@@ -26,7 +26,7 @@ def main():
         string = ''
     content.append(str(datetime.now()))
     fp = open('fang.txt', 'a+', encoding='utf-8')
-    fp.write(str(content))
+    fp.write(str(content)+'\n')
     fp.close()
     mongoRow = {}
     mongoRow['signNum'] = content[0]
@@ -34,11 +34,11 @@ def main():
     mongoRow['getTime'] = content[2]
     print(mongoRow)
 
-    #mongoClient = MongoClient()
-    #mongoDB = mongoClient.fang
-    #mongoColl = mongoDB.yishou
-    #mongoColl.insert_one(mongoRow)
-    #print(mongoRow)
+    mongoClient = MongoClient()
+    mongoDB = mongoClient.fang
+    mongoColl = mongoDB.yishou
+    mongoColl.insert_one(mongoRow)
+    print(mongoRow)
 
 if __name__ == '__main__':
     main()
