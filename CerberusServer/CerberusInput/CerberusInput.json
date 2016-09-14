@@ -1,0 +1,72 @@
+{
+    "os": [
+        {
+		  	"machinename": "SHGTGVMWIN047",
+            "platform": "Windows"
+        },
+        {
+		  	"machinename": "SHGTGVMWIN048",
+            "platform": "Suse"
+        }
+	],
+	
+	"responseparameter": [
+        {
+			"machinename": "SHGTGVMWIN047",
+			"userdomain": "shgtgvmwin047",
+			"user": "administrator",
+			"machinepassword": "bobobo",
+            "cmspassword": "Bobobo",
+            "cmsport": "6400",
+			"dsproductkey": "C431C-19HU54C-00NZHCN-T4HH",
+			"boeproductkey": "DC00V-JUZ600G-TNV54C4-GU800WC-7D",
+			"cmsusername": "Administrator",
+			"clusterkey": "Bobobo",
+			"lcmpassword": "Bobobo",
+			"lcmport": "3690",
+			"siaport": "6410",
+			"sqlanywhereadminpassword": "Password1",
+			"sqlanywhereport": "2638",
+			"tomcatconnectionport": "8080",
+			"tomcatredirectport": "8443",
+			"tomcatshutdownport": "8005",
+			"wacsport": "6405"
+        },
+        {
+			"machinename": "SHGTGVMWIN048",
+			"userdomain": "shgtgvmwin048",
+			"user": "administrator",
+			"machinepassword": "bobobo"
+        }
+    ],
+	
+	"cerberussetup": [
+        {
+		  	"machinename": "SHGTGVMWIN047",
+            "dsinstallforceinstall": "0",
+            "minibipinstallforceinstall": "0",
+			"fullboeinstallforceinstall": "0",
+			"boeinstallforceinstall": "0",
+			"minibippatchforcepatch": "0",
+			"fullboepatchforcepatch": "0",
+			"boepatchforcepatch": "0",
+			"dsupgradeforceinstall": "0",
+			"dsupgradeforceupgrade": "0"
+        },
+        {
+		  	"machinename": "SHGTGVMWIN048",
+            "dsinstallforceinstall": "1"
+        }
+    ],
+	
+	"installationsteps": [
+        {
+		  	"machinename": "SHGTGVMWIN047",
+			"step1": ["InstallDS", "Y:\\IM_DS_4.2_SP04_Patch_REL\\1040\\win32_x86\\release\\packages\\dataservices64"]
+        },
+        {
+		  	"machinename": "SHGTGVMWIN048",
+            "step1": ["cleanup"]
+        }
+    ]
+}

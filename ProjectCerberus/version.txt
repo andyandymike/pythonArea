@@ -1,0 +1,25 @@
+version number: 2.1.1
+1. fix check steps for patch boe problem
+
+
+version number: 2.1
+1. Add write log function
+2. fix several bugs
+
+version number: 2.0
+1. Add full BOE support, including patch, fresh install, remove
+2. Enhance mini BIP support, including patch, remove
+3. Add several useful steps (removeboe, removeallboepatch etc)
+4. Rewrite several steps to support more complex scenarios (cleanup etc )
+5. Redesign check installed BOE and DS version function. Install path input no longer needed
+6. Rewrite check machine status function
+7. Add function to detect BOE type
+
+version number: 1.1
+1. Add more setup to support different user needs
+2. Redesign several function, remove hardcode, read from setup file instead
+3. fix several bugs
+
+version number: 1.0
+1. Framework done
+2. support complex scenarios for DS and mini BIP

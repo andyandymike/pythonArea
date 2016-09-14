@@ -1,0 +1,11 @@
+{
+    "DBAttribute": [
+        {
+		  	"DBName": "SYBASE_ASE",
+            "Version": "16",
+			"InstallationType": "Client",
+			"InstallationPackage": "SybaseASE16Client",
+			"RspFile": "SybaseASE16_client.rsp"
+        }
+	]
+}

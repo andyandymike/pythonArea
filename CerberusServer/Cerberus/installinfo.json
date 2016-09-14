@@ -1,0 +1,17 @@
+{
+	"cmspassword": "Bobobo",
+	"cmsport": "6400",
+	"dsproductkey": "C431C-19HU54C-00NZHCN-T4HH",
+	"boeproductkey": "DC00V-JUZ600G-TNV54C4-GU800WC-7D",
+	"cmsusername": "Administrator",
+	"clusterkey": "Bobobo",
+	"lcmpassword": "Bobobo",
+	"lcmport": "3690",
+	"siaport": "6410",
+	"sqlanywhereadminpassword": "Password1",
+	"sqlanywhereport": "2638",
+	"tomcatconnectionport": "8080",
+	"tomcatredirectport": "8443",
+	"tomcatshutdownport": "8005",
+	"wacsport": "6405"
+}

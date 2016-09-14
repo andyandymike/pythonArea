@@ -1,0 +1,8 @@
+TypeAHotelUserNum=1
+TypeAHotelSales=200000
+TypeBHotelUserNum=8
+TypeBHotelSales=800000
+TypeCHotelUserNum=12
+TypeCHotelSales=600000
+TypeDHotelUserNum=33
+TypeDHotelSales=660000

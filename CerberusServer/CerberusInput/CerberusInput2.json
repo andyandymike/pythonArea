@@ -1,0 +1,40 @@
+{
+    "os": [
+        {
+		  	"machinename": "SHGTGVMWIN050",
+            "platform": "Windows"
+        }
+	],
+	
+	"responseparameter": [
+        {
+			"machinename": "SHGTGVMWIN050",
+			"userdomain": "shgtgvmwin050",
+			"user": "administrator",
+			"machinepassword": "bobobo"
+        }
+    ],
+	
+	"cerberussetup": [
+        {
+		  	"machinename": "SHGTGVMWIN050",
+            "dsinstallforceinstall": "1",
+            "minibipinstallforceinstall": "1",
+			"fullboeinstallforceinstall": "0",
+			"boeinstallforceinstall": "0",
+			"minibippatchforcepatch": "0",
+			"fullboepatchforcepatch": "0",
+			"boepatchforcepatch": "0",
+			"dsupgradeforceinstall": "0",
+			"dsupgradeforceupgrade": "1"
+        }
+    ],
+	
+	"installationsteps": [
+        {
+		  	"machinename": "SHGTGVMWIN050",
+            "step1": ["removeds"],
+            "step2": ["InstallMiniBIP", "V:\\Installation Package\\BOE\\14.1.6.1702\\MiniBIP"]
+        }
+    ]
+}

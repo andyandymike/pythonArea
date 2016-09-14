@@ -1,0 +1,20 @@
+{
+    "InstallAll": [
+        {
+		  	"DBName": "ALL",
+            "Version": "Latest",
+			"InstallationType": "Client",
+			"Install": "True"
+        }
+	],
+	
+	"SybaseASE": [
+        {
+		  	"DBName": "SYBASE_ASE",
+            "Version": "16",
+			"InstallationType": "Client",
+			"IsLatest": "True",
+			"Install": "True"
+        }
+	]
+}
