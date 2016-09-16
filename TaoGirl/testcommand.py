@@ -6,6 +6,7 @@ import re
 import time
 from bs4 import BeautifulSoup
 import os
+from multiprocessing.pool import ThreadPool
 
 seen_urls = set(['/'])
 lock = Lock()
@@ -16,8 +17,6 @@ class Fetcher(Thread):
         Thread.__init__(self)
         self.tasks = tasks
         self.daemon = True
-
-        self.start()
 
     def run(self):
         while True:
@@ -83,24 +82,16 @@ class Fetcher(Thread):
         headers = dict(h.split(': ') for h in head.decode().split('\r\n')[1:])
         return headers.get('Content-Type', '').startswith('text/html')
 
-
-class ThreadPool:
-    def __init__(self, num_threads):
-        self.tasks = Queue()
-        for _ in range(num_threads):
-            Fetcher(self.tasks)
-
-    def add_task(self, url):
-        self.tasks.put(url)
-
-    def wait_completion(self):
-        self.tasks.join()
-
 if __name__ == '__main__':
     if os.path.isfile(outfile):
         os.remove(outfile)
     start = time.time()
-    pool = ThreadPool(4)
-    pool.add_task("/")
-    pool.wait_completion()
+    pool = ThreadPool()
+    tasks = Queue()
+    tasks.put("/")
+    Workers = [Fetcher(tasks) for i in range(4)]
+    pool.map_async(lambda w:w.run(), Workers)
+    tasks.join()
+    pool.close()
+
     print('{} URLs fetched in {:.1f} seconds'.format(len(seen_urls),time.time() - start))
