@@ -39,9 +39,8 @@ def sum(root, fn):
         st.append('Number of testcase run:                %d' % (passed + failed))
         st.append('Number of testcase passed:             %d' % passed)
         st.append('Number of testcase failed:             %d' % failed)
-        (d, tmp) = os.path.split(root)
         fp = fn[:fn.rfind('_')]
-        fo = os.path.join(d, "%s.sum" % fp)
+        fo = os.path.join(root, "%s.sum" % fp)
         with open(fo, 'w') as f2:
             f2.write("\n".join(st))
 

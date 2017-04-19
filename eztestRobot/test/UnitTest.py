@@ -23,6 +23,8 @@ def testDiff():
     wf = os.path.join(testRoot, 'w.txt')
     print(diff_unordered_files(gf, wf))
 
+def testUnescape():
+    print(unescape('test\ \\n\\.\\\\@\\*\\\\'))
 
 if __name__ == '__main__':
-    shell_command('echo hello')
+    testDiff()

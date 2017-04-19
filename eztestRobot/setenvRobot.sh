@@ -4,6 +4,7 @@ export jythonjar='jython-standalone-2.7.0.jar'
 export robotframeworkjar='robotframework-2.8.7.jar'
 export JYTHON_CMD="java -jar ${ROBOTHOME}/bin/${jythonjar}"
 export subvalue2=${ROBOTHOME}/bin/subvalue2.py
+export ROBOT_OPTION="-v ROBOTHOME:${ROBOTHOME} --noncritical InTestingSetup"
 
 
 if [ "$TERM" = "cygwin" ]

@@ -5,6 +5,39 @@ findcase=0
 testsuit=""
 TESTCASE=""
 
+function run_the_test
+{
+       cd $TESTNODE
+
+       if [ $XML_JOB = 'on' ] ;
+       then 
+           echo 'XML job testcases will be executed ....'
+
+      ##     java -classpath N:/ezTestTool/env/bin GenXMLTestCase $TESTNODE $testsuite $cases
+
+      ##     eztest.exe < $QAENV/bin/eztest_setup_xml
+       else
+
+           echo 'ATL job testcases will be executed ....'
+          
+           $QAENV/bin/eztest.exe < $QAENV/bin/eztest_setup
+       fi
+       if [ $G_UPDATE = 'on' ] ;
+          then
+          echo $testsuite
+          echo $CONFIG
+          echo $test_result_dir
+          if [ $XML_JOB = 'on' ] ;
+            then
+				echo
+        ##    ezupdate $CONFIG ${test_result_dir}/${testunit}_xml.sum $testunit
+          else
+			echo
+        ##    ezupdate $CONFIG ${test_result_dir}/${testunit}.sum $testunit
+          fi
+       fi
+}
+
 function read_alltest
 {
    if [ $# -eq 0 ] 
@@ -266,6 +299,7 @@ else
     	       export all
             fi
 fi
+# . $TESTNODE/testlib/$LANGFILE
 
 
 if [ "$testunit" = "all" ]
@@ -287,6 +321,11 @@ do
     export utestunit=$UTESTNODE/$testsuite/$cases
     export testunit=$TESTNODE/$testsuite/$cases
 
+	#export DS_WORK=$runtest/work
+	#export UDS_WORK=$unix_runtest/work
+#	export DS_WORK_LOC_MAP=$runtest/work
+#	export DS_LOCAL_JS_LOC=$runtest
+#	export DS_JS_WORK_LOC=$runtest/work
     echo "Testsuite=$runtest"
     if [ ! -e $runtest ]
     then
@@ -294,12 +333,10 @@ do
     fi
 
     java -jar ${ROBOTHOME}/bin/${jythonjar} bin/Converter.py $runtest
-	java -jar ${ROBOTHOME}/bin/${robotframeworkjar} ${ROBOT_OPTION} -d ${test_result_dir} -o ${cases}_output.xml -l ${cases}_log.html -r ${cases}_report.html $runtest/testcase.robot
-	java -jar ${ROBOTHOME}/bin/${jythonjar} bin/summary.py ${test_result_dir}/${cases}_output.xml
+	java -jar ${ROBOTHOME}/bin/${robotframeworkjar} ${ROBOT_OPTION} -d ${test_result_dir}/${testsuite} -o ${cases}_output.xml -l ${cases}_log.html -r ${cases}_report.html $runtest/testcase.robot
+	java -jar ${ROBOTHOME}/bin/${jythonjar} bin/summary.py ${test_result_dir}/${testsuite}/${cases}_output.xml
 done
+#generate_report.sh $cases
 
-echo ---------------------------------------------------------------------------------
-echo ${cases} summary:
-cat ${test_result_dir}/${cases}.sum
 
 
