@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 2.8.7 (Jython 2.5.3 on java1.8.0_121)" generated="20170419 00:20:02.467">
+<suite source="Y:\landy\EZTEST\diqa\generic\HANA\HANA_Pipe_File_Options\testcase.robot" name="Testcase" id="s1">
+<test name="hana001" id="s1-t1">
+<kw type="kw" name="OSHelper.Shell Command">
+<doc></doc>
+<arguments>
+<arg>echo Hello1</arg>
+</arguments>
+<msg level="INFO" timestamp="20170419 00:20:03.967">RUN: echo Hello1</msg>
+<msg level="INFO" timestamp="20170419 00:20:04.092">Command exit code: 0</msg>
+<msg level="INFO" timestamp="20170419 00:20:04.092">Command output: Hello1</msg>
+<status endtime="20170419 00:20:04.092" starttime="20170419 00:20:03.967" status="PASS"></status>
+</kw>
+<doc>Job_File_Option_01_Setup</doc>
+<tags>
+<tag>HANA_Pipe_File_Options</tag>
+<tag>in</tag>
+</tags>
+<status critical="yes" endtime="20170419 00:20:04.108" starttime="20170419 00:20:03.952" status="PASS"></status>
+</test>
+<test name="hana002" id="s1-t2">
+<kw type="kw" name="OSHelper.Diff Unordered Files">
+<doc></doc>
+<arguments>
+<arg>no1.txt</arg>
+<arg>no2.txt</arg>
+</arguments>
+<msg level="FAIL" timestamp="20170419 00:20:04.202">IOError: [Errno 2] No such file or directory: u'no1.txt'</msg>
+<status endtime="20170419 00:20:04.202" starttime="20170419 00:20:04.170" status="FAIL"></status>
+</kw>
+<doc>Job_File_Option_11</doc>
+<tags>
+<tag>HANA_Pipe_File_Options</tag>
+<tag>InTestingSetup</tag>
+</tags>
+<status critical="no" endtime="20170419 00:20:04.202" starttime="20170419 00:20:04.155" status="FAIL">IOError: [Errno 2] No such file or directory: u'no1.txt'</status>
+</test>
+<doc></doc>
+<metadata>
+</metadata>
+<status endtime="20170419 00:20:04.233" starttime="20170419 00:20:02.498" status="PASS"></status>
+</suite>
+<statistics>
+<total>
+<stat pass="1" fail="0">Critical Tests</stat>
+<stat pass="1" fail="1">All Tests</stat>
+</total>
+<tag>
+<stat pass="0" fail="1" doc="" links="" combined="" info="non-critical">InTestingSetup</stat>
+<stat pass="1" fail="1" doc="" links="" combined="" info="">HANA_Pipe_File_Options</stat>
+<stat pass="1" fail="0" doc="" links="" combined="" info="">in</stat>
+</tag>
+<suite>
+<stat pass="1" fail="1" name="Testcase" id="s1">Testcase</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>

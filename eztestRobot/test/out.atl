@@ -1,0 +1,448 @@
+ AlGUIComment ("ActaName_1" = 'RSavedAfterCheckOut', "ActaName_2" = 'RDate_created', "ActaValue_1" = 'YES', "ActaValue_2" = 'Mon Jun 11 23:53:33 2012', "x" = '-1', "y" = '-1')
+CREATE DATABASE DATASTORE hana_ansijoin::'9868a8b4-33bb-4453-8ae9-267b60a5074c' SET ("DBLiveLoad" = 'no', "application_type" = 'Custom', "cdc_enabled" = 'no', "datastore_repotype" = 'local', "ds_configuration_enabled" = 'yes', "ds_configurations" = '<?xml version="1.0" encoding="WINDOWS-1252" ?>
+<DSConfigurations>
+<DSConfiguration default="true" name="Configuration1">
+<case_sensitive>no</case_sensitive>
+<database_type>ODBC</database_type>
+<db_alias_name1>ANSIALIAS</db_alias_name1>
+<db_alias_user1></db_alias_user1><db_alias_user1></db_alias_user1>
+<loader_xact_size>1000</loader_xact_size>
+<newdb_version>HANA 1.x</newdb_version>
+<odbc_data_source></odbc_data_source>
+<odbc_database_type>HANA</odbc_database_type>
+<password></password>
+<user></user>
+</DSConfiguration>
+</DSConfigurations>
+', "enable_data_transfer" = 'yes', "import_unknown_type" = 'no', "name" = 'hana_ansijoin', "pcache_force_utf16" = 'no');
+ AlGUIComment ("x" = '-1', "y" = '-1')
+CREATE DATABASE DATASTORE hana_ansijoin1::'78b3fad8-9778-4246-90b8-46e745d6ab73' SET ("DBLiveLoad" = 'no', "application_type" = 'Custom', "cdc_enabled" = 'no', "datastore_repotype" = 'local', "ds_configuration_enabled" = 'yes', "ds_configurations" = '<?xml version="1.0" encoding="WINDOWS-1252" ?>
+<DSConfigurations>
+<DSConfiguration default="true" name="Configuration1">
+<case_sensitive>no</case_sensitive>
+<database_type>ODBC</database_type>
+<db_alias_name1>ANSIALIAS1</db_alias_name1>
+<db_alias_user1></db_alias_user1>
+<loader_xact_size>1000</loader_xact_size>
+<newdb_version>HANA 1.x</newdb_version>
+<odbc_data_source></odbc_data_source>
+<odbc_database_type>HANA</odbc_database_type>
+<password></password>
+<user></user>
+</DSConfiguration>
+</DSConfigurations>
+', "enable_data_transfer" = 'yes', "import_unknown_type" = 'no', "name" = 'hana_ansijoin1', "pcache_force_utf16" = 'no');
+ AlGUIComment (ActaName_1 = 'RDatabase_Object_Type',ActaValue_1 = 'TABLE' , 
+ActaName_2 = 'RTable_Type',ActaValue_2 = 'TABLE' , 
+ActaName_3 = 'RDescription',ActaValue_3 = '' , 
+ActaName_4 = 'REstimated_Row_Count',ActaValue_4 = '50000' , 
+ActaName_5 = 'RSavedAfterCheckOut',ActaValue_5 = 'YES' , 
+ActaName_6 = 'RLoader_Is_Template_Table',ActaValue_6 = 'no' , 
+ActaName_7 = 'RDate_modified',ActaValue_7 = 'Wed Jun 13 18:04:40 2012' )
+CREATE TABLE hana_ansijoin.DS_EIM.ANSIT1(ONE DECIMAL(10, 0)  KEY  NOT NULL , 
+UNIQUE_ONE DECIMAL(10, 0)  NULL , 
+UNIQUE_ONE_DEC DECIMAL(20, 6)  NULL , 
+TWO DECIMAL(10, 2)  NULL , 
+FOUR INT  NULL , 
+SIXTEEN DECIMAL(13, 2)  NULL , 
+TEN_DATE DATE  NULL , 
+STRINGA VARCHAR(400)  NULL , 
+SIXTEEN_INTERVAL INT  NULL , 
+STRINGB VARCHAR(400)  NULL , 
+STRINGC VARCHAR(500)  NULL , 
+TEN_DATETIME DATE  NULL , 
+STRINGC_CHAR VARCHAR(500)  NULL , 
+HUNDRED_TIME DATE  NULL , 
+TEN_TIMESTAMP DATETIME(7)  NULL , 
+SIXTEEN_REAL DOUBLE  NULL , 
+SIXTEEN_DOUBLE DOUBLE  NULL ) 
+PRIMARY KEY (ONE) 
+SET("db_alias_name" = 'ANSIALIAS')
+;
+ AlGUIComment (ActaName_1 = 'RDatabase_Object_Type',ActaValue_1 = 'TABLE' , 
+ActaName_2 = 'RTable_Type',ActaValue_2 = 'TABLE' , 
+ActaName_3 = 'RDescription',ActaValue_3 = '' , 
+ActaName_4 = 'REstimated_Row_Count',ActaValue_4 = '50000' , 
+ActaName_5 = 'RSavedAfterCheckOut',ActaValue_5 = 'YES' , 
+ActaName_6 = 'RLoader_Is_Template_Table',ActaValue_6 = 'no' , 
+ActaName_7 = 'RDate_modified',ActaValue_7 = 'Wed Jun 13 18:04:57 2012' )
+CREATE TABLE hana_ansijoin1.DS_EIM.ANSIT1(ONE DECIMAL(10, 0)  KEY  NOT NULL , 
+UNIQUE_ONE DECIMAL(10, 0)  NULL , 
+UNIQUE_ONE_DEC DECIMAL(20, 6)  NULL , 
+TWO DECIMAL(10, 2)  NULL , 
+FOUR INT  NULL , 
+SIXTEEN DECIMAL(13, 2)  NULL , 
+TEN_DATE DATE  NULL , 
+STRINGA VARCHAR(400)  NULL , 
+SIXTEEN_INTERVAL INT  NULL , 
+STRINGB VARCHAR(400)  NULL , 
+STRINGC VARCHAR(500)  NULL , 
+TEN_DATETIME DATE  NULL , 
+STRINGC_CHAR VARCHAR(500)  NULL , 
+HUNDRED_TIME DATE  NULL , 
+TEN_TIMESTAMP DATETIME(7)  NULL , 
+SIXTEEN_REAL DOUBLE  NULL , 
+SIXTEEN_DOUBLE DOUBLE  NULL ) 
+PRIMARY KEY (ONE) 
+SET("db_alias_name" = 'ANSIALIAS1')
+;
+ AlGUIComment (ActaName_1 = 'RDatabase_Object_Type',ActaValue_1 = 'TABLE' , 
+ActaName_2 = 'RTable_Type',ActaValue_2 = 'TABLE' , 
+ActaName_3 = 'RDescription',ActaValue_3 = '' , 
+ActaName_4 = 'REstimated_Row_Count',ActaValue_4 = '50000' , 
+ActaName_5 = 'RSavedAfterCheckOut',ActaValue_5 = 'YES' , 
+ActaName_6 = 'RLoader_Is_Template_Table',ActaValue_6 = 'no' , 
+ActaName_7 = 'RDate_modified',ActaValue_7 = 'Wed Jun 13 18:04:40 2012' )
+CREATE TABLE hana_ansijoin.DS_EIM.ANSIT2(ONE DECIMAL(10, 0)  KEY  NOT NULL , 
+UNIQUE_ONE DECIMAL(10, 0)  NULL , 
+UNIQUE_ONE_DEC DECIMAL(20, 6)  NULL , 
+TWO DECIMAL(10, 2)  NULL , 
+FOUR INT  NULL , 
+SIXTEEN DECIMAL(13, 2)  NULL , 
+TEN_DATE DATE  NULL , 
+STRINGA VARCHAR(400)  NULL , 
+SIXTEEN_INTERVAL INT  NULL , 
+STRINGB VARCHAR(400)  NULL , 
+STRINGC VARCHAR(500)  NULL , 
+TEN_DATETIME DATE  NULL , 
+STRINGC_CHAR VARCHAR(500)  NULL , 
+HUNDRED_TIME DATE  NULL , 
+TEN_TIMESTAMP DATETIME(7)  NULL , 
+SIXTEEN_REAL DOUBLE  NULL , 
+SIXTEEN_DOUBLE DOUBLE  NULL ) 
+PRIMARY KEY (ONE) 
+SET("db_alias_name" = 'ANSIALIAS')
+;
+ AlGUIComment (ActaName_1 = 'RDatabase_Object_Type',ActaValue_1 = 'TABLE' , 
+ActaName_2 = 'RTable_Type',ActaValue_2 = 'TABLE' , 
+ActaName_3 = 'RDescription',ActaValue_3 = '' , 
+ActaName_4 = 'REstimated_Row_Count',ActaValue_4 = '50000' , 
+ActaName_5 = 'RSavedAfterCheckOut',ActaValue_5 = 'YES' , 
+ActaName_6 = 'RLoader_Is_Template_Table',ActaValue_6 = 'no' , 
+ActaName_7 = 'RDate_modified',ActaValue_7 = 'Wed Jun 13 18:04:57 2012' )
+CREATE TABLE hana_ansijoin1.DS_EIM.ANSIT2(ONE DECIMAL(10, 0)  KEY  NOT NULL , 
+UNIQUE_ONE DECIMAL(10, 0)  NULL , 
+UNIQUE_ONE_DEC DECIMAL(20, 6)  NULL , 
+TWO DECIMAL(10, 2)  NULL , 
+FOUR INT  NULL , 
+SIXTEEN DECIMAL(13, 2)  NULL , 
+TEN_DATE DATE  NULL , 
+STRINGA VARCHAR(400)  NULL , 
+SIXTEEN_INTERVAL INT  NULL , 
+STRINGB VARCHAR(400)  NULL , 
+STRINGC VARCHAR(500)  NULL , 
+TEN_DATETIME DATE  NULL , 
+STRINGC_CHAR VARCHAR(500)  NULL , 
+HUNDRED_TIME DATE  NULL , 
+TEN_TIMESTAMP DATETIME(7)  NULL , 
+SIXTEEN_REAL DOUBLE  NULL , 
+SIXTEEN_DOUBLE DOUBLE  NULL ) 
+PRIMARY KEY (ONE) 
+SET("db_alias_name" = 'ANSIALIAS1')
+;
+ AlGUIComment (ActaName_1 = 'RDatabase_Object_Type',ActaValue_1 = 'TABLE' , 
+ActaName_2 = 'RTable_Type',ActaValue_2 = 'TABLE' , 
+ActaName_3 = 'RDescription',ActaValue_3 = '' , 
+ActaName_4 = 'REstimated_Row_Count',ActaValue_4 = '50000' , 
+ActaName_5 = 'RSavedAfterCheckOut',ActaValue_5 = 'YES' , 
+ActaName_6 = 'RLoader_Is_Template_Table',ActaValue_6 = 'no' , 
+ActaName_7 = 'RDate_modified',ActaValue_7 = 'Wed Jun 13 18:04:41 2012' )
+CREATE TABLE hana_ansijoin.DS_EIM.ANSIT3(ONE DECIMAL(10, 0)  KEY  NOT NULL , 
+UNIQUE_ONE VARCHAR(50)  NULL , 
+UNIQUE_ONE_DEC VARCHAR(50)  NULL , 
+TWO VARCHAR(15)  NULL , 
+FOUR INT  NULL , 
+SIXTEEN DECIMAL(13, 2)  NULL , 
+TEN_DATE VARCHAR(24)  NULL , 
+STRINGA VARCHAR(400)  NULL , 
+SIXTEEN_INTERVAL INT  NULL , 
+STRINGB VARCHAR(400)  NULL , 
+STRINGC VARCHAR(500)  NULL , 
+TEN_DATETIME VARCHAR(50)  NULL , 
+STRINGC_CHAR VARCHAR(500)  NULL , 
+HUNDRED_TIME VARCHAR(24)  NULL , 
+TEN_TIMESTAMP VARCHAR(24)  NULL , 
+SIXTEEN_REAL VARCHAR(8)  NULL , 
+SIXTEEN_DOUBLE VARCHAR(8)  NULL ) 
+PRIMARY KEY (ONE) 
+SET("db_alias_name" = 'ANSIALIAS')
+;
+ AlGUIComment (ActaName_1 = 'RTable_Type',ActaValue_1 = 'TABLE' , 
+ActaName_2 = 'RDescription',ActaValue_2 = '' , 
+ActaName_3 = 'REstimated_Row_Count',ActaValue_3 = '50000' , 
+ActaName_4 = 'RSavedAfterCheckOut',ActaValue_4 = 'YES' , 
+ActaName_5 = 'RDatabase_Object_Type',ActaValue_5 = 'TABLE' , 
+ActaName_6 = 'RLoader_Is_Template_Table',ActaValue_6 = 'no' , 
+ActaName_7 = 'RDate_modified',ActaValue_7 = 'Wed Jun 13 18:04:57 2012' )
+CREATE TABLE hana_ansijoin1.DS_EIM.ANSIT3(ONE DECIMAL(10, 0)  KEY  NOT NULL , 
+UNIQUE_ONE VARCHAR(50)  NULL , 
+UNIQUE_ONE_DEC VARCHAR(50)  NULL , 
+TWO VARCHAR(15)  NULL , 
+FOUR INT  NULL , 
+SIXTEEN DECIMAL(13, 2)  NULL , 
+TEN_DATE VARCHAR(24)  NULL , 
+STRINGA VARCHAR(400)  NULL , 
+SIXTEEN_INTERVAL INT  NULL , 
+STRINGB VARCHAR(400)  NULL , 
+STRINGC VARCHAR(500)  NULL , 
+TEN_DATETIME VARCHAR(50)  NULL , 
+STRINGC_CHAR VARCHAR(500)  NULL , 
+HUNDRED_TIME VARCHAR(24)  NULL , 
+TEN_TIMESTAMP VARCHAR(24)  NULL , 
+SIXTEEN_REAL VARCHAR(8)  NULL , 
+SIXTEEN_DOUBLE VARCHAR(8)  NULL ) 
+PRIMARY KEY (ONE) 
+SET("db_alias_name" = 'ANSIALIAS1')
+;
+ AlGUIComment (ActaName_1 = 'RDatabase_Object_Type',ActaValue_1 = 'TABLE' , 
+ActaName_2 = 'RTable_Type',ActaValue_2 = 'TABLE' , 
+ActaName_3 = 'RDescription',ActaValue_3 = '' , 
+ActaName_4 = 'REstimated_Row_Count',ActaValue_4 = '50000' , 
+ActaName_5 = 'RSavedAfterCheckOut',ActaValue_5 = 'YES' , 
+ActaName_6 = 'RLoader_Is_Template_Table',ActaValue_6 = 'no' , 
+ActaName_7 = 'RDate_modified',ActaValue_7 = 'Wed Jun 13 18:04:41 2012' )
+CREATE TABLE hana_ansijoin.DS_EIM.ANSIT4(ONE DECIMAL(10, 0)  KEY  NOT NULL , 
+UNIQUE_ONE VARCHAR(50)  NULL , 
+UNIQUE_ONE_DEC VARCHAR(50)  NULL , 
+TWO VARCHAR(15)  NULL , 
+FOUR INT  NULL , 
+SIXTEEN DECIMAL(13, 2)  NULL , 
+TEN_DATE VARCHAR(24)  NULL , 
+STRINGA VARCHAR(400)  NULL , 
+SIXTEEN_INTERVAL INT  NULL , 
+STRINGB VARCHAR(400)  NULL , 
+STRINGC VARCHAR(500)  NULL , 
+TEN_DATETIME VARCHAR(50)  NULL , 
+STRINGC_CHAR VARCHAR(500)  NULL , 
+HUNDRED_TIME VARCHAR(24)  NULL , 
+TEN_TIMESTAMP VARCHAR(24)  NULL , 
+SIXTEEN_REAL VARCHAR(8)  NULL , 
+SIXTEEN_DOUBLE VARCHAR(8)  NULL ) 
+PRIMARY KEY (ONE) 
+SET("db_alias_name" = 'ANSIALIAS')
+;
+ AlGUIComment (ActaName_1 = 'RDatabase_Object_Type',ActaValue_1 = 'TABLE' , 
+ActaName_2 = 'RTable_Type',ActaValue_2 = 'TABLE' , 
+ActaName_3 = 'RDescription',ActaValue_3 = '' , 
+ActaName_4 = 'REstimated_Row_Count',ActaValue_4 = '50000' , 
+ActaName_5 = 'RSavedAfterCheckOut',ActaValue_5 = 'YES' , 
+ActaName_6 = 'RLoader_Is_Template_Table',ActaValue_6 = 'no' , 
+ActaName_7 = 'RDate_modified',ActaValue_7 = 'Wed Jun 13 18:04:57 2012' )
+CREATE TABLE hana_ansijoin1.DS_EIM.ANSIT4(ONE DECIMAL(10, 0)  KEY  NOT NULL , 
+UNIQUE_ONE VARCHAR(50)  NULL , 
+UNIQUE_ONE_DEC VARCHAR(50)  NULL , 
+TWO VARCHAR(15)  NULL , 
+FOUR INT  NULL , 
+SIXTEEN DECIMAL(13, 2)  NULL , 
+TEN_DATE VARCHAR(24)  NULL , 
+STRINGA VARCHAR(400)  NULL , 
+SIXTEEN_INTERVAL INT  NULL , 
+STRINGB VARCHAR(400)  NULL , 
+STRINGC VARCHAR(500)  NULL , 
+TEN_DATETIME VARCHAR(50)  NULL , 
+STRINGC_CHAR VARCHAR(500)  NULL , 
+HUNDRED_TIME VARCHAR(24)  NULL , 
+TEN_TIMESTAMP VARCHAR(24)  NULL , 
+SIXTEEN_REAL VARCHAR(8)  NULL , 
+SIXTEEN_DOUBLE VARCHAR(8)  NULL ) 
+PRIMARY KEY (ONE) 
+SET("db_alias_name" = 'ANSIALIAS1')
+;
+ AlGUIComment (ActaName_1 = 'RDatabase_Object_Type',ActaValue_1 = 'TABLE' , 
+ActaName_2 = 'RTable_Type',ActaValue_2 = 'TABLE' , 
+ActaName_3 = 'RDescription',ActaValue_3 = '' , 
+ActaName_4 = 'REstimated_Row_Count',ActaValue_4 = '50000' , 
+ActaName_5 = 'RSavedAfterCheckOut',ActaValue_5 = 'YES' , 
+ActaName_6 = 'RLoader_Is_Template_Table',ActaValue_6 = 'no' , 
+ActaName_7 = 'RDate_modified',ActaValue_7 = 'Wed Jun 13 18:04:41 2012' )
+CREATE TABLE hana_ansijoin.DS_EIM.ANSIT5(ONE DECIMAL(10, 0)  KEY  NOT NULL , 
+UNIQUE_ONE VARCHAR(50)  NULL , 
+UNIQUE_ONE_DEC VARCHAR(50)  NULL , 
+TWO VARCHAR(15)  NULL , 
+FOUR INT  NULL , 
+SIXTEEN DECIMAL(13, 2)  NULL , 
+TEN_DATE VARCHAR(24)  NULL , 
+STRINGA VARCHAR(400)  NULL , 
+SIXTEEN_INTERVAL INT  NULL , 
+STRINGB VARCHAR(400)  NULL , 
+STRINGC VARCHAR(500)  NULL , 
+TEN_DATETIME VARCHAR(50)  NULL , 
+STRINGC_CHAR VARCHAR(500)  NULL , 
+HUNDRED_TIME VARCHAR(24)  NULL , 
+TEN_TIMESTAMP VARCHAR(24)  NULL , 
+SIXTEEN_REAL VARCHAR(8)  NULL , 
+SIXTEEN_DOUBLE VARCHAR(8)  NULL ) 
+PRIMARY KEY (ONE) 
+SET("db_alias_name" = 'ANSIALIAS')
+;
+ AlGUIComment (ActaName_1 = 'RDatabase_Object_Type',ActaValue_1 = 'TABLE' , 
+ActaName_2 = 'RTable_Type',ActaValue_2 = 'TABLE' , 
+ActaName_3 = 'RDescription',ActaValue_3 = '' , 
+ActaName_4 = 'REstimated_Row_Count',ActaValue_4 = '50000' , 
+ActaName_5 = 'RSavedAfterCheckOut',ActaValue_5 = 'YES' , 
+ActaName_6 = 'RLoader_Is_Template_Table',ActaValue_6 = 'no' , 
+ActaName_7 = 'RDate_created',ActaValue_7 = 'Wed Jun 13 18:04:57 2012' , 
+ActaName_8 = 'RDate_last_loaded',ActaValue_8 = 'NotYetLoaded' )
+CREATE TABLE hana_ansijoin1.DS_EIM.ANSIT5(ONE DECIMAL(10, 0)  KEY  NOT NULL , 
+UNIQUE_ONE VARCHAR(50)  NULL , 
+UNIQUE_ONE_DEC VARCHAR(50)  NULL , 
+TWO VARCHAR(15)  NULL , 
+FOUR INT  NULL , 
+SIXTEEN DECIMAL(13, 2)  NULL , 
+TEN_DATE VARCHAR(24)  NULL , 
+STRINGA VARCHAR(400)  NULL , 
+SIXTEEN_INTERVAL INT  NULL , 
+STRINGB VARCHAR(400)  NULL , 
+STRINGC VARCHAR(500)  NULL , 
+TEN_DATETIME VARCHAR(50)  NULL , 
+STRINGC_CHAR VARCHAR(500)  NULL , 
+HUNDRED_TIME VARCHAR(24)  NULL , 
+TEN_TIMESTAMP VARCHAR(24)  NULL , 
+SIXTEEN_REAL VARCHAR(8)  NULL , 
+SIXTEEN_DOUBLE VARCHAR(8)  NULL ) 
+PRIMARY KEY (ONE) 
+SET("db_alias_name" = 'ANSIALIAS1')
+;
+ AlGUIComment (ActaName_1 = 'RDatabase_Object_Type',ActaValue_1 = 'TABLE' , 
+ActaName_2 = 'RTable_Type',ActaValue_2 = 'TABLE' , 
+ActaName_3 = 'RDescription',ActaValue_3 = '' , 
+ActaName_4 = 'REstimated_Row_Count',ActaValue_4 = '50000' , 
+ActaName_5 = 'RSavedAfterCheckOut',ActaValue_5 = 'YES' , 
+ActaName_6 = 'RLoader_Is_Template_Table',ActaValue_6 = 'no' , 
+ActaName_7 = 'RDate_created',ActaValue_7 = 'Wed Jun 13 18:04:41 2012' , 
+ActaName_8 = 'RDate_last_loaded',ActaValue_8 = 'NotYetLoaded' )
+CREATE TABLE hana_ansijoin.DS_EIM.ANSITARGET(ONE DECIMAL(10, 0)  KEY  NOT NULL , 
+UNIQUE_ONE VARCHAR(50)  NULL , 
+UNIQUE_ONE_DEC VARCHAR(50)  NULL , 
+TWO VARCHAR(15)  NULL , 
+FOUR INT  NULL , 
+SIXTEEN DECIMAL(13, 2)  NULL , 
+TEN_DATE VARCHAR(24)  NULL , 
+STRINGA VARCHAR(400)  NULL , 
+SIXTEEN_INTERVAL INT  NULL , 
+STRINGB VARCHAR(400)  NULL , 
+STRINGC VARCHAR(500)  NULL , 
+TEN_DATETIME VARCHAR(50)  NULL , 
+STRINGC_CHAR VARCHAR(500)  NULL , 
+HUNDRED_TIME VARCHAR(24)  NULL , 
+TEN_TIMESTAMP VARCHAR(24)  NULL , 
+SIXTEEN_REAL VARCHAR(8)  NULL , 
+SIXTEEN_DOUBLE VARCHAR(8)  NULL ) 
+PRIMARY KEY (ONE) 
+SET("db_alias_name" = 'ANSIALIAS')
+;
+ AlGUIComment (ActaName_1 = 'RDate_last_loaded',ActaValue_1 = 'NotYetLoaded' , 
+ActaName_2 = 'RDate_created',ActaValue_2 = 'Wed Jun 13 18:04:58 2012' , 
+ActaName_3 = 'RDatabase_Object_Type',ActaValue_3 = 'TABLE' , 
+ActaName_4 = 'RTable_Type',ActaValue_4 = 'TABLE' , 
+ActaName_5 = 'RDescription',ActaValue_5 = '' , 
+ActaName_6 = 'REstimated_Row_Count',ActaValue_6 = '50000' , 
+ActaName_7 = 'RSavedAfterCheckOut',ActaValue_7 = 'YES' , 
+ActaName_8 = 'RLoader_Is_Template_Table',ActaValue_8 = 'no' )
+CREATE TABLE hana_ansijoin1.DS_EIM.ANSITARGET(ONE DECIMAL(10, 0)  KEY  NOT NULL , 
+UNIQUE_ONE VARCHAR(50)  NULL , 
+UNIQUE_ONE_DEC VARCHAR(50)  NULL , 
+TWO VARCHAR(15)  NULL , 
+FOUR INT  NULL , 
+SIXTEEN DECIMAL(13, 2)  NULL , 
+TEN_DATE VARCHAR(24)  NULL , 
+STRINGA VARCHAR(400)  NULL , 
+SIXTEEN_INTERVAL INT  NULL , 
+STRINGB VARCHAR(400)  NULL , 
+STRINGC VARCHAR(500)  NULL , 
+TEN_DATETIME VARCHAR(50)  NULL , 
+STRINGC_CHAR VARCHAR(500)  NULL , 
+HUNDRED_TIME VARCHAR(24)  NULL , 
+TEN_TIMESTAMP VARCHAR(24)  NULL , 
+SIXTEEN_REAL VARCHAR(8)  NULL , 
+SIXTEEN_DOUBLE VARCHAR(8)  NULL ) 
+PRIMARY KEY (ONE) 
+SET("db_alias_name" = 'ANSIALIAS1')
+;
+ AlGUIComment (ActaName_1 = 'RDatabase_Object_Type',ActaValue_1 = 'TABLE' , 
+ActaName_2 = 'RTable_Type',ActaValue_2 = 'TABLE' , 
+ActaName_3 = 'RDescription',ActaValue_3 = '' , 
+ActaName_4 = 'REstimated_Row_Count',ActaValue_4 = '50000' , 
+ActaName_5 = 'RSavedAfterCheckOut',ActaValue_5 = 'YES' , 
+ActaName_6 = 'RLoader_Is_Template_Table',ActaValue_6 = 'no' , 
+ActaName_7 = 'RDate_created',ActaValue_7 = 'Wed Jun 13 18:04:41 2012' , 
+ActaName_8 = 'RDate_last_loaded',ActaValue_8 = 'NotYetLoaded' )
+CREATE TABLE hana_ansijoin.DS_EIM.ANSITARGET1(ONE DECIMAL(10, 0)  KEY  NOT NULL , 
+UNIQUE_ONE VARCHAR(50)  NULL , 
+UNIQUE_ONE_DEC VARCHAR(50)  NULL , 
+TWO VARCHAR(15)  NULL , 
+FOUR INT  NULL , 
+SIXTEEN DECIMAL(13, 2)  NULL , 
+TEN_DATE VARCHAR(24)  NULL , 
+STRINGA VARCHAR(400)  NULL , 
+SIXTEEN_INTERVAL INT  NULL , 
+STRINGB VARCHAR(400)  NULL , 
+STRINGC VARCHAR(500)  NULL , 
+TEN_DATETIME VARCHAR(50)  NULL , 
+STRINGC_CHAR VARCHAR(500)  NULL , 
+HUNDRED_TIME VARCHAR(24)  NULL , 
+TEN_TIMESTAMP VARCHAR(24)  NULL , 
+SIXTEEN_REAL VARCHAR(8)  NULL , 
+SIXTEEN_DOUBLE VARCHAR(8)  NULL ) 
+PRIMARY KEY (ONE) 
+SET("db_alias_name" = 'ANSIALIAS')
+;
+ AlGUIComment (ActaName_1 = 'RDatabase_Object_Type',ActaValue_1 = 'TABLE' , 
+ActaName_2 = 'RTable_Type',ActaValue_2 = 'TABLE' , 
+ActaName_3 = 'RDescription',ActaValue_3 = '' , 
+ActaName_4 = 'REstimated_Row_Count',ActaValue_4 = '50000' , 
+ActaName_5 = 'RSavedAfterCheckOut',ActaValue_5 = 'YES' , 
+ActaName_6 = 'RLoader_Is_Template_Table',ActaValue_6 = 'no' , 
+ActaName_7 = 'RDate_created',ActaValue_7 = 'Wed Jun 13 18:04:58 2012' , 
+ActaName_8 = 'RDate_last_loaded',ActaValue_8 = 'NotYetLoaded' )
+CREATE TABLE hana_ansijoin1.DS_EIM.ANSITARGET1(ONE DECIMAL(10, 0)  KEY  NOT NULL , 
+UNIQUE_ONE VARCHAR(50)  NULL , 
+UNIQUE_ONE_DEC VARCHAR(50)  NULL , 
+TWO VARCHAR(15)  NULL , 
+FOUR INT  NULL , 
+SIXTEEN DECIMAL(13, 2)  NULL , 
+TEN_DATE VARCHAR(24)  NULL , 
+STRINGA VARCHAR(400)  NULL , 
+SIXTEEN_INTERVAL INT  NULL , 
+STRINGB VARCHAR(400)  NULL , 
+STRINGC VARCHAR(500)  NULL , 
+TEN_DATETIME VARCHAR(50)  NULL , 
+STRINGC_CHAR VARCHAR(500)  NULL , 
+HUNDRED_TIME VARCHAR(24)  NULL , 
+TEN_TIMESTAMP VARCHAR(24)  NULL , 
+SIXTEEN_REAL VARCHAR(8)  NULL , 
+SIXTEEN_DOUBLE VARCHAR(8)  NULL ) 
+PRIMARY KEY (ONE) 
+SET("db_alias_name" = 'ANSIALIAS1')
+;
+ AlGUIComment (ActaName_1 = 'RDatabase_Object_Type',ActaValue_1 = 'TABLE' , 
+ActaName_2 = 'RTable_Type',ActaValue_2 = 'TABLE' , 
+ActaName_3 = 'RDescription',ActaValue_3 = '' , 
+ActaName_4 = 'REstimated_Row_Count',ActaValue_4 = '50000' , 
+ActaName_5 = 'RSavedAfterCheckOut',ActaValue_5 = 'YES' , 
+ActaName_6 = 'RLoader_Is_Template_Table',ActaValue_6 = 'no' , 
+ActaName_7 = 'RDate_modified',ActaValue_7 = 'Wed Jun 13 18:04:40 2012' )
+CREATE TABLE hana_ansijoin.DS_EIM.ANSI_EMPL(ID INT  NOT NULL , 
+FIRST_NAME VARCHAR(20)  NULL , 
+LAST_NAME VARCHAR(20)  NULL , 
+TITLE VARCHAR(50)  NULL  SET("Content_Type" = 'TITLE'), 
+SALARY DECIMAL(10, 3)  NULL , 
+MANAGER VARCHAR(4)  NULL ) 
+SET("db_alias_name" = 'ANSIALIAS')
+;
+ AlGUIComment (ActaName_1 = 'RDatabase_Object_Type',ActaValue_1 = 'TABLE' , 
+ActaName_2 = 'RTable_Type',ActaValue_2 = 'TABLE' , 
+ActaName_3 = 'RDescription',ActaValue_3 = '' , 
+ActaName_4 = 'REstimated_Row_Count',ActaValue_4 = '50000' , 
+ActaName_5 = 'RSavedAfterCheckOut',ActaValue_5 = 'YES' , 
+ActaName_6 = 'RLoader_Is_Template_Table',ActaValue_6 = 'no' , 
+ActaName_7 = 'RDate_created',ActaValue_7 = 'Wed Jun 13 18:04:57 2012' , 
+ActaName_8 = 'RDate_last_loaded',ActaValue_8 = 'NotYetLoaded' )
+CREATE TABLE hana_ansijoin1.DS_EIM.ANSI_EMPL(ID INT  NOT NULL , 
+FIRST_NAME VARCHAR(20)  NULL , 
+LAST_NAME VARCHAR(20)  NULL , 
+TITLE VARCHAR(50)  NULL  SET("Content_Type" = 'TITLE'), 
+SALARY DECIMAL(10, 3)  NULL , 
+MANAGER VARCHAR(4)  NULL ) 
+SET("db_alias_name" = 'ANSIALIAS1')
+;
