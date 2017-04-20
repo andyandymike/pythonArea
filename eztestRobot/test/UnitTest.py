@@ -19,12 +19,13 @@ def testProcessOut():
     print(status)
 
 def testDiff():
-    gf = os.path.join(testRoot, 'g.txt')
-    wf = os.path.join(testRoot, 'w.txt')
+    gf = os.path.join(testRoot, 'gALL_TDP_42_03_Query_After_TDP.out')
+    wf = os.path.join(testRoot, 'wALL_TDP_42_03_Query_After_TDP.out')
     print(diff_unordered_files(gf, wf))
 
 def testUnescape():
     print(unescape('test\ \\n\\.\\\\@\\*\\\\'))
+
 
 if __name__ == '__main__':
     testDiff()

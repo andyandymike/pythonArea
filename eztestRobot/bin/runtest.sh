@@ -301,5 +301,6 @@ done
 echo ---------------------------------------------------------------------------------
 echo ${cases} summary:
 cat ${test_result_dir}/${cases}.sum
+echo
 
 

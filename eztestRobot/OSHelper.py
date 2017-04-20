@@ -11,6 +11,9 @@ import shlex
 from robot.libraries.BuiltIn import BuiltIn
 from robot.api import logger
 
+__all__ = ['shell_command', 'export_env', 'change_working_directory', 'remove_wildcard_files', 'import_atl',
+           'diff_unordered_files', 'replace_env', 'eim_launcher']
+
 ''' Use replace_env_str to workaround shell expansion '''
 
 
@@ -43,7 +46,7 @@ def use_shell(cmd):
         return False
 
 
-def shell_command(cmd, printOutput=False):
+def shell_command(cmd, printOutput=True):
     useShell = use_shell(cmd)
     if not useShell:
         cmd = replace_env_str(cmd)
@@ -56,7 +59,7 @@ def shell_command(cmd, printOutput=False):
                                stderr=subprocess.STDOUT, shell=useShell)
     status = process.communicate()[0].strip()
     rc = process.returncode
-    if rc != 0 or status != '':
+    if rc != 0 or status != '' or printOutput:
         logger.info("Command exit code: %s" % rc, also_console=printOutput)
         logger.info("Command output: %s" % status, also_console=printOutput)
     return status
@@ -83,6 +86,35 @@ def remove_wildcard_files(dir, fn):
     path = os.path.join(dir, fn)
     for f in glob.glob(path):
         os.remove(f)
+
+
+def eim_launcher(jobname, *args):
+    al_engine_param = get_env('al_engine_param')
+    UDS_WORK = get_env('UDS_WORK')
+    # al_engine ${al_engine_param} -s$JOBNAME -Ksp$SYSPROF $JOB_EXE_OPT $JOB_EXE_OPT2 -l${UDS_WORK}/$JOBNAME.log -t${UDS_WORK}/$JOBNAME.err
+    cmd = ['al_engine', al_engine_param, '-s' + jobname]
+    jobexeoption = ''
+    for arg in args:
+        cmd.append(arg)
+        jobexeoption += arg + ' '
+    cmd.append('-l' + UDS_WORK + '/' + jobname + '.log')
+    cmd.append('-t' + UDS_WORK + '/' + jobname + '.err')
+
+    logger.info(' ', also_console=True)
+    logger.info('====================================================', also_console=True)
+    logger.info('==  JOb Executed on Server   ==', also_console=True)
+    logger.info(' JOB SERVER HOST : %s' % get_env('JOBSERVERHOST'), also_console=True)
+    logger.info('      Job Server : %s' % get_env('JOBSERVERNAME'), also_console=True)
+    logger.info('            Port : %s' % get_env('JOBSERVERPORT'), also_console=True)
+    logger.info('    Engine Param : %s' % get_env('al_engine_param'), also_console=True)
+    logger.info('----------------------------------------------------', also_console=True)
+    logger.info('     Running Job : %s' % jobname, also_console=True)
+    logger.info('         Options : %s' % jobexeoption, also_console=True)
+    logger.info('         RUNTEST : %s' % get_env('runtest'), also_console=True)
+    logger.info('        LINK_DIR : %s' % get_env('LINK_DIR'), also_console=True)
+    logger.info('====================================================', also_console=True)
+
+    shell_command(' '.join(cmd), True)
 
 
 def import_atl(atlFileName, passPhrase='dsplatform'):
@@ -113,6 +145,9 @@ def unescape(content):
 def diff_unordered_files(gold, work, limit=10):
     gold = replace_env_str(gold)
     work = replace_env_str(work)
+    af1 = os.path.abspath(gold)
+    af2 = os.path.abspath(work)
+
     with open(gold, 'r') as fGoldFile:
         with open(work, 'r') as fWorkFile:
             regex = re.compile(r'<!--.*-->|xsi:schemaLocation=".*">|<ID>.*</ID>|<TableIndex Name=".*"')
@@ -128,6 +163,9 @@ def diff_unordered_files(gold, work, limit=10):
             regex = re.compile(r'\\\*')
             glines = map(lambda line: regex.sub(".*", line), glinesPre3)
             wlines = wlinesPre2
+
+            if len(glines) != len(wlines):
+                raise AssertionError("Files are different: %s %s" % (af1, af2))
 
             while True:
                 gfStartLen = len(glines)
@@ -176,9 +214,7 @@ def diff_unordered_files(gold, work, limit=10):
                 for diff in setDiffs:
                     logger.info(diff, also_console=True)
 
-                af1 = os.path.abspath(gold)
-                af2 = os.path.abspath(work)
-                #raise AssertionError("Files are different: %s %s" % (af1, af2))
+                raise AssertionError("Files are different: %s %s" % (af1, af2))
 
     return 'Success'
 

@@ -164,6 +164,18 @@ class ImportATLStep(TestStep):
         super(ImportATLStep, self).__init__("| Import ATL | %s " % self._atlFileName)
 
 
+class EIMLauncherStep(TestStep):
+    def __init__(self, jobname, *args):
+        self._args = []
+        self._jobname = jobname
+        for arg in args:
+            self._args.append(arg)
+        if len(self._args) != 0:
+            super(EIMLauncherStep, self).__init__("| EIM Launcher | %s | %s" % self._jobname, ' | '.join(self._args))
+        else:
+            super(EIMLauncherStep, self).__init__("| EIM Launcher | %s " % self._jobname)
+
+
 class RunStep(TestStep):
     def __init__(self, cmd):
         self._cmd = cmd

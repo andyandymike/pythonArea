@@ -4,6 +4,7 @@ from __future__ import with_statement
 import os
 import re
 import sys
+import shlex
 from Handler import *
 
 
@@ -22,14 +23,20 @@ def converter(root, fileName):
         re_export2 = re.compile(r'(\w+)=(.+)')
         re_importAtl = re.compile(r'import_atl\.sh\s+(.+)')
         re_expect = re.compile(r'!expect\s+(\w+)\s+\*?(.+[^\*])\*?')
-        re_define = re.compile(r'!define\s+(.+)')
-        re_testcase = re.compile(r'!testcase\s+(\w+)')
+        re_define = re.compile(r'!define\s+(\w+)\s*')
+        re_testcase = re.compile(r'!testcase\s+(\w+)\s*')
         re_testcase_doc = re.compile(r'!testcase\s+\w+\s+(.+)')
-        re_call = re.compile(r'!call\s+(.+)')
+        re_call = re.compile(r'!call\s+(\w+)\s*')
+        re_eimlauncher = re.compile(r'eim_launcher\.sh\s+(.*)')
 
         def findTestStep(ln):
             if ln[:2] == "cd":
                 robotTestStep = ChangeWorkingDirStep(ln[3:].strip())
+                return robotTestStep
+            m = re_eimlauncher.match(ln)
+            if m:
+                eimlauncherparams = list(shlex.split(m.group(1)))
+                robotTestStep = EIMLauncherStep(eimlauncherparams)
                 return robotTestStep
             m = re_importAtl.match(ln)
             if m:
@@ -122,14 +129,14 @@ def converter(root, fileName):
 
                 elif ln[:5] == "!call":
                     m = re_call.match(ln)
-                    if m:
+                    if m and m.group(1) != 'setup':
                         robotTestStep = CallStep(m.group(1))
 
                 elif ln[:9] == "!testcase":
                     m = re_testcase.match(ln)
                     mdoc = re_testcase_doc.match(ln)
                     if mdoc:
-                        robotTestStep = DocStep(mdoc.group(1))
+                        robotTestStep = DocStep(mdoc.group(1).strip())
                     if testcase:
                         testunit.addCase(testcase)
                     testcase = TestCase(m.group(1).strip())
@@ -199,6 +206,13 @@ def converter(root, fileName):
                 pass
             else:
                 testunit.addSetup(robotTestStep)
+
+        if testunit.numCases() == 0:
+            temptestcase = TestCase('A temp testcase')
+            temptestcase.addStep(DocStep('Create a temp testcase to run setup'))
+            temptestcase.addStep(TagStep('InTestingSetup'))
+            temptestcase.addStep(RunStep('echo A temp testcase'))
+            testunit.addCase(temptestcase)
 
         outputFile = inputFile + ".robot"
         with open(outputFile, 'w') as fOutputFile:
