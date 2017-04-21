@@ -1,5 +1,5 @@
 from OSHelper import *
-from bin import Converter
+from bin import utils
 import os
 import subprocess
 
@@ -23,9 +23,12 @@ def testDiff():
     wf = os.path.join(testRoot, 'wALL_TDP_42_03_Query_After_TDP.out')
     print(diff_unordered_files(gf, wf))
 
-def testUnescape():
-    print(unescape('test\ \\n\\.\\\\@\\*\\\\'))
+def testSplitParams():
+    print(utils.splitParams('''-V'HANA 1.x' -V 'HANA 1.x'"-KspS1 -l${UDS_WORK}/${JOBNAME}.log -z${UDS_WORK}/${JOBNAME}.txt"'''))
+
+def testReplaceEnv():
+    print(utils.splitParams("\"-k'hana 1.x' -s test \"-lkkk -pppp\"\""))
 
 
 if __name__ == '__main__':
-    testDiff()
+    testReplaceEnv()

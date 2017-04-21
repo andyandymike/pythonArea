@@ -1,3 +1,32 @@
+import re
+import shlex
+
+def splitParams(params):
+    lex = shlex.shlex(params, posix=False)
+    lex.whitespace_split = True
+    tempoutput = list(lex)
+    output = []
+    temp = ''
+    merge = False
+    m1 = re.compile(r'\'.*\'')
+    m2 = re.compile(r'\\\'')
+    for arg in tempoutput:
+        if m1.match(arg) is None:
+            if m2.match(arg) is None:
+                if arg.find("'") != -1:
+                    merge = not merge
+                    if not merge:
+                        temp += ' ' + arg
+                        output.append(temp.strip())
+                        continue
+        if merge:
+            temp += ' ' + arg
+        else:
+            output.append(arg)
+
+    return output
+
+
 class TestUnit(object):
     def __init__(self, name):
         self._name = name
@@ -165,13 +194,14 @@ class ImportATLStep(TestStep):
 
 
 class EIMLauncherStep(TestStep):
-    def __init__(self, jobname, *args):
+    def __init__(self, jobname, args=None):
         self._args = []
         self._jobname = jobname
-        for arg in args:
-            self._args.append(arg)
+        if args is not None:
+            for arg in splitParams(args):
+                self._args.append(arg)
         if len(self._args) != 0:
-            super(EIMLauncherStep, self).__init__("| EIM Launcher | %s | %s" % self._jobname, ' | '.join(self._args))
+            super(EIMLauncherStep, self).__init__("| EIM Launcher | %s | %s" % (self._jobname, ' | '.join(self._args)))
         else:
             super(EIMLauncherStep, self).__init__("| EIM Launcher | %s " % self._jobname)
 

@@ -2,9 +2,7 @@
 from __future__ import with_statement
 
 import os
-import re
 import sys
-import shlex
 from Handler import *
 
 
@@ -27,7 +25,7 @@ def converter(root, fileName):
         re_testcase = re.compile(r'!testcase\s+(\w+)\s*')
         re_testcase_doc = re.compile(r'!testcase\s+\w+\s+(.+)')
         re_call = re.compile(r'!call\s+(\w+)\s*')
-        re_eimlauncher = re.compile(r'eim_launcher\.sh\s+(.*)')
+        re_eimlauncher = re.compile(r'eim_launcher\.sh\s+(.+)')
 
         def findTestStep(ln):
             if ln[:2] == "cd":
@@ -35,8 +33,13 @@ def converter(root, fileName):
                 return robotTestStep
             m = re_eimlauncher.match(ln)
             if m:
-                eimlauncherparams = list(shlex.split(m.group(1)))
-                robotTestStep = EIMLauncherStep(eimlauncherparams)
+                eimlauncherparams = splitParams(m.group(1))
+                jobname = splitParams(m.group(1))[0]
+                if len(eimlauncherparams) == 1:
+                    robotTestStep = EIMLauncherStep(jobname)
+                else:
+                    eimlauncherparams = splitParams(m.group(1))[1:]
+                    robotTestStep = EIMLauncherStep(jobname, ' '.join(eimlauncherparams))
                 return robotTestStep
             m = re_importAtl.match(ln)
             if m:

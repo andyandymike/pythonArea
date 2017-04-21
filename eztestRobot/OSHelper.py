@@ -14,6 +14,31 @@ from robot.api import logger
 __all__ = ['shell_command', 'export_env', 'change_working_directory', 'remove_wildcard_files', 'import_atl',
            'diff_unordered_files', 'replace_env', 'eim_launcher']
 
+def splitParams(params):
+    lex = shlex.shlex(params, posix=False)
+    lex.whitespace_split = True
+    tempoutput = list(lex)
+    output = []
+    temp = ''
+    merge = False
+    m1 = re.compile(r'\'.*\'')
+    m2 = re.compile(r'\\\'')
+    for arg in tempoutput:
+        if m1.match(arg) is None:
+            if m2.match(arg) is None:
+                if arg.find("'") != -1:
+                    merge = not merge
+                    if not merge:
+                        temp += ' ' + arg
+                        output.append(temp.strip())
+                        continue
+        if merge:
+            temp += ' ' + arg
+        else:
+            output.append(arg)
+
+    return output
+
 ''' Use replace_env_str to workaround shell expansion '''
 
 
@@ -50,11 +75,11 @@ def shell_command(cmd, printOutput=True):
     useShell = use_shell(cmd)
     if not useShell:
         cmd = replace_env_str(cmd)
-        logger.info('RUN: %s' % cmd, also_console=printOutput)
         # to get around shell problem under cygwin
         cmd = "sh -c \"%s\"" % cmd
         cmd = shlex.split(cmd)
 
+    logger.info('RUN: %s' % cmd, also_console=printOutput)
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                                stderr=subprocess.STDOUT, shell=useShell)
     status = process.communicate()[0].strip()
@@ -99,16 +124,22 @@ def eim_launcher(jobname, *args):
         jobexeoption += arg + ' '
     cmd.append('-l' + UDS_WORK + '/' + jobname + '.log')
     cmd.append('-t' + UDS_WORK + '/' + jobname + '.err')
+    m_jobname = re.compile(r'\$\{(\w+)\}')
+    m = m_jobname.match(jobname)
+    if m:
+        runjob = get_env(m.group(1))
+    else:
+        runjob = jobname
 
     logger.info(' ', also_console=True)
     logger.info('====================================================', also_console=True)
-    logger.info('==  JOb Executed on Server   ==', also_console=True)
-    logger.info(' JOB SERVER HOST : %s' % get_env('JOBSERVERHOST'), also_console=True)
+    logger.info('==  Job Executed on Server   ==', also_console=True)
+    logger.info(' Job Server Host : %s' % get_env('JOBSERVERHOST'), also_console=True)
     logger.info('      Job Server : %s' % get_env('JOBSERVERNAME'), also_console=True)
     logger.info('            Port : %s' % get_env('JOBSERVERPORT'), also_console=True)
     logger.info('    Engine Param : %s' % get_env('al_engine_param'), also_console=True)
     logger.info('----------------------------------------------------', also_console=True)
-    logger.info('     Running Job : %s' % jobname, also_console=True)
+    logger.info('     Running Job : %s' % runjob, also_console=True)
     logger.info('         Options : %s' % jobexeoption, also_console=True)
     logger.info('         RUNTEST : %s' % get_env('runtest'), also_console=True)
     logger.info('        LINK_DIR : %s' % get_env('LINK_DIR'), also_console=True)
