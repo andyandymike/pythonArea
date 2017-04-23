@@ -1,0 +1,234 @@
+!sh mkdir ${DS_WORK}
+!sh mkdir ${DS_GOLD}
+!sh mkdir ${DS_INPUT}
+!sh rm ${DS_WORK}/*
+!sh rm ${DS_GOLD}/*
+!sh rm ${DS_INPUT}/*
+!sh cp ${runtest}/goldlog/* ${DS_GOLD}
+!sh cp ${runtest}/input/* ${DS_INPUT}
+!sh cd ${runtest}/positive
+
+#!define setup
+#!sh subvalue2 ezTest_HANA_BulkLoad_Datastore.atl ${DS_WORK}/tezTest_HANA_BulkLoad_Datastore.atl
+#!sh subvalue2 HANA_BulkLoad_Functional_Unit.atl ${DS_WORK}/tHANA_BulkLoad_Functional_Unit.atl
+#!sh subvalue2 SubstitutionParam__Signatured.atl ${DS_WORK}/tSubstitutionParam__Signatured.atl
+#!sh al_engine ${al_engine_param} -U$REPOID -P$REPOPW -f${DS_WORK}/tHANA_BulkLoad_Functional_Unit.atl -l${UDS_WORK}/HANA_BulkLoad_Functional_Unit.log -z${UDS_WORK}/HANA_BulkLoad_Functional_Unit.txt
+#!sh al_engine ${al_engine_param} -U$REPOID -P$REPOPW -f${DS_WORK}/tezTest_HANA_BulkLoad_Datastore.atl -l${UDS_WORK}/ezTest_HANA_BulkLoad_Datastore.log -z${UDS_WORK}/ezTest_HANA_BulkLoad_Datastore.txt
+#!sh al_engine ${al_engine_param} -U$REPOID -P$REPOPW -f${DS_WORK}/tSubstitutionParam__Signatured.atl -l${UDS_WORK}/SubstitutionParam__Signatured.log -z${UDS_WORK}/SubstitutionParam__Signatured.txt
+#!sh al_engine ${al_engine_param} -U$REPOID -P$REPOPW -f${runtest}/positive/sysconfig.atl -l${UDS_WORK}/sysconfig.log -z${UDS_WORK}/sysconfig.txt
+#!end
+
+!sh import_atl.sh ezTest_HANA_BulkLoad_Datastore.atl
+!sh import_atl.sh HANA_BulkLoad_Functional_Unit.atl
+!sh import_atl.sh SubstitutionParam__Signatured.atl
+!sh import_atl.sh sysconfig.atl
+
+$TESTSUITE_SETUP
+
+!testcase hana001 001__HANA_BKL_DDL_CreateTables 
+## Create Table Schema, default is column base.
+!sh export JOBNAME=001__HANA_BKL_DDL_CreateTables
+!sh eim_launcher.sh ${JOBNAME} "-k'HANA 1.x'" "-s\"hana 2.x\""
+!expect any *successfully*
+!sh grep -o "Job <${JOBNAME}> is completed successfully." ${DS_WORK}/${JOBNAME}.log
+!endtestcase
+
+!testcase hana002 100_HANA_BKL_Gen_Inp_DataSet 
+## Truncate target table, load base rows
+## Delete output file before job run
+!sh rm ${DS_WORK}/HANA_BKL_Job.out
+!sh export JOBNAME=100_HANA_BKL_Gen_Inp_DataSet
+!sh eim_launcher.sh ${JOBNAME} "-KspS1 -T2062 -l${UDS_WORK}/${JOBNAME}.log -z${UDS_WORK}/${JOBNAME}.txt"
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/100_HANA_BKL_Glod.out ${DS_WORK}/HANA_BKL_Job.out
+!sh cut -c38-200 ${DS_WORK}/${JOBNAME}.log | tr -d '\r'
+!endtestcase
+
+!testcase hana003 101_HANA_BKL_AutoCorrect_Insert
+
+## // Delete output file before job run
+!sh rm ${DS_WORK}/HANA_BKL_Job.out
+
+## append rows
+!sh export JOBNAME=101_HANA_BKL_AutoCorrect_Insert
+!sh eim_launcher.sh ${JOBNAME} "-KspS1 -T2062 -l${UDS_WORK}/${JOBNAME}.log -z${UDS_WORK}/${JOBNAME}.txt"
+
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/101_HANA_BKL_Glod.out ${DS_WORK}/HANA_BKL_Job.out
+!sh cut -c38-200 ${DS_WORK}/${JOBNAME}.log | tr -d '\r'
+!endtestcase
+
+!testcase hana004 102_HANA_BKL_AutoCorrect_Update
+
+## // Delete output file before job run
+!sh rm ${DS_WORK}/HANA_BKL_Job.out
+
+## Auto_correct = Yes, update = update
+!sh export JOBNAME=102_HANA_BKL_AutoCorrect_Update
+!sh eim_launcher.sh ${JOBNAME} "-KspS1 -T2062 -l${UDS_WORK}/${JOBNAME}.log -z${UDS_WORK}/${JOBNAME}.txt"
+
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/102_HANA_BKL_Glod.out ${DS_WORK}/HANA_BKL_Job.out
+!sh cut -c38-200 ${DS_WORK}/${JOBNAME}.log | tr -d '\r'
+!endtestcase
+
+!testcase hana005 103_HANA_BKL_AutoCorrect_DeleteInsert
+
+## // Delete output file before job run
+!sh rm ${DS_WORK}/HANA_BKL_Job.out
+
+## Auto_correct = Yes, update = update
+!sh export JOBNAME=103_HANA_BKL_AutoCorrect_DeleteInsert
+!sh eim_launcher.sh ${JOBNAME} "-KspS1 -T2062 -l${UDS_WORK}/${JOBNAME}.log -z${UDS_WORK}/${JOBNAME}.txt"
+
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/103_HANA_BKL_Glod.out ${DS_WORK}/HANA_BKL_Job.out
+!sh cut -c38-200 ${DS_WORK}/${JOBNAME}.log | tr -d '\r'
+!endtestcase
+
+!testcase hana006 104_HANA_BKL_DeleteInsert
+
+## // Delete output file before job run
+!sh rm ${DS_WORK}/HANA_BKL_Job.out
+
+## Auto_correct = Yes, update = update
+!sh export JOBNAME=104_HANA_BKL_DeleteInsert
+!sh eim_launcher.sh ${JOBNAME} "-KspS1 -T2062 -l${UDS_WORK}/${JOBNAME}.log -z${UDS_WORK}/${JOBNAME}.txt"
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/104_HANA_BKL_Glod.out ${DS_WORK}/HANA_BKL_Job.out
+!sh cut -c38-200 ${DS_WORK}/${JOBNAME}.log | tr -d '\r'
+!endtestcase
+
+!testcase hana007 105_HANA_BKL_Update
+
+## // Delete output file before job run
+!sh rm ${DS_WORK}/HANA_BKL_Job.out
+
+## Auto_correct = Yes, update = update
+!sh export JOBNAME=105_HANA_BKL_Update
+!sh eim_launcher.sh ${JOBNAME} "-KspS1 -T2062 -l${UDS_WORK}/${JOBNAME}.log -z${UDS_WORK}/${JOBNAME}.txt"
+
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/105_HANA_BKL_Glod.out ${DS_WORK}/HANA_BKL_Job.out
+!sh cut -c38-200 ${DS_WORK}/${JOBNAME}.log | tr -d '\r'
+!endtestcase
+
+!testcase hana008 106_HANA_BKL_Delete
+
+## // Delete output file before job run
+!sh rm ${DS_WORK}/HANA_BKL_Job.out
+
+## delete
+!sh export JOBNAME=106_HANA_BKL_Delete
+!sh eim_launcher.sh ${JOBNAME} "-KspS1 -T2062 -l${UDS_WORK}/${JOBNAME}.log -z${UDS_WORK}/${JOBNAME}.txt"
+
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/106_HANA_BKL_Glod.out ${DS_WORK}/HANA_BKL_Job.out
+!sh cut -c38-200 ${DS_WORK}/${JOBNAME}.log | tr -d '\r'
+!endtestcase
+
+!testcase hana009 002__HANA_BKL_DDL_2_RowBase
+## Change table to row base, then repeat above test
+!sh export JOBNAME=002__HANA_BKL_DDL_2_RowBase
+!sh eim_launcher.sh ${JOBNAME} "-KspS1 -l${UDS_WORK}/${JOBNAME}.log -z${UDS_WORK}/${JOBNAME}.txt"
+!expect any *successfully*
+!sh grep -o "Job <${JOBNAME}> is completed successfully." ${DS_WORK}/${JOBNAME}.log
+!endtestcase
+
+!testcase hana009 100_HANA_BKL_Gen_Inp_DataSet 
+## Truncate target table, load base rows
+
+## // Delete output file before job run
+!sh rm ${DS_WORK}/HANA_BKL_Job.out
+
+!sh export JOBNAME=100_HANA_BKL_Gen_Inp_DataSet
+!sh eim_launcher.sh ${JOBNAME} "-KspS1 -T2062 -l${UDS_WORK}/${JOBNAME}.log -z${UDS_WORK}/${JOBNAME}.txt"
+
+
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/100_HANA_BKL_Glod.out ${DS_WORK}/HANA_BKL_Job.out
+!sh cut -c38-200 ${DS_WORK}/${JOBNAME}.log | tr -d '\r'
+!endtestcase
+
+!testcase hana010 101_HANA_BKL_AutoCorrect_Insert
+
+## // Delete output file before job run
+!sh rm ${DS_WORK}/HANA_BKL_Job.out
+
+## append rows
+!sh export JOBNAME=101_HANA_BKL_AutoCorrect_Insert
+!sh eim_launcher.sh ${JOBNAME} "-KspS1 -T2062 -l${UDS_WORK}/${JOBNAME}.log -z${UDS_WORK}/${JOBNAME}.txt"
+
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/101_HANA_BKL_Glod.out ${DS_WORK}/HANA_BKL_Job.out
+!sh cut -c38-200 ${DS_WORK}/${JOBNAME}.log | tr -d '\r'
+!endtestcase
+
+!testcase hana011 102_HANA_BKL_AutoCorrect_Update
+
+## // Delete output file before job run
+!sh rm ${DS_WORK}/HANA_BKL_Job.out
+
+## Auto_correct = Yes, update = update
+!sh export JOBNAME=102_HANA_BKL_AutoCorrect_Update
+!sh eim_launcher.sh ${JOBNAME} "-KspS1 -T2062 -l${UDS_WORK}/${JOBNAME}.log -z${UDS_WORK}/${JOBNAME}.txt"
+
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/102_HANA_BKL_Glod.out ${DS_WORK}/HANA_BKL_Job.out
+!sh cut -c38-200 ${DS_WORK}/${JOBNAME}.log | tr -d '\r'
+!endtestcase
+
+!testcase haan012 103_HANA_BKL_AutoCorrect_DeleteInsert
+
+## // Delete output file before job run
+!sh rm ${DS_WORK}/HANA_BKL_Job.out
+
+## Auto_correct = Yes, update = update
+!sh export JOBNAME=103_HANA_BKL_AutoCorrect_DeleteInsert
+!sh eim_launcher.sh ${JOBNAME} "-KspS1 -T2062 -l${UDS_WORK}/${JOBNAME}.log -z${UDS_WORK}/${JOBNAME}.txt"
+
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/103_HANA_BKL_Glod.out ${DS_WORK}/HANA_BKL_Job.out
+!sh cut -c38-200 ${DS_WORK}/${JOBNAME}.log | tr -d '\r'
+!endtestcase
+
+!testcase hana013 104_HANA_BKL_DeleteInsert
+
+## // Delete output file before job run
+!sh rm ${DS_WORK}/HANA_BKL_Job.out
+
+## Auto_correct = Yes, update = update
+!sh export JOBNAME=104_HANA_BKL_DeleteInsert
+!sh eim_launcher.sh ${JOBNAME} "-KspS1 -T2062 -l${UDS_WORK}/${JOBNAME}.log -z${UDS_WORK}/${JOBNAME}.txt"
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/104_HANA_BKL_Glod.out ${DS_WORK}/HANA_BKL_Job.out
+!sh cut -c38-200 ${DS_WORK}/${JOBNAME}.log | tr -d '\r'
+!endtestcase
+
+!testcase hana014 105_HANA_BKL_Update
+
+## // Delete output file before job run
+!sh rm ${DS_WORK}/HANA_BKL_Job.out
+
+## Auto_correct = Yes, update = update
+!sh export JOBNAME=105_HANA_BKL_Update
+!sh eim_launcher.sh ${JOBNAME} "-KspS1 -T2062 -l${UDS_WORK}/${JOBNAME}.log -z${UDS_WORK}/${JOBNAME}.txt"
+
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/105_HANA_BKL_Glod.out ${DS_WORK}/HANA_BKL_Job.out
+!sh cut -c38-200 ${DS_WORK}/${JOBNAME}.log | tr -d '\r'
+!endtestcase
+
+!testcase hana015 106_HANA_BKL_Delete
+
+## // Delete output file before job run
+!sh rm ${DS_WORK}/HANA_BKL_Job.out
+
+## delete
+!sh export JOBNAME=106_HANA_BKL_Delete
+!sh eim_launcher.sh ${JOBNAME} "-KspS1 -T2062 -l${UDS_WORK}/${JOBNAME}.log -z${UDS_WORK}/${JOBNAME}.txt"
+
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/106_HANA_BKL_Glod.out ${DS_WORK}/HANA_BKL_Job.out
+!sh cut -c38-200 ${DS_WORK}/${JOBNAME}.log | tr -d '\r'
+!endtestcase

@@ -31,15 +31,15 @@ def converter(root, fileName):
             if ln[:2] == "cd":
                 robotTestStep = ChangeWorkingDirStep(ln[3:].strip())
                 return robotTestStep
-            m = re_eimlauncher.match(ln)
+            m = re_eimlauncher.match(ln.replace(r'\$', r'$').replace(r'\|', r'|'))
             if m:
-                eimlauncherparams = splitParams(m.group(1))
-                jobname = splitParams(m.group(1))[0]
+                eimlauncherparams = shlex.split(m.group(1))
+                jobname = shlex.split(m.group(1))[0].replace(r'$', r'\$').replace(r'|', r'\|')
                 if len(eimlauncherparams) == 1:
                     robotTestStep = EIMLauncherStep(jobname)
                 else:
-                    eimlauncherparams = splitParams(m.group(1))[1:]
-                    robotTestStep = EIMLauncherStep(jobname, ' '.join(eimlauncherparams))
+                    eimlauncherparams = shlex.split(m.group(1))[1:]
+                    robotTestStep = EIMLauncherStep(jobname, eimlauncherparams)
                 return robotTestStep
             m = re_importAtl.match(ln)
             if m:

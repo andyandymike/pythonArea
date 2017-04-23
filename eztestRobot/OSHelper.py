@@ -14,31 +14,6 @@ from robot.api import logger
 __all__ = ['shell_command', 'export_env', 'change_working_directory', 'remove_wildcard_files', 'import_atl',
            'diff_unordered_files', 'replace_env', 'eim_launcher']
 
-def splitParams(params):
-    lex = shlex.shlex(params, posix=False)
-    lex.whitespace_split = True
-    tempoutput = list(lex)
-    output = []
-    temp = ''
-    merge = False
-    m1 = re.compile(r'\'.*\'')
-    m2 = re.compile(r'\\\'')
-    for arg in tempoutput:
-        if m1.match(arg) is None:
-            if m2.match(arg) is None:
-                if arg.find("'") != -1:
-                    merge = not merge
-                    if not merge:
-                        temp += ' ' + arg
-                        output.append(temp.strip())
-                        continue
-        if merge:
-            temp += ' ' + arg
-        else:
-            output.append(arg)
-
-    return output
-
 ''' Use replace_env_str to workaround shell expansion '''
 
 
@@ -47,7 +22,7 @@ def replace_env_str(s):
     regex = re.compile(r'`(.*)`')
     it = regex.finditer(ns)
     for match in it:
-        cmd = "sh -c \"%s\"" % match.group(1)
+        cmd = "sh -c \"%s\"" % match.group(1).replace(r'"', r'\"')
         ns = ns.replace(match.group(0), command_output(cmd))
     return ns
 
@@ -76,7 +51,7 @@ def shell_command(cmd, printOutput=True):
     if not useShell:
         cmd = replace_env_str(cmd)
         # to get around shell problem under cygwin
-        cmd = "sh -c \"%s\"" % cmd
+        cmd = "sh -c \"%s\"" % cmd.replace(r'"', r'\"')
         cmd = shlex.split(cmd)
 
     logger.info('RUN: %s' % cmd, also_console=printOutput)
@@ -195,7 +170,7 @@ def diff_unordered_files(gold, work, limit=10):
             glines = map(lambda line: regex.sub(".*", line), glinesPre3)
             wlines = wlinesPre2
 
-            if len(glines) != len(wlines):
+            if len(glines) != len(wlines) and (len(glines) > 10000 or len(wlines) > 10000):
                 raise AssertionError("Files are different: %s %s" % (af1, af2))
 
             while True:

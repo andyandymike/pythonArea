@@ -27,7 +27,9 @@ def testSplitParams():
     print(utils.splitParams('''-V'HANA 1.x' -V 'HANA 1.x'"-KspS1 -l${UDS_WORK}/${JOBNAME}.log -z${UDS_WORK}/${JOBNAME}.txt"'''))
 
 def testReplaceEnv():
-    print(utils.splitParams("\"-k'hana 1.x' -s test \"-lkkk -pppp\"\""))
+    cmd = "al_engine -Kversion'hana 1.x' -shana -v "+"-kspS1"+" -lc/build/log -ec/build/error"
+    print(utils.shlex.split("sh -c \"%s\"" % cmd.replace('\"','\\\"')))
+    print(utils.splitParams("sh -c \"%s\"" % cmd.replace('\"','\\\"')))
 
 
 if __name__ == '__main__':

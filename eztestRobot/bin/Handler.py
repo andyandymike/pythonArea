@@ -1,31 +1,6 @@
 import re
 import shlex
 
-def splitParams(params):
-    lex = shlex.shlex(params, posix=False)
-    lex.whitespace_split = True
-    tempoutput = list(lex)
-    output = []
-    temp = ''
-    merge = False
-    m1 = re.compile(r'\'.*\'')
-    m2 = re.compile(r'\\\'')
-    for arg in tempoutput:
-        if m1.match(arg) is None:
-            if m2.match(arg) is None:
-                if arg.find("'") != -1:
-                    merge = not merge
-                    if not merge:
-                        temp += ' ' + arg
-                        output.append(temp.strip())
-                        continue
-        if merge:
-            temp += ' ' + arg
-        else:
-            output.append(arg)
-
-    return output
-
 
 class TestUnit(object):
     def __init__(self, name):
@@ -108,6 +83,7 @@ class KeyWord(object):
             robotContent.append(str(step))
         robotContent.append("")
         return "\n".join(robotContent)
+
 
 class Variable(object):
     def __init__(self, key, value):
@@ -198,8 +174,8 @@ class EIMLauncherStep(TestStep):
         self._args = []
         self._jobname = jobname
         if args is not None:
-            for arg in splitParams(args):
-                self._args.append(arg)
+            for arg in args:
+                self._args.append(arg.replace(r'$', r'\$').replace(r'|', r'\|'))
         if len(self._args) != 0:
             super(EIMLauncherStep, self).__init__("| EIM Launcher | %s | %s" % (self._jobname, ' | '.join(self._args)))
         else:
