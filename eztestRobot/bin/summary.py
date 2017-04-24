@@ -28,7 +28,6 @@ def sum(root, fn):
             if s is not None and not skip:
                 caseStartTime = datetime.strptime(s.attrib['starttime'], '%Y%m%d %H:%M:%S.%f')
                 caseEndTime = datetime.strptime(s.attrib['endtime'], '%Y%m%d %H:%M:%S.%f')
-                print(caseEndTime - caseStartTime)
                 st.append("%-55s%-12s%-12s" % (node.attrib['name'], dic[s.attrib['status']], caseEndTime - caseStartTime))
                 if s.attrib['status'] == 'FAIL':
                     failed += 1

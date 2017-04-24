@@ -287,6 +287,36 @@ do
     export utestunit=$UTESTNODE/$testsuite/$cases
     export testunit=$TESTNODE/$testsuite/$cases
 
+    export DS_WORK=$DS_WORK_ROOT/$testsuite/$cases
+    export UDS_WORK=$UDS_WORK_ROOT/$testsuite/$cases
+    export DS_GOLD=$DS_WORK_ROOT/$testsuite/$cases/gold
+    export DS_INPUT=$DS_WORK_ROOT/$testsuite/$cases/input
+    export UDS_INPUT=$UDS_WORK_ROOT/$testsuite/$cases/input
+
+    mkdir $DS_WORK
+    mkdir $UDS_WORK
+    mkdir $DS_GOLD
+    mkdir $DS_INPUT
+    mkdir $UDS_INPUT
+
+    chmod -R 777 $DS_WORK
+    chmod -R 777 $UDS_WORK
+    chmod -R 777 $DS_GOLD
+    chmod -R 777 $DS_INPUT
+    chmod -R 777 $UDS_INPUT
+
+    rm ${DS_WORK}/*
+    rm ${DS_GOLD}/*
+    rm ${DS_INPUT}/*
+    cp ${runtest}/goldlog/* ${DS_GOLD}
+    cp ${runtest}/input/* ${DS_INPUT}
+
+    rm ${test_result_dir}/${cases}_output.xml
+    rm ${test_result_dir}/${cases}_log.html
+    rm ${test_result_dir}/${cases}_report.html
+    rm ${test_result_dir}/${cases}.sum
+
+
     echo "Testsuite=$runtest"
     if [ ! -e $runtest ]
     then

@@ -2,6 +2,7 @@ from OSHelper import *
 from bin import utils
 import os
 import subprocess
+import re
 
 root = os.path.abspath('.')
 testRoot = os.path.join(root, 'test')
@@ -19,8 +20,8 @@ def testProcessOut():
     print(status)
 
 def testDiff():
-    gf = os.path.join(testRoot, 'gALL_TDP_42_03_Query_After_TDP.out')
-    wf = os.path.join(testRoot, 'wALL_TDP_42_03_Query_After_TDP.out')
+    gf = os.path.join(testRoot, 'partition_df_patch.atl')
+    wf = os.path.join(testRoot, 'wpartition_df_patch.atl')
     print(diff_unordered_files(gf, wf))
 
 def testSplitParams():
@@ -33,4 +34,4 @@ def testReplaceEnv():
 
 
 if __name__ == '__main__':
-    testReplaceEnv()
+    testDiff()
