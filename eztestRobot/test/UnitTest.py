@@ -5,7 +5,7 @@ import subprocess
 import re
 
 root = os.path.abspath('.')
-testRoot = os.path.join(root, 'test')
+testRoot = root
 
 def testImportATL():
     atl = os.path.join(testRoot, 'ezTest_hana_ansijoin_Datastore.atl')
