@@ -293,6 +293,8 @@ do
     export DS_INPUT=$DS_WORK_ROOT/$testsuite/$cases/input
     export UDS_INPUT=$UDS_WORK_ROOT/$testsuite/$cases/input
 
+    mkdir $DS_WORK_ROOT/$testsuite
+
     mkdir $DS_WORK
     mkdir $UDS_WORK
     mkdir $DS_GOLD

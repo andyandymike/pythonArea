@@ -153,15 +153,32 @@ def unescape(content):
 def checksum(file):
     hash_md5 = hashlib.md5()
     with open(file, "rb") as f:
-        for chunk in iter(lambda: f.read(4096), b""):
+        for chunk in iter(lambda: f.read(4096), ""):
             hash_md5.update(chunk)
     return hash_md5.hexdigest()
 
 def diff_unordered_files(gold, work, limit=10):
     gold = replace_env_str(gold)
     work = replace_env_str(work)
+    gsize = os.stat(gold).st_size
+    wsize = os.stat(work).st_size
     af1 = os.path.abspath(gold)
     af2 = os.path.abspath(work)
+
+    if gsize > 300000000L or wsize > 300000000L:
+        logger.info('Files are too big (over 300mb)! Diff in EX Big File Mode (Can not ensure correct result)', also_console=True)
+        if gsize == wsize:
+            return 'Success'
+        else:
+            diffInfo = []
+            diffInfo.append("gold and work has different file size")
+            diffInfo.append("glod size: %s" % gsize)
+            diffInfo.append("work size: %s" % wsize)
+            diffInfo.append("====================")
+            logger.info('\n', also_console=True)
+            logger.info('\n'.join(diffInfo), also_console=True)
+            raise AssertionError("Files are different: %s %s" % (af1, af2))
+
 
     if checksum(gold) == checksum(work):
         return 'Success'
@@ -172,14 +189,22 @@ def diff_unordered_files(gold, work, limit=10):
             glinesPre1 = map(lambda line: regex.sub("", line), fGoldFile.readlines())
             wlinesPre1 = map(lambda line: regex.sub("", line), fWorkFile.readlines())
 
-            regex = re.compile(r'\r?\n$|\r$')
-            glinesPre2 = map(lambda line: regex.sub("", line), glinesPre1)
-            wlinesPre2 = map(lambda line: regex.sub("", line), wlinesPre1)
+            regex = re.compile(r'\r?\n$|\r+$')
+            glinesPre2 = []
+            for line in glinesPre1:
+                line = regex.sub("", line)
+                if line != '':
+                    glinesPre2.append(line)
+            wlinesPre2 = []
+            for line in wlinesPre1:
+                line = regex.sub("", line)
+                if line != '':
+                    wlinesPre2.append(line)
 
             glinesPre3 = map(lambda line: re.escape(line), glinesPre2)
 
             regex = re.compile(r'\\\*')
-            glines = map(lambda line: regex.sub(".*?", line), glinesPre3)
+            glines = map(lambda line: regex.sub(".*", line), glinesPre3)
             wlines = wlinesPre2
 
             lenglines = len(glines)
@@ -189,11 +214,33 @@ def diff_unordered_files(gold, work, limit=10):
                 diffInfo = []
                 diffInfo.append("gold and work has different line number")
                 diffInfo.append("glod has %d lines" % lenglines)
-                diffInfo.append("====================")
                 diffInfo.append("work has %d lines" % lenwlines)
+                diffInfo.append("====================")
                 logger.info('\n', also_console=True)
                 logger.info('\n'.join(diffInfo), also_console=True)
                 raise AssertionError("Files are different: %s %s" % (af1, af2))
+
+            if lenglines > 10000:
+                logger.info('Files have too many lines! Diff in Big File Mode (Do not support wildcard)', also_console=True)
+                glines_bf = sorted(glinesPre2)
+                wlines_bf = sorted(wlinesPre2)
+                diffInfo = []
+                j = 0
+                for i in range(lenglines):
+                    if glines_bf[i] != wlines_bf[i] and j < limit:
+                        diffInfo.append("gold: " + glines_bf[i])
+                        diffInfo.append("work: " + wlines_bf[i])
+                        diffInfo.append("====================")
+                        j += 1
+                    if j == limit:
+                        break
+
+                if j > 0:
+                    logger.info('\n', also_console=True)
+                    logger.info('\n'.join(diffInfo), also_console=True)
+                    raise AssertionError("Files are different: %s %s" % (af1, af2))
+
+                return 'Success'
 
             while True:
                 gfStartLen = len(glines)
@@ -244,7 +291,7 @@ def diff_unordered_files(gold, work, limit=10):
                 for diff in setDiffs:
                     logger.info(diff, also_console=True)
 
-                #raise AssertionError("Files are different: %s %s" % (af1, af2))
+                raise AssertionError("Files are different: %s %s" % (af1, af2))
 
     return 'Success'
 

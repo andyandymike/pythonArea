@@ -1,5 +1,6 @@
 import shlex
 import re
+import hashlib
 
 
 def splitParams(params):
@@ -27,3 +28,10 @@ def splitParams(params):
             output.append(arg)
 
     return output
+
+def checksum(file):
+    hash_md5 = hashlib.md5()
+    with open(file, "rb") as f:
+        for chunk in iter(lambda: f.read(4096), ""):
+            hash_md5.update(chunk)
+    return hash_md5.hexdigest()
