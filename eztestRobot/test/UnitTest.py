@@ -1,4 +1,5 @@
 from OSHelper import *
+from bin import summary
 from bin import utils
 import os
 import subprocess
@@ -57,6 +58,9 @@ def testGetCheckSum():
     f = os.path.join('Y:\\landy\\EZTEST\diqa\\generic\\google_big_query\\gbq_reader\\goldlog', 'tcase033.xml')
     print(utils.checksum(f))
 
+def testSummary():
+    summary.sum(testRoot, 'HANA_Pipe_File_Options_output.xml')
+
 
 if __name__ == '__main__':
-    testDiff()
+    testSummary()

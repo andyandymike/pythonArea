@@ -3,6 +3,8 @@ from __future__ import with_statement
 
 import os
 import sys
+import re
+import shlex
 from Handler import *
 
 
@@ -219,6 +221,7 @@ def converter(root, fileName):
 
         outputFile = inputFile + ".robot"
         with open(outputFile, 'w') as fOutputFile:
+            os.chmod(outputFile, 0777)
             print("Converting %s to %s ..." % (inputFile, outputFile))
             fOutputFile.write(str(testunit))
 

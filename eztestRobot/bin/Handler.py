@@ -1,7 +1,3 @@
-import re
-import shlex
-
-
 class TestUnit(object):
     def __init__(self, name):
         self._name = name
@@ -30,7 +26,7 @@ class TestUnit(object):
         robotContent.append("| Library | ${ROBOTHOME}/OSHelper.py |")
         robotContent.append("| Suite Setup | Combined Setup |")
         robotContent.append("| Force Tags | %s |" % self._name)
-        # robotContent.append("| Test Timeout | ${ROBOT_TEST_TIMEOUT} |")
+        robotContent.append("| Test Timeout | ${ROBOT_TEST_TIMEOUT} |")
         robotContent.append("")
         robotContent.append("| *** Keywords *** |")
         for keyword in self._keywords:

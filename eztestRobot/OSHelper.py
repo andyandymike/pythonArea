@@ -40,8 +40,10 @@ def command_output(cmd):
 def use_shell(cmd):
     cmd = cmd.strip()
     re_grep = re.compile(r'grep\s.*')
-    m = re_grep.match(cmd)
-    if m:
+
+    mre_grep = re_grep.match(cmd)
+
+    if mre_grep:
         return True
     else:
         return False
@@ -90,18 +92,58 @@ def remove_wildcard_files(dir, fn):
         os.remove(f)
 
 
+def subvalue2(input, output):
+    if os.path.isfile(input):
+        inputFilePath = os.path.abspath(input)
+    else:
+        raise IOError("Cannot find file: %s" % input)
+        sys.exit(1)
+
+    outputFilePath = os.path.abspath(output)
+
+    re_env = re.compile(r'(%(\w+)%)')
+    with open(inputFilePath, 'r') as finput:
+        with open(outputFilePath, 'w') as foutput:
+            os.chmod(outputFilePath, 0777)
+            for ln in finput:
+                for m in re_env.finditer(ln):
+                    value = os.environ.get(m.group(2))
+                    if value == None:
+                        value = ''
+                    ln = ln.replace(m.group(1), value)
+                foutput.write(ln)
+
+
 def eim_launcher(jobname, *args):
+    runengine = get_env('runengine')
     al_engine_param = get_env('al_engine_param')
+    ROBOTHOME = get_env('ROBOTHOME')
+    DS_WORK = get_env('DS_WORK')
     UDS_WORK = get_env('UDS_WORK')
     SYSPROF = get_env('SYSPROF')
-    # al_engine ${al_engine_param} -s$JOBNAME -Ksp$SYSPROF $JOB_EXE_OPT $JOB_EXE_OPT2 -l${UDS_WORK}/$JOBNAME.log -t${UDS_WORK}/$JOBNAME.err
-    cmd = ['al_engine', al_engine_param, '-s' + jobname, '-Ksp' + SYSPROF]
-    cmd.append('-l' + UDS_WORK + '/' + jobname + '.log')
-    cmd.append('-t' + UDS_WORK + '/' + jobname + '.err')
+    DS_COMMON_DIR = get_env('DS_COMMON_DIR')
+    JOBSERVERNAME = get_env('JOBSERVERNAME')
+    JOBSERVERHOST = get_env('JOBSERVERHOST')
+    JOBSERVERPORT = get_env('JOBSERVERPORT')
     jobexeoption = ''
-    for arg in args:
-        cmd.append(arg)
+    for i, arg in enumerate(args):
         jobexeoption += arg + ' '
+        export_env('JOB_EXE_OPT' + str(i), arg)
+
+    if runengine.upper() == 'Y':
+        # al_engine ${al_engine_param} -s$JOBNAME -Ksp$SYSPROF $JOB_EXE_OPT $JOB_EXE_OPT2 -l${UDS_WORK}/$JOBNAME.log -t${UDS_WORK}/$JOBNAME.err
+        cmd = ['al_engine', al_engine_param, '-s' + jobname, '-Ksp' + SYSPROF]
+        cmd.append('-l' + UDS_WORK + '/' + jobname + '.log')
+        cmd.append('-t' + UDS_WORK + '/' + jobname + '.err')
+        for arg in args:
+            cmd.append(arg)
+    else:
+        subvalue2(ROBOTHOME + '/bin/launcher.txt', DS_WORK + '/tlauncher.txt')
+        # AL_RWJobLauncher.exe "$DS_COMMON_DIR/log/$JOBSERVERNAME/" -w "inet:$JOBSERVERHOST:$JOBSERVERPORT" -t5 -C "${DS_WORK}/tlauncher.txt"
+        cmd = ['AL_RWJobLauncher.exe', '"inet:' + JOBSERVERHOST + ':' + JOBSERVERPORT + '"',
+               '"' + DS_COMMON_DIR + '/log/' + JOBSERVERNAME + '/"', '-w',
+               '-t5', '-C', '"' + DS_WORK + '/tlauncher.txt"']
+
     m_jobname = re.compile(r'\$\{(\w+)\}')
     m = m_jobname.match(jobname)
     if m:
@@ -150,12 +192,14 @@ def import_atl(atlFileName, passPhrase='dsplatform'):
 def unescape(content):
     return re.sub(r'\\(.)', r'\1', content)
 
+
 def checksum(file):
     hash_md5 = hashlib.md5()
     with open(file, "rb") as f:
         for chunk in iter(lambda: f.read(4096), ""):
             hash_md5.update(chunk)
     return hash_md5.hexdigest()
+
 
 def diff_unordered_files(gold, work, limit=10):
     gold = replace_env_str(gold)
@@ -166,7 +210,8 @@ def diff_unordered_files(gold, work, limit=10):
     af2 = os.path.abspath(work)
 
     if gsize > 300000000L or wsize > 300000000L:
-        logger.info('Files are too big (over 300mb)! Diff in EX Big File Mode (Can not ensure correct result)', also_console=True)
+        logger.info('Files are too big (over 300mb)! Diff in EX Big File Mode (Can not ensure correct result)',
+                    also_console=True)
         if gsize == wsize:
             return 'Success'
         else:
@@ -178,7 +223,6 @@ def diff_unordered_files(gold, work, limit=10):
             logger.info('\n', also_console=True)
             logger.info('\n'.join(diffInfo), also_console=True)
             raise AssertionError("Files are different: %s %s" % (af1, af2))
-
 
     if checksum(gold) == checksum(work):
         return 'Success'
@@ -221,7 +265,8 @@ def diff_unordered_files(gold, work, limit=10):
                 raise AssertionError("Files are different: %s %s" % (af1, af2))
 
             if lenglines > 10000:
-                logger.info('Files have too many lines! Diff in Big File Mode (Do not support wildcard)', also_console=True)
+                logger.info('Files have too many lines! Diff in Big File Mode (Do not support wildcard)',
+                            also_console=True)
                 glines_bf = sorted(glinesPre2)
                 wlines_bf = sorted(wlinesPre2)
                 diffInfo = []
@@ -302,6 +347,7 @@ def replace_env(fo, fn):
     dic = os.environ
     with open(fo, 'r') as fin:
         with open(fn, 'w') as fout:
+            os.chmod(fn, 0777)
             regex = re.compile('\%(\w+)\%')
             for line in fin:
                 it = regex.finditer(line)

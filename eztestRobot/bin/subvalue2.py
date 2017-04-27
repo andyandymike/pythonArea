@@ -22,6 +22,7 @@ def main():
     re_env = re.compile(r'(%(\w+)%)')
     with open(inputFilePath, 'r') as finput:
         with open(outputFilePath, 'w') as foutput:
+            os.chmod(outputFilePath, 0777)
             for ln in finput:
                 for m in re_env.finditer(ln):
                     value = os.environ.get(m.group(2))

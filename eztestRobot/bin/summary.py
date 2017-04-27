@@ -16,7 +16,7 @@ def sum(root, fn):
         failed = 0
         st = []
         st.append('Testcase                                               Status      Elapsed Time')
-        st.append('---------------------------------------------------------------------------------')
+        st.append('-------------------------------------------------------------------------------')
         tree = ET.parse(f)
         for node in tree.findall('.//test'):
             skip = False
@@ -28,7 +28,8 @@ def sum(root, fn):
             if s is not None and not skip:
                 caseStartTime = datetime.strptime(s.attrib['starttime'], '%Y%m%d %H:%M:%S.%f')
                 caseEndTime = datetime.strptime(s.attrib['endtime'], '%Y%m%d %H:%M:%S.%f')
-                st.append("%-55s%-12s%-12s" % (node.attrib['name'], dic[s.attrib['status']], caseEndTime - caseStartTime))
+                elapsedTime = str(caseEndTime - caseStartTime)[:7]
+                st.append("%-55s%-12s%-12s" % (node.attrib['name'], dic[s.attrib['status']], elapsedTime))
                 if s.attrib['status'] == 'FAIL':
                     failed += 1
                 else:
@@ -41,6 +42,7 @@ def sum(root, fn):
         fp = fn[:fn.rfind('_')]
         fo = os.path.join(root, "%s.sum" % fp)
         with open(fo, 'w') as f2:
+            os.chmod(fo, 0777)
             f2.write("\n".join(st))
 
 
