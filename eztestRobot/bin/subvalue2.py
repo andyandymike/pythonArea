@@ -25,7 +25,7 @@ def main():
             os.chmod(outputFilePath, 0777)
             for ln in finput:
                 for m in re_env.finditer(ln):
-                    value = os.environ.get(m.group(2))
+                    value = os.environ.get(m.group(2)).replace(r'\r', "").replace(r'\n', "")
                     if value == None:
                         value = ''
                     ln = ln.replace(m.group(1), value)

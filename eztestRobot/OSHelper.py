@@ -125,6 +125,16 @@ def eim_launcher(jobname, *args):
     JOBSERVERNAME = get_env('JOBSERVERNAME')
     JOBSERVERHOST = get_env('JOBSERVERHOST')
     JOBSERVERPORT = get_env('JOBSERVERPORT')
+
+    m_jobname = re.compile(r'\$\{(\w+)\}')
+    m = m_jobname.match(jobname)
+    if m:
+        runjob = get_env(m.group(1))
+    else:
+        runjob = jobname
+
+    export_env('JOBNAME', runjob)
+
     jobexeoption = ''
     for i, arg in enumerate(args):
         jobexeoption += arg + ' '
@@ -144,12 +154,7 @@ def eim_launcher(jobname, *args):
                '"' + DS_COMMON_DIR + '/log/' + JOBSERVERNAME + '/"', '-w',
                '-t5', '-C', '"' + DS_WORK + '/tlauncher.txt"']
 
-    m_jobname = re.compile(r'\$\{(\w+)\}')
-    m = m_jobname.match(jobname)
-    if m:
-        runjob = get_env(m.group(1))
-    else:
-        runjob = jobname
+
 
     logger.info(' ', also_console=True)
     logger.info('====================================================', also_console=True)

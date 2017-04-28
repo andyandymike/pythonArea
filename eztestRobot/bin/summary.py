@@ -15,6 +15,8 @@ def sum(root, fn):
         passed = 0
         failed = 0
         st = []
+        st.append('Date : %s' % datetime.strftime(datetime.now(), '%a %b %d %H:%M:%S %Y'))
+        st.append('')
         st.append('Testcase                                               Status      Elapsed Time')
         st.append('-------------------------------------------------------------------------------')
         tree = ET.parse(f)
