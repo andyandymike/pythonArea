@@ -22,7 +22,7 @@ def converter(root, fileName):
         re_regcheck = re.compile(r'!regcheck\s+(.+)\s+(.+)')
         re_export2 = re.compile(r'(\w+)=(.+)')
         re_importAtl = re.compile(r'import_atl\.sh\s+(.+)')
-        re_expect = re.compile(r'!expect\s+(\w+)\s+\*?(.+[^\*])\*?')
+        re_expect = re.compile(r'!expect\s+(\w+)\s+\*?([^\*]+)\*?')
         re_define = re.compile(r'!define\s+(\w+)\s*')
         re_testcase = re.compile(r'!testcase\s+(\w+)\s*')
         re_testcase_doc = re.compile(r'!testcase\s+\w+\s+(.+)')
