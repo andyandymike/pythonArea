@@ -20,8 +20,8 @@ def testProcessOut():
     print(status)
 
 def testDiff():
-    gf = os.path.join('Y:\\landy\\EZTEST\diqa\\generic\\google_big_query\\gbq_reader\\goldlog', 'tcase033.xml')
-    wf = os.path.join(testRoot, 'gBJ_054.out')
+    gf = os.path.join(testRoot, 'godbc004.out')
+    wf = os.path.join(testRoot, 'wodbc004.out')
     print(diff_unordered_files(gf, wf))
 
 def testSplitParams():
@@ -63,4 +63,4 @@ def testSummary():
 
 
 if __name__ == '__main__':
-    testSummary()
+    testDiff()
