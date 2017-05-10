@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generated="20170510 20:12:35.891" generator="Robot 3.0.2 (Python 2.7.13 on win32)">
+<suite source="C:\Users\i067382\PycharmProjects\robotframework-3.0.2\src\test\testcase.robot" id="s1" name="tcase01">
+<test id="s1-t1" name="tcase01">
+<kw name="Shell Command" library="OSHelper">
+<arguments>
+<arg>echo hello</arg>
+<arg>True</arg>
+</arguments>
+<assign>
+<var>${result}</var>
+</assign>
+<msg timestamp="20170510 20:12:35.977" level="INFO">RUN: echo hello</msg>
+<msg timestamp="20170510 20:12:35.990" level="INFO">Command exit code: 0</msg>
+<msg timestamp="20170510 20:12:35.990" level="INFO">Command output: hello</msg>
+<msg timestamp="20170510 20:12:35.991" level="INFO">${result} = hello</msg>
+<status status="PASS" endtime="20170510 20:12:35.991" starttime="20170510 20:12:35.975"></status>
+</kw>
+<kw name="Should Contain" library="BuiltIn">
+<doc>Fails if ``container`` does not contain ``item`` one or more times.</doc>
+<arguments>
+<arg>${result}</arg>
+<arg>hello</arg>
+</arguments>
+<status status="PASS" endtime="20170510 20:12:35.992" starttime="20170510 20:12:35.991"></status>
+</kw>
+<doc>hive_query03 SUM and GROUP BY</doc>
+<status status="PASS" endtime="20170510 20:12:35.993" critical="yes" starttime="20170510 20:12:35.973"></status>
+</test>
+<status status="PASS" endtime="20170510 20:12:35.994" starttime="20170510 20:12:35.895"></status>
+</suite>
+<statistics>
+<total>
+<stat fail="0" pass="1">Critical Tests</stat>
+<stat fail="0" pass="1">All Tests</stat>
+</total>
+<tag>
+</tag>
+<suite>
+<stat fail="0" id="s1" name="tcase01" pass="1">tcase01</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>

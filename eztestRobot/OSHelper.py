@@ -49,8 +49,9 @@ def use_shell(cmd):
         return False
 
 
-def shell_command(cmd, printOutput=True):
-    useShell = use_shell(cmd)
+def shell_command(cmd, useShell=False, printOutput=True):
+    if not useShell:
+        useShell = use_shell(cmd)
     cmd = replace_env_str(cmd)
     # to get around shell problem under cygwin
     if not useShell:
