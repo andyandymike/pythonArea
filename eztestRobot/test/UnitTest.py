@@ -61,6 +61,10 @@ def testGetCheckSum():
 def testSummary():
     summary.sum(testRoot, 'HANA_Pipe_File_Options_output.xml')
 
+def testGrep():
+    export_env('TEST', "i'm testing grep")
+    print(os.path.expandvars('%TEST%'))
+
 
 if __name__ == '__main__':
-    testDiff()
+    testGrep()

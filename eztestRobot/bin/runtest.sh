@@ -286,26 +286,25 @@ do
 	export unix_runtest=$UTESTNODE/$testsuite/$cases
     export utestunit=$UTESTNODE/$testsuite/$cases
     export testunit=$TESTNODE/$testsuite/$cases
-
-    export DS_WORK=$DS_WORK_ROOT/$testsuite/$cases
-    export UDS_WORK=$UDS_WORK_ROOT/$testsuite/$cases
-    export DS_GOLD=$DS_WORK_ROOT/$testsuite/$cases/gold
-    export DS_INPUT=$DS_WORK_ROOT/$testsuite/$cases/input
-    export UDS_INPUT=$UDS_WORK_ROOT/$testsuite/$cases/input
+	
+	[ -z "$DS_WORK_ROOT" ] && export DS_WORK_ROOT=$TESTNODE
+	[ -z "$UDS_WORK_ROOT" ] && export UDS_WORK_ROOT=$UTESTNODE
+	[ -z "$DS_WORK" ] && export DS_WORK=$DS_WORK_ROOT/$testsuite/$cases/work
+    [ -z "$UDS_WORK" ] && export UDS_WORK=$UDS_WORK_ROOT/$testsuite/$cases/work
+    [ -z "$DS_GOLD" ] && export DS_GOLD=$DS_WORK_ROOT/$testsuite/$cases/gold
+    [ -z "$DS_INPUT" ] && export DS_INPUT=$DS_WORK_ROOT/$testsuite/$cases/input
+    [ -z "$UDS_INPUT" ] && export UDS_INPUT=$UDS_WORK_ROOT/$testsuite/$cases/input
 
     mkdir $DS_WORK_ROOT/$testsuite
+	mkdir $DS_WORK_ROOT/$testsuite/$cases
 
     mkdir $DS_WORK
-    mkdir $UDS_WORK
     mkdir $DS_GOLD
     mkdir $DS_INPUT
-    mkdir $UDS_INPUT
 
     chmod -R 777 $DS_WORK
-    chmod -R 777 $UDS_WORK
     chmod -R 777 $DS_GOLD
     chmod -R 777 $DS_INPUT
-    chmod -R 777 $UDS_INPUT
 
     rm ${DS_WORK}/*
     rm ${DS_GOLD}/*

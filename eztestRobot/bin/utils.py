@@ -1,6 +1,7 @@
 import shlex
 import re
 import hashlib
+import subprocess
 
 
 def splitParams(params):
