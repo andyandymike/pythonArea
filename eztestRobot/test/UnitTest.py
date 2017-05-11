@@ -20,8 +20,8 @@ def testProcessOut():
     print(status)
 
 def testDiff():
-    gf = os.path.join(testRoot, 'godbc004.out')
-    wf = os.path.join(testRoot, 'wodbc004.out')
+    gf = os.path.join(testRoot, 'g.json')
+    wf = os.path.join(testRoot, 'w.json')
     print(diff_unordered_files(gf, wf))
 
 def testSplitParams():
@@ -65,6 +65,11 @@ def testGrep():
     export_env('TEST', "i'm testing grep")
     print(os.path.expandvars('%TEST%'))
 
+def testLine():
+    gf = os.path.join(testRoot, 'g.txt')
+    with open(gf, 'r', encoding='utf-8') as f:
+        print(len(f.readlines()))
+
 
 if __name__ == '__main__':
-    testGrep()
+    testLine()

@@ -312,10 +312,10 @@ def diff_unordered_files(gold, work, limit=10):
                 setDiffs = set()
                 for gline in glines:
                     diffInfo = []
-                    diffInfo.append("gold: " + unescape(gline))
+                    diffInfo.append("gold: " + unescape(gline)[:100] + ' ...')
                     wline = difflib.get_close_matches(gline, wlines, n=1)
                     if len(wline) == 1 and gline != wline[0]:
-                        diffInfo.append("work: " + wline[0])
+                        diffInfo.append("work: " + wline[0][:100] + ' ...')
                     else:
                         diffInfo.append("work: Missing!")
                     diffInfo.append("====================")
@@ -328,10 +328,10 @@ def diff_unordered_files(gold, work, limit=10):
                     diffInfo = []
                     gline = difflib.get_close_matches(wline, glines, n=1)
                     if len(gline) == 1 and gline[0] != wline:
-                        diffInfo.append("gold: " + unescape(gline[0]))
+                        diffInfo.append("gold: " + unescape(gline[0])[:100] + ' ...')
                     else:
                         diffInfo.append("gold: Missing!")
-                    diffInfo.append("work: " + wline)
+                    diffInfo.append("work: " + wline[:100] + ' ...')
                     diffInfo.append("====================")
                     setDiffs.add('\n'.join(diffInfo))
                     i += 1

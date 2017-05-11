@@ -15,8 +15,8 @@ CREATE DATABASE DATASTORE gbq2file::'0cb53e77-3c72-4e26-8b6f-7ad3c3f7606c' SET (
 <locale_codepage>&lt;default&gt;</locale_codepage>
 <locale_language>&lt;default&gt;</locale_language>
 <locale_territory>&lt;default&gt;</locale_territory>
-<proxy_host></proxy_host>
-<proxy_port></proxy_port>
+<proxy_host>%GBQ_PROXY_HOST%</proxy_host>
+<proxy_port>%GBQ_PROXY_PORT%</proxy_port>
 <web_service_url>https://www.googleapis.com/bigquery/v2</web_service_url>
 </DSConfiguration>
 </DSConfigurations>
@@ -32,7 +32,7 @@ CREATE __BODI_FILELOCATION DATASTORE gbq2file_1::'145b940a-517e-44ef-9aa1-3d7056
 <fl_download_chunk_size>5</fl_download_chunk_size>
 <fl_gcs_download_url>https://www.googleapis.com/storage/v1</fl_gcs_download_url>
 <fl_gcs_upload_url>https://www.googleapis.com/upload/storage/v1</fl_gcs_upload_url>
-<fl_local_dir></fl_local_dir>
+<fl_local_dir>%UDS_WORK%</fl_local_dir>
 <fl_number_of_threads>1</fl_number_of_threads>
 <fl_project>saphanadspaloalto</fl_project>
 <fl_protocol>Google Cloud Storage</fl_protocol>
@@ -45,8 +45,8 @@ CREATE __BODI_FILELOCATION DATASTORE gbq2file_1::'145b940a-517e-44ef-9aa1-3d7056
 <locale_codepage>&lt;default&gt;</locale_codepage>
 <locale_language>&lt;default&gt;</locale_language>
 <locale_territory>&lt;default&gt;</locale_territory>
-<proxy_host></proxy_host>
-<proxy_port></proxy_port>
+<proxy_host>%GBQ_PROXY_HOST%</proxy_host>
+<proxy_port>%GBQ_PROXY_PORT%</proxy_port>
 </DSConfiguration>
 </DSConfigurations>
 ', "enable_data_transfer" = 'yes', "import_unknown_type" = 'no', "name" = 'gbq2file_1', "pcache_force_utf16" = 'no', "unknown_type_size" = '255');
@@ -61,7 +61,7 @@ CREATE __BODI_FILELOCATION DATASTORE gbq2file_compre::'3bdc36d4-2012-4104-80b4-4
 <fl_download_chunk_size>5</fl_download_chunk_size>
 <fl_gcs_download_url>https://www.googleapis.com/storage/v1</fl_gcs_download_url>
 <fl_gcs_upload_url>https://www.googleapis.com/upload/storage/v1</fl_gcs_upload_url>
-<fl_local_dir></fl_local_dir>
+<fl_local_dir>%UDS_WORK%</fl_local_dir>
 <fl_number_of_threads>1</fl_number_of_threads>
 <fl_project>saphanadspaloalto</fl_project>
 <fl_protocol>Google Cloud Storage</fl_protocol>
@@ -74,8 +74,8 @@ CREATE __BODI_FILELOCATION DATASTORE gbq2file_compre::'3bdc36d4-2012-4104-80b4-4
 <locale_codepage>&lt;default&gt;</locale_codepage>
 <locale_language>&lt;default&gt;</locale_language>
 <locale_territory>&lt;default&gt;</locale_territory>
-<proxy_host></proxy_host>
-<proxy_port></proxy_port>
+<proxy_host>%GBQ_PROXY_HOST%</proxy_host>
+<proxy_port>%GBQ_PROXY_PORT%</proxy_port>
 </DSConfiguration>
 </DSConfigurations>
 ', "enable_data_transfer" = 'yes', "import_unknown_type" = 'no', "name" = 'gbq2file_compre', "pcache_force_utf16" = 'no', "unknown_type_size" = '255');
@@ -92,7 +92,7 @@ CREATE __BODI_FILELOCATION DATASTORE gbq2file_with_path_prefix::'76cb8887-1b8d-4
 <fl_gcs_upload_url>https://www.googleapis.com/upload/storage/v1</fl_gcs_upload_url>
 <fl_number_of_threads>1</fl_number_of_threads>
 <fl_project>saphanadspaloalto</fl_project>
-<fl_local_dir></fl_local_dir>
+<fl_local_dir>%UDS_WORK%</fl_local_dir>
 <fl_protocol>Google Cloud Storage</fl_protocol>
 <fl_remote_path_prefix>gbq/</fl_remote_path_prefix>
 <fl_upload_chunk_size>5</fl_upload_chunk_size>
@@ -104,8 +104,8 @@ CREATE __BODI_FILELOCATION DATASTORE gbq2file_with_path_prefix::'76cb8887-1b8d-4
 <locale_codepage>&lt;default&gt;</locale_codepage>
 <locale_language>&lt;default&gt;</locale_language>
 <locale_territory>&lt;default&gt;</locale_territory>
-<proxy_host></proxy_host>
-<proxy_port></proxy_port>
+<proxy_host>%GBQ_PROXY_HOST%</proxy_host>
+<proxy_port>%GBQ_PROXY_PORT%</proxy_port>
 </DSConfiguration>
 </DSConfigurations>
 ', "enable_data_transfer" = 'yes', "import_unknown_type" = 'no', "name" = 'gbq2file_with_path_prefix', "pcache_force_utf16" = 'no', "unknown_type_size" = '255');
