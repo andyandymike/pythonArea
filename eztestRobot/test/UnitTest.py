@@ -67,7 +67,7 @@ def testGrep():
 
 def testLine():
     gf = os.path.join(testRoot, 'g.txt')
-    with open(gf, 'r', encoding='utf-8') as f:
+    with open(gf, 'rU') as f:
         print(len(f.readlines()))
 
 

@@ -233,8 +233,8 @@ def diff_unordered_files(gold, work, limit=10):
     if checksum(gold) == checksum(work):
         return 'Success'
 
-    with open(gold, 'r') as fGoldFile:
-        with open(work, 'r') as fWorkFile:
+    with open(gold, 'rU') as fGoldFile:
+        with open(work, 'rU') as fWorkFile:
             regex = re.compile(r'<!--.*-->|xsi:schemaLocation=".*">|<ID>.*</ID>|<TableIndex Name=".*"')
             glinesPre1 = map(lambda line: regex.sub("", line), fGoldFile.readlines())
             wlinesPre1 = map(lambda line: regex.sub("", line), fWorkFile.readlines())
