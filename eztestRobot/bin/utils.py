@@ -36,3 +36,11 @@ def checksum(file):
         for chunk in iter(lambda: f.read(4096), ""):
             hash_md5.update(chunk)
     return hash_md5.hexdigest()
+
+def use_shell_command(val):
+    re_export_val = re.compile(r'\\\$\(.+\s.*.+\)')
+    m = re_export_val.match(val)
+    if m:
+        return True
+    else:
+        return False

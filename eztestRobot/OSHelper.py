@@ -49,10 +49,11 @@ def use_shell(cmd):
         return False
 
 
-def shell_command(cmd, useShell=False, printOutput=True):
+def shell_command(cmd, useShell=False, replaceEnv=True, printOutput=True):
     if not useShell:
         useShell = use_shell(cmd)
-    cmd = replace_env_str(cmd)
+    if replaceEnv:
+        cmd = replace_env_str(cmd)
     # to get around shell problem under cygwin
     if not useShell:
         cmd = "sh -c \"%s\"" % cmd.replace(r'"', r'\"')
@@ -69,8 +70,29 @@ def shell_command(cmd, useShell=False, printOutput=True):
     return status
 
 
+def use_shell_command(val):
+    re_export_val = re.compile(r'\$\(.+\s.*.+\)')
+    m = re_export_val.match(val)
+    if m:
+        return True
+    else:
+        return False
+
+
+def get_shell_command(val):
+    re_export_val = re.compile(r'\$\((.+\s.*.+)\)')
+    m = re_export_val.match(val)
+    if m:
+        return m.group(1)
+    else:
+        return ''
+
+
 def export_env(key, val):
-    val = replace_env_str(val)
+    if use_shell_command(val):
+        val = shell_command(get_shell_command(val), True)
+    else:
+        val = replace_env_str(val)
     os.environ[key] = val
 
 
@@ -155,8 +177,6 @@ def eim_launcher(jobname, *args):
                '"' + DS_COMMON_DIR + '/log/' + JOBSERVERNAME + '/"', '-w',
                '-t5', '-C', '"' + DS_WORK + '/tlauncher.txt"']
 
-
-
     logger.info(' ', also_console=True)
     logger.info('====================================================', also_console=True)
     logger.info('==  Job Executed on Server   ==', also_console=True)
@@ -215,6 +235,12 @@ def diff_unordered_files(gold, work, limit=10):
     af1 = os.path.abspath(gold)
     af2 = os.path.abspath(work)
 
+    logger.info(' ', also_console=True)
+    logger.info('==  Compare files   ==', also_console=True)
+    logger.info('gold: %s' % os.path.basename(gold), also_console=True)
+    logger.info('work: %s' % os.path.basename(work), also_console=True)
+    logger.info('----------------------', also_console=True)
+
     if gsize > 300000000L or wsize > 300000000L:
         logger.info('Files are too big (over 300mb)! Diff in EX Big File Mode (Can not ensure correct result)',
                     also_console=True)
@@ -225,7 +251,7 @@ def diff_unordered_files(gold, work, limit=10):
             diffInfo.append("gold and work has different file size")
             diffInfo.append("glod size: %s" % gsize)
             diffInfo.append("work size: %s" % wsize)
-            diffInfo.append("====================")
+            diffInfo.append("----------------------")
             logger.info('\n', also_console=True)
             logger.info('\n'.join(diffInfo), also_console=True)
             raise AssertionError("Files are different: %s %s" % (af1, af2))
@@ -265,7 +291,7 @@ def diff_unordered_files(gold, work, limit=10):
                 diffInfo.append("gold and work has different line number")
                 diffInfo.append("glod has %d lines" % lenglines)
                 diffInfo.append("work has %d lines" % lenwlines)
-                diffInfo.append("====================")
+                diffInfo.append("----------------------")
                 logger.info('\n', also_console=True)
                 logger.info('\n'.join(diffInfo), also_console=True)
                 raise AssertionError("Files are different: %s %s" % (af1, af2))
@@ -281,7 +307,7 @@ def diff_unordered_files(gold, work, limit=10):
                     if glines_bf[i] != wlines_bf[i] and j < limit:
                         diffInfo.append("gold: " + glines_bf[i])
                         diffInfo.append("work: " + wlines_bf[i])
-                        diffInfo.append("====================")
+                        diffInfo.append("----------------------")
                         j += 1
                     if j == limit:
                         break
@@ -318,7 +344,7 @@ def diff_unordered_files(gold, work, limit=10):
                         diffInfo.append("work: " + wline[0][:100] + ' ...')
                     else:
                         diffInfo.append("work: Missing!")
-                    diffInfo.append("====================")
+                    diffInfo.append("----------------------")
                     setDiffs.add('\n'.join(diffInfo))
                     i += 1
                     if i > limit:
@@ -332,7 +358,7 @@ def diff_unordered_files(gold, work, limit=10):
                     else:
                         diffInfo.append("gold: Missing!")
                     diffInfo.append("work: " + wline[:100] + ' ...')
-                    diffInfo.append("====================")
+                    diffInfo.append("----------------------")
                     setDiffs.add('\n'.join(diffInfo))
                     i += 1
                     if i > limit:
