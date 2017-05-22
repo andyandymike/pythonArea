@@ -10,9 +10,15 @@ testRoot = os.path.join(root, 'test')
 
 
 def testImportATL():
-    atl = os.path.join(testRoot, 'ezTest_hana_ansijoin_Datastore.atl')
-    export_env('IMPORT', 'FALSE')
+    atl = os.path.join(testRoot, 'test.atl')
+    export_env('test', '%netezza 7.5%')
     import_atl(atl)
+
+def testSubvalue2():
+    atl = os.path.join(testRoot, 'test.atl')
+    out = os.path.join(testRoot, 'ttest.atl')
+    export_env('test', '"netezza 7.5"')
+    utils.subvalue2(atl, out)
 
 
 def testProcessOut():
@@ -71,7 +77,7 @@ def testGetCheckSum():
 
 
 def testSummary():
-    summary.sum(testRoot, 'HANA_Pipe_File_Options_output.xml')
+    summary.sum(testRoot, 'hadoop_hive_load_output.xml')
 
 
 def testGrep():
@@ -100,4 +106,4 @@ def testUseShellCommand():
 
 
 if __name__ == '__main__':
-    testUseShellCommand()
+    testSubvalue2()

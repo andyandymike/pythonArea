@@ -131,6 +131,8 @@ def subvalue2(input, output):
             for ln in finput:
                 for m in re_env.finditer(ln):
                     value = os.environ.get(m.group(2))
+                    if value[0] == '"' and value[len(value) - 1] == '"':
+                        value = value[1:len(value) - 1] if len(value) > 2 else ''
                     if value == None:
                         value = ''
                     ln = ln.replace(m.group(1), value)
@@ -397,7 +399,10 @@ def replace_env(fo, fn):
                     else:
                         key = match.group(1)
                         if key in dic:
-                            line = line.replace(match.group(0), dic[key])
+                            value = dic[key]
+                            if value[0] == '"' and value[len(value) - 1] == '"':
+                                value = value[1:len(value) - 1] if len(value) > 2 else ''
+                            line = line.replace(match.group(0), value)
                 fout.write(line)
 
 

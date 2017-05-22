@@ -24,14 +24,16 @@ def sum(root, fn):
             skip = False
             s = node.find('status')
             tags = node.find('tags')
-            for tag in tags:
-                if tag.text == 'InTestingSetup':
-                    skip = True
+            doc = node.find('doc')
+            if tags is not None:
+                for tag in tags:
+                    if tag.text == 'InTestingSetup':
+                        skip = True
             if s is not None and not skip:
                 caseStartTime = datetime.strptime(s.attrib['starttime'], '%Y%m%d %H:%M:%S.%f')
                 caseEndTime = datetime.strptime(s.attrib['endtime'], '%Y%m%d %H:%M:%S.%f')
                 elapsedTime = str(caseEndTime - caseStartTime)[:7]
-                st.append("%-55s%-12s%-12s" % (node.attrib['name'], dic[s.attrib['status']], elapsedTime))
+                st.append("%-55.54s%-12s%-12s" % (node.attrib['name'] + ' ' + doc.text if doc is not None else '', dic[s.attrib['status']], elapsedTime))
                 if s.attrib['status'] == 'FAIL':
                     failed += 1
                 else:

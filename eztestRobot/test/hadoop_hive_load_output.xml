@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 2.8.7 (Jython 2.5.3 on java1.8.0_121)" generated="20170518 22:39:34.871">
+<suite source="Y:\landy\EZTEST_Other\diqa\generic\hadoop\hadoop_hive_load\testcase.robot" name="Testcase" id="s1">
+<kw type="setup" name="Combined Setup">
+<doc></doc>
+<arguments>
+</arguments>
+<kw type="kw" name="OSHelper.Export Env">
+<doc></doc>
+<arguments>
+<arg>HOSTNAME</arg>
+<arg>`hostname`</arg>
+</arguments>
+<status endtime="20170518 22:39:36.637" starttime="20170518 22:39:36.152" status="PASS"></status>
+</kw>
+<kw type="kw" name="OSHelper.Export Env">
+<doc></doc>
+<arguments>
+<arg>TEST_DIR</arg>
+<arg>\$runtest</arg>
+</arguments>
+<status endtime="20170518 22:39:36.637" starttime="20170518 22:39:36.637" status="PASS"></status>
+</kw>
+<kw type="kw" name="OSHelper.Shell Command">
+<doc></doc>
+<arguments>
+<arg>rm \${DS_WORK}/*</arg>
+</arguments>
+<msg level="INFO" timestamp="20170518 22:39:36.652">RUN: ['sh', '-c', 'rm Y:/landy/Auto_Working/SUSE/work_other/hadoop/hadoop_hive_load/work/*']</msg>
+<msg level="INFO" timestamp="20170518 22:39:36.824">Command exit code: 1</msg>
+<msg level="INFO" timestamp="20170518 22:39:36.840">Command output: rm: cannot remove `Y:/landy/Auto_Working/SUSE/work_other/hadoop/hadoop_hive_load/work/*': No such file or directory</msg>
+<status endtime="20170518 22:39:36.840" starttime="20170518 22:39:36.637" status="PASS"></status>
+</kw>
+<kw type="kw" name="OSHelper.Change Working Directory">
+<doc></doc>
+<arguments>
+<arg>\${runtest}/positive</arg>
+</arguments>
+<status endtime="20170518 22:39:36.855" starttime="20170518 22:39:36.840" status="PASS"></status>
+</kw>
+<status endtime="20170518 22:39:36.855" starttime="20170518 22:39:36.152" status="PASS"></status>
+</kw>
+<test timeout="1 hour 40 minutes" name="tcase029" id="s1-t1">
+<kw type="kw" name="OSHelper.Export Env">
+<doc></doc>
+<arguments>
+<arg>JOBNAME</arg>
+<arg>hive_partition_ca_from_hive</arg>
+</arguments>
+<status endtime="20170518 22:39:36.887" starttime="20170518 22:39:36.871" status="PASS"></status>
+</kw>
+<kw type="kw" name="OSHelper.Eim Launcher">
+<doc></doc>
+<arguments>
+<arg>\${JOBNAME}</arg>
+<arg>-T4096 -z\${UDS_WORK}/\${JOBNAME}.txt</arg>
+</arguments>
+<msg level="INFO" timestamp="20170518 22:39:36.933"> </msg>
+<msg level="INFO" timestamp="20170518 22:39:36.949">====================================================</msg>
+<msg level="INFO" timestamp="20170518 22:39:36.949">==  Job Executed on Server   ==</msg>
+<msg level="INFO" timestamp="20170518 22:39:36.949"> Job Server Host : lvpal585</msg>
+<msg level="INFO" timestamp="20170518 22:39:36.949">      Job Server : js_hadoop</msg>
+<msg level="INFO" timestamp="20170518 22:39:36.949">            Port : 7777</msg>
+<msg level="INFO" timestamp="20170518 22:39:36.965">    Engine Param : -NHANA -SDS42_HANA_HADOOP -UANDYHANA4 -PPassword1</msg>
+<msg level="INFO" timestamp="20170518 22:39:36.965">----------------------------------------------------</msg>
+<msg level="INFO" timestamp="20170518 22:39:36.965">     Running Job : hive_partition_ca_from_hive</msg>
+<msg level="INFO" timestamp="20170518 22:39:36.965">         Options : -T4096 -z${UDS_WORK}/${JOBNAME}.txt </msg>
+<msg level="INFO" timestamp="20170518 22:39:36.965">         RUNTEST : Y:/landy/EZTEST_Other/diqa/generic/hadoop/hadoop_hive_load</msg>
+<msg level="INFO" timestamp="20170518 22:39:36.965">        LINK_DIR : C:\Program Files (x86)\SAP BusinessObjects\Data Services</msg>
+<msg level="INFO" timestamp="20170518 22:39:36.980">====================================================</msg>
+<msg level="INFO" timestamp="20170518 22:39:36.980">RUN: AL_RWJobLauncher.exe "inet:lvpal585:7777" "C:\ProgramData\SAP BusinessObjects\Data Services/log/js_hadoop/" -w -t5 -C "Y:/landy/Auto_Working/SUSE/work_other/hadoop/hadoop_hive_load/work/tlauncher.txt"</msg>
+<msg level="INFO" timestamp="20170518 22:41:12.436">Command exit code: 0</msg>
+<msg level="INFO" timestamp="20170518 22:41:12.436">Command output: </msg>
+<status endtime="20170518 22:41:12.436" starttime="20170518 22:39:36.902" status="PASS"></status>
+</kw>
+<doc>hive_partition_ca_from_hive Hive load</doc>
+<tags>
+<tag>hadoop_hive_load</tag>
+</tags>
+<status critical="yes" endtime="20170518 22:41:12.467" starttime="20170518 22:39:36.855" status="PASS"></status>
+</test>
+<test timeout="1 hour 40 minutes" name="tcase030" id="s1-t2">
+<kw type="kw" name="OSHelper.Export Env">
+<doc></doc>
+<arguments>
+<arg>JOBNAME</arg>
+<arg>hive_partition_ss1_from_file_append</arg>
+</arguments>
+<status endtime="20170518 22:41:12.530" starttime="20170518 22:41:12.514" status="PASS"></status>
+</kw>
+<kw type="kw" name="OSHelper.Eim Launcher">
+<doc></doc>
+<arguments>
+<arg>\${JOBNAME}</arg>
+<arg>-T4096 -z\${UDS_WORK}/\${JOBNAME}.txt</arg>
+</arguments>
+<msg level="INFO" timestamp="20170518 22:41:12.576"> </msg>
+<msg level="INFO" timestamp="20170518 22:41:12.576">====================================================</msg>
+<msg level="INFO" timestamp="20170518 22:41:12.576">==  Job Executed on Server   ==</msg>
+<msg level="INFO" timestamp="20170518 22:41:12.576"> Job Server Host : lvpal585</msg>
+<msg level="INFO" timestamp="20170518 22:41:12.576">      Job Server : js_hadoop</msg>
+<msg level="INFO" timestamp="20170518 22:41:12.576">            Port : 7777</msg>
+<msg level="INFO" timestamp="20170518 22:41:12.592">    Engine Param : -NHANA -SDS42_HANA_HADOOP -UANDYHANA4 -PPassword1</msg>
+<msg level="INFO" timestamp="20170518 22:41:12.592">----------------------------------------------------</msg>
+<msg level="INFO" timestamp="20170518 22:41:12.592">     Running Job : hive_partition_ss1_from_file_append</msg>
+<msg level="INFO" timestamp="20170518 22:41:12.592">         Options : -T4096 -z${UDS_WORK}/${JOBNAME}.txt </msg>
+<msg level="INFO" timestamp="20170518 22:41:12.592">         RUNTEST : Y:/landy/EZTEST_Other/diqa/generic/hadoop/hadoop_hive_load</msg>
+<msg level="INFO" timestamp="20170518 22:41:12.592">        LINK_DIR : C:\Program Files (x86)\SAP BusinessObjects\Data Services</msg>
+<msg level="INFO" timestamp="20170518 22:41:12.608">====================================================</msg>
+<msg level="INFO" timestamp="20170518 22:41:12.608">RUN: AL_RWJobLauncher.exe "inet:lvpal585:7777" "C:\ProgramData\SAP BusinessObjects\Data Services/log/js_hadoop/" -w -t5 -C "Y:/landy/Auto_Working/SUSE/work_other/hadoop/hadoop_hive_load/work/tlauncher.txt"</msg>
+<msg level="INFO" timestamp="20170518 22:44:02.703">Command exit code: 0</msg>
+<msg level="INFO" timestamp="20170518 22:44:02.719">Command output: </msg>
+<status endtime="20170518 22:44:02.719" starttime="20170518 22:41:12.530" status="PASS"></status>
+</kw>
+<doc>hive_partition_ss1_from_file_append Hive load</doc>
+<tags>
+<tag>hadoop_hive_load</tag>
+</tags>
+<status critical="yes" endtime="20170518 22:44:02.719" starttime="20170518 22:41:12.498" status="PASS"></status>
+</test>
+<test timeout="1 hour 40 minutes" name="tcase031" id="s1-t3">
+<kw type="kw" name="OSHelper.Export Env">
+<doc></doc>
+<arguments>
+<arg>JOBNAME</arg>
+<arg>hive_partition_ss1_from_file_overwrite</arg>
+</arguments>
+<status endtime="20170518 22:44:02.766" starttime="20170518 22:44:02.750" status="PASS"></status>
+</kw>
+<kw type="kw" name="OSHelper.Eim Launcher">
+<doc></doc>
+<arguments>
+<arg>\${JOBNAME}</arg>
+<arg>-T4096 -z\${UDS_WORK}/\${JOBNAME}.txt</arg>
+</arguments>
+<msg level="INFO" timestamp="20170518 22:44:02.797"> </msg>
+<msg level="INFO" timestamp="20170518 22:44:02.813">====================================================</msg>
+<msg level="INFO" timestamp="20170518 22:44:02.813">==  Job Executed on Server   ==</msg>
+<msg level="INFO" timestamp="20170518 22:44:02.813"> Job Server Host : lvpal585</msg>
+<msg level="INFO" timestamp="20170518 22:44:02.813">      Job Server : js_hadoop</msg>
+<msg level="INFO" timestamp="20170518 22:44:02.813">            Port : 7777</msg>
+<msg level="INFO" timestamp="20170518 22:44:02.813">    Engine Param : -NHANA -SDS42_HANA_HADOOP -UANDYHANA4 -PPassword1</msg>
+<msg level="INFO" timestamp="20170518 22:44:02.813">----------------------------------------------------</msg>
+<msg level="INFO" timestamp="20170518 22:44:02.828">     Running Job : hive_partition_ss1_from_file_overwrite</msg>
+<msg level="INFO" timestamp="20170518 22:44:02.828">         Options : -T4096 -z${UDS_WORK}/${JOBNAME}.txt </msg>
+<msg level="INFO" timestamp="20170518 22:44:02.828">         RUNTEST : Y:/landy/EZTEST_Other/diqa/generic/hadoop/hadoop_hive_load</msg>
+<msg level="INFO" timestamp="20170518 22:44:02.828">        LINK_DIR : C:\Program Files (x86)\SAP BusinessObjects\Data Services</msg>
+<msg level="INFO" timestamp="20170518 22:44:02.828">====================================================</msg>
+<msg level="INFO" timestamp="20170518 22:44:02.828">RUN: AL_RWJobLauncher.exe "inet:lvpal585:7777" "C:\ProgramData\SAP BusinessObjects\Data Services/log/js_hadoop/" -w -t5 -C "Y:/landy/Auto_Working/SUSE/work_other/hadoop/hadoop_hive_load/work/tlauncher.txt"</msg>
+<msg level="INFO" timestamp="20170518 22:46:47.657">Command exit code: 0</msg>
+<msg level="INFO" timestamp="20170518 22:46:47.673">Command output: </msg>
+<status endtime="20170518 22:46:47.673" starttime="20170518 22:44:02.766" status="PASS"></status>
+</kw>
+<doc>hive_partition_ss1_from_file_overwrite Hive load</doc>
+<tags>
+<tag>hadoop_hive_load</tag>
+</tags>
+<status critical="yes" endtime="20170518 22:46:47.673" starttime="20170518 22:44:02.719" status="PASS"></status>
+</test>
+<test timeout="1 hour 40 minutes" name="tcase032" id="s1-t4">
+<kw type="kw" name="OSHelper.Export Env">
+<doc></doc>
+<arguments>
+<arg>JOBNAME</arg>
+<arg>hive_partition_ss2_dynamic</arg>
+</arguments>
+<status endtime="20170518 22:46:47.720" starttime="20170518 22:46:47.704" status="PASS"></status>
+</kw>
+<kw type="kw" name="OSHelper.Eim Launcher">
+<doc></doc>
+<arguments>
+<arg>\${JOBNAME}</arg>
+<arg>-T4096 -z\${UDS_WORK}/\${JOBNAME}.txt</arg>
+</arguments>
+<msg level="INFO" timestamp="20170518 22:46:49.532"> </msg>
+<msg level="INFO" timestamp="20170518 22:46:49.548">====================================================</msg>
+<msg level="INFO" timestamp="20170518 22:46:49.548">==  Job Executed on Server   ==</msg>
+<msg level="INFO" timestamp="20170518 22:46:49.548"> Job Server Host : lvpal585</msg>
+<msg level="INFO" timestamp="20170518 22:46:49.548">      Job Server : js_hadoop</msg>
+<msg level="INFO" timestamp="20170518 22:46:49.548">            Port : 7777</msg>
+<msg level="INFO" timestamp="20170518 22:46:49.548">    Engine Param : -NHANA -SDS42_HANA_HADOOP -UANDYHANA4 -PPassword1</msg>
+<msg level="INFO" timestamp="20170518 22:46:49.563">----------------------------------------------------</msg>
+<msg level="INFO" timestamp="20170518 22:46:49.563">     Running Job : hive_partition_ss2_dynamic</msg>
+<msg level="INFO" timestamp="20170518 22:46:49.563">         Options : -T4096 -z${UDS_WORK}/${JOBNAME}.txt </msg>
+<msg level="INFO" timestamp="20170518 22:46:49.563">         RUNTEST : Y:/landy/EZTEST_Other/diqa/generic/hadoop/hadoop_hive_load</msg>
+<msg level="INFO" timestamp="20170518 22:46:49.563">        LINK_DIR : C:\Program Files (x86)\SAP BusinessObjects\Data Services</msg>
+<msg level="INFO" timestamp="20170518 22:46:49.563">====================================================</msg>
+<msg level="INFO" timestamp="20170518 22:46:49.563">RUN: AL_RWJobLauncher.exe "inet:lvpal585:7777" "C:\ProgramData\SAP BusinessObjects\Data Services/log/js_hadoop/" -w -t5 -C "Y:/landy/Auto_Working/SUSE/work_other/hadoop/hadoop_hive_load/work/tlauncher.txt"</msg>
+<msg level="INFO" timestamp="20170518 22:49:57.565">Command exit code: 0</msg>
+<msg level="INFO" timestamp="20170518 22:49:57.565">Command output: </msg>
+<status endtime="20170518 22:49:57.580" starttime="20170518 22:46:47.720" status="PASS"></status>
+</kw>
+<doc>hive_partition_ss2_dynamic Hive load</doc>
+<tags>
+<tag>hadoop_hive_load</tag>
+</tags>
+<status critical="yes" endtime="20170518 22:49:57.580" starttime="20170518 22:46:47.688" status="PASS"></status>
+</test>
+<test timeout="1 hour 40 minutes" name="tcase033" id="s1-t5">
+<kw type="kw" name="OSHelper.Export Env">
+<doc></doc>
+<arguments>
+<arg>JOBNAME</arg>
+<arg>hive_partition_ss2_static_1</arg>
+</arguments>
+<status endtime="20170518 22:49:57.612" starttime="20170518 22:49:57.596" status="PASS"></status>
+</kw>
+<kw type="kw" name="OSHelper.Eim Launcher">
+<doc></doc>
+<arguments>
+<arg>\${JOBNAME}</arg>
+<arg>-T4096 -z\${UDS_WORK}/\${JOBNAME}.txt</arg>
+</arguments>
+<msg level="INFO" timestamp="20170518 22:49:57.627"> </msg>
+<msg level="INFO" timestamp="20170518 22:49:57.643">====================================================</msg>
+<msg level="INFO" timestamp="20170518 22:49:57.643">==  Job Executed on Server   ==</msg>
+<msg level="INFO" timestamp="20170518 22:49:57.643"> Job Server Host : lvpal585</msg>
+<msg level="INFO" timestamp="20170518 22:49:57.643">      Job Server : js_hadoop</msg>
+<msg level="INFO" timestamp="20170518 22:49:57.643">            Port : 7777</msg>
+<msg level="INFO" timestamp="20170518 22:49:57.643">    Engine Param : -NHANA -SDS42_HANA_HADOOP -UANDYHANA4 -PPassword1</msg>
+<msg level="INFO" timestamp="20170518 22:49:57.643">----------------------------------------------------</msg>
+<msg level="INFO" timestamp="20170518 22:49:57.643">     Running Job : hive_partition_ss2_static_1</msg>
+<msg level="INFO" timestamp="20170518 22:49:57.659">         Options : -T4096 -z${UDS_WORK}/${JOBNAME}.txt </msg>
+<msg level="INFO" timestamp="20170518 22:49:57.659">         RUNTEST : Y:/landy/EZTEST_Other/diqa/generic/hadoop/hadoop_hive_load</msg>
+<msg level="INFO" timestamp="20170518 22:49:57.659">        LINK_DIR : C:\Program Files (x86)\SAP BusinessObjects\Data Services</msg>
+<msg level="INFO" timestamp="20170518 22:49:57.659">====================================================</msg>
+<msg level="INFO" timestamp="20170518 22:49:57.659">RUN: AL_RWJobLauncher.exe "inet:lvpal585:7777" "C:\ProgramData\SAP BusinessObjects\Data Services/log/js_hadoop/" -w -t5 -C "Y:/landy/Auto_Working/SUSE/work_other/hadoop/hadoop_hive_load/work/tlauncher.txt"</msg>
+<msg level="INFO" timestamp="20170518 22:52:02.597">Command exit code: 0</msg>
+<msg level="INFO" timestamp="20170518 22:52:02.612">Command output: </msg>
+<status endtime="20170518 22:52:02.612" starttime="20170518 22:49:57.612" status="PASS"></status>
+</kw>
+<doc>hive_partition_ss2_static_1 Hive load</doc>
+<tags>
+<tag>hadoop_hive_load</tag>
+</tags>
+<status critical="yes" endtime="20170518 22:52:02.644" starttime="20170518 22:49:57.580" status="PASS"></status>
+</test>
+<test timeout="1 hour 40 minutes" name="tcase034" id="s1-t6">
+<kw type="kw" name="OSHelper.Export Env">
+<doc></doc>
+<arguments>
+<arg>JOBNAME</arg>
+<arg>hive_partition_ss2_static_2</arg>
+</arguments>
+<status endtime="20170518 22:52:02.675" starttime="20170518 22:52:02.659" status="PASS"></status>
+</kw>
+<kw type="kw" name="OSHelper.Eim Launcher">
+<doc></doc>
+<arguments>
+<arg>\${JOBNAME}</arg>
+<arg>-T4096 -z\${UDS_WORK}/\${JOBNAME}.txt</arg>
+</arguments>
+<msg level="INFO" timestamp="20170518 22:52:02.722"> </msg>
+<msg level="INFO" timestamp="20170518 22:52:02.722">====================================================</msg>
+<msg level="INFO" timestamp="20170518 22:52:02.722">==  Job Executed on Server   ==</msg>
+<msg level="INFO" timestamp="20170518 22:52:02.722"> Job Server Host : lvpal585</msg>
+<msg level="INFO" timestamp="20170518 22:52:02.722">      Job Server : js_hadoop</msg>
+<msg level="INFO" timestamp="20170518 22:52:02.737">            Port : 7777</msg>
+<msg level="INFO" timestamp="20170518 22:52:02.737">    Engine Param : -NHANA -SDS42_HANA_HADOOP -UANDYHANA4 -PPassword1</msg>
+<msg level="INFO" timestamp="20170518 22:52:02.737">----------------------------------------------------</msg>
+<msg level="INFO" timestamp="20170518 22:52:02.737">     Running Job : hive_partition_ss2_static_2</msg>
+<msg level="INFO" timestamp="20170518 22:52:02.737">         Options : -T4096 -z${UDS_WORK}/${JOBNAME}.txt </msg>
+<msg level="INFO" timestamp="20170518 22:52:02.737">         RUNTEST : Y:/landy/EZTEST_Other/diqa/generic/hadoop/hadoop_hive_load</msg>
+<msg level="INFO" timestamp="20170518 22:52:02.737">        LINK_DIR : C:\Program Files (x86)\SAP BusinessObjects\Data Services</msg>
+<msg level="INFO" timestamp="20170518 22:52:02.753">====================================================</msg>
+<msg level="INFO" timestamp="20170518 22:52:02.753">RUN: AL_RWJobLauncher.exe "inet:lvpal585:7777" "C:\ProgramData\SAP BusinessObjects\Data Services/log/js_hadoop/" -w -t5 -C "Y:/landy/Auto_Working/SUSE/work_other/hadoop/hadoop_hive_load/work/tlauncher.txt"</msg>
+<msg level="INFO" timestamp="20170518 22:54:12.504">Command exit code: 0</msg>
+<msg level="INFO" timestamp="20170518 22:54:12.504">Command output: </msg>
+<status endtime="20170518 22:54:12.504" starttime="20170518 22:52:02.675" status="PASS"></status>
+</kw>
+<doc>hive_partition_ss2_static_2 Hive load</doc>
+<tags>
+<tag>hadoop_hive_load</tag>
+</tags>
+<status critical="yes" endtime="20170518 22:54:12.520" starttime="20170518 22:52:02.644" status="PASS"></status>
+</test>
+<test timeout="1 hour 40 minutes" name="tcase035" id="s1-t7">
+<kw type="kw" name="OSHelper.Export Env">
+<doc></doc>
+<arguments>
+<arg>JOBNAME</arg>
+<arg>hive_partition_ss2_static_3</arg>
+</arguments>
+<status endtime="20170518 22:54:12.535" starttime="20170518 22:54:12.520" status="PASS"></status>
+</kw>
+<kw type="kw" name="OSHelper.Eim Launcher">
+<doc></doc>
+<arguments>
+<arg>\${JOBNAME}</arg>
+<arg>-T4096 -z\${UDS_WORK}/\${JOBNAME}.txt</arg>
+</arguments>
+<msg level="INFO" timestamp="20170518 22:54:12.551"> </msg>
+<msg level="INFO" timestamp="20170518 22:54:12.566">====================================================</msg>
+<msg level="INFO" timestamp="20170518 22:54:12.566">==  Job Executed on Server   ==</msg>
+<msg level="INFO" timestamp="20170518 22:54:12.566"> Job Server Host : lvpal585</msg>
+<msg level="INFO" timestamp="20170518 22:54:12.566">      Job Server : js_hadoop</msg>
+<msg level="INFO" timestamp="20170518 22:54:12.566">            Port : 7777</msg>
+<msg level="INFO" timestamp="20170518 22:54:12.566">    Engine Param : -NHANA -SDS42_HANA_HADOOP -UANDYHANA4 -PPassword1</msg>
+<msg level="INFO" timestamp="20170518 22:54:12.566">----------------------------------------------------</msg>
+<msg level="INFO" timestamp="20170518 22:54:12.566">     Running Job : hive_partition_ss2_static_3</msg>
+<msg level="INFO" timestamp="20170518 22:54:12.566">         Options : -T4096 -z${UDS_WORK}/${JOBNAME}.txt </msg>
+<msg level="INFO" timestamp="20170518 22:54:12.566">         RUNTEST : Y:/landy/EZTEST_Other/diqa/generic/hadoop/hadoop_hive_load</msg>
+<msg level="INFO" timestamp="20170518 22:54:12.566">        LINK_DIR : C:\Program Files (x86)\SAP BusinessObjects\Data Services</msg>
+<msg level="INFO" timestamp="20170518 22:54:12.566">====================================================</msg>
+<msg level="INFO" timestamp="20170518 22:54:12.582">RUN: AL_RWJobLauncher.exe "inet:lvpal585:7777" "C:\ProgramData\SAP BusinessObjects\Data Services/log/js_hadoop/" -w -t5 -C "Y:/landy/Auto_Working/SUSE/work_other/hadoop/hadoop_hive_load/work/tlauncher.txt"</msg>
+<msg level="INFO" timestamp="20170518 22:58:02.458">Command exit code: 0</msg>
+<msg level="INFO" timestamp="20170518 22:58:02.458">Command output: </msg>
+<status endtime="20170518 22:58:02.458" starttime="20170518 22:54:12.535" status="PASS"></status>
+</kw>
+<doc>hive_partition_ss2_static_3 Hive load</doc>
+<tags>
+<tag>hadoop_hive_load</tag>
+</tags>
+<status critical="yes" endtime="20170518 22:58:02.474" starttime="20170518 22:54:12.520" status="PASS"></status>
+</test>
+<test timeout="1 hour 40 minutes" name="tcase036" id="s1-t8">
+<kw type="kw" name="OSHelper.Export Env">
+<doc></doc>
+<arguments>
+<arg>JOBNAME</arg>
+<arg>hive_partition_ss2_static_4</arg>
+</arguments>
+<status endtime="20170518 22:58:02.505" starttime="20170518 22:58:02.489" status="PASS"></status>
+</kw>
+<kw type="kw" name="OSHelper.Eim Launcher">
+<doc></doc>
+<arguments>
+<arg>\${JOBNAME}</arg>
+<arg>-T4096 -z\${UDS_WORK}/\${JOBNAME}.txt</arg>
+</arguments>
+<msg level="INFO" timestamp="20170518 22:58:02.583"> </msg>
+<msg level="INFO" timestamp="20170518 22:58:02.583">====================================================</msg>
+<msg level="INFO" timestamp="20170518 22:58:02.583">==  Job Executed on Server   ==</msg>
+<msg level="INFO" timestamp="20170518 22:58:02.583"> Job Server Host : lvpal585</msg>
+<msg level="INFO" timestamp="20170518 22:58:02.583">      Job Server : js_hadoop</msg>
+<msg level="INFO" timestamp="20170518 22:58:02.583">            Port : 7777</msg>
+<msg level="INFO" timestamp="20170518 22:58:02.583">    Engine Param : -NHANA -SDS42_HANA_HADOOP -UANDYHANA4 -PPassword1</msg>
+<msg level="INFO" timestamp="20170518 22:58:02.599">----------------------------------------------------</msg>
+<msg level="INFO" timestamp="20170518 22:58:02.599">     Running Job : hive_partition_ss2_static_4</msg>
+<msg level="INFO" timestamp="20170518 22:58:02.599">         Options : -T4096 -z${UDS_WORK}/${JOBNAME}.txt </msg>
+<msg level="INFO" timestamp="20170518 22:58:02.599">         RUNTEST : Y:/landy/EZTEST_Other/diqa/generic/hadoop/hadoop_hive_load</msg>
+<msg level="INFO" timestamp="20170518 22:58:02.599">        LINK_DIR : C:\Program Files (x86)\SAP BusinessObjects\Data Services</msg>
+<msg level="INFO" timestamp="20170518 22:58:02.599">====================================================</msg>
+<msg level="INFO" timestamp="20170518 22:58:02.599">RUN: AL_RWJobLauncher.exe "inet:lvpal585:7777" "C:\ProgramData\SAP BusinessObjects\Data Services/log/js_hadoop/" -w -t5 -C "Y:/landy/Auto_Working/SUSE/work_other/hadoop/hadoop_hive_load/work/tlauncher.txt"</msg>
+<msg level="INFO" timestamp="20170518 23:01:47.445">Command exit code: 0</msg>
+<msg level="INFO" timestamp="20170518 23:01:47.460">Command output: </msg>
+<status endtime="20170518 23:01:47.476" starttime="20170518 22:58:02.505" status="PASS"></status>
+</kw>
+<doc>hive_partition_ss2_static_4 Hive load</doc>
+<tags>
+<tag>hadoop_hive_load</tag>
+</tags>
+<status critical="yes" endtime="20170518 23:01:47.492" starttime="20170518 22:58:02.474" status="PASS"></status>
+</test>
+<doc></doc>
+<metadata>
+</metadata>
+<status endtime="20170518 23:01:47.554" starttime="20170518 22:39:34.871" status="PASS"></status>
+</suite>
+<statistics>
+<total>
+<stat pass="8" fail="0">Critical Tests</stat>
+<stat pass="8" fail="0">All Tests</stat>
+</total>
+<tag>
+<stat pass="8" fail="0" doc="" links="" combined="" info="">hadoop_hive_load</stat>
+</tag>
+<suite>
+<stat pass="8" fail="0" name="Testcase" id="s1">Testcase</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>
