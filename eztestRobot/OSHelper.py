@@ -15,6 +15,9 @@ from robot.api import logger
 __all__ = ['shell_command', 'export_env', 'change_working_directory', 'remove_wildcard_files', 'import_atl',
            'diff_unordered_files', 'replace_env', 'eim_launcher']
 
+DEBUG = os.environ.get('DEBUG')
+printOutput = True if DEBUG == '1' else False
+
 ''' Use replace_env_str to workaround shell expansion '''
 
 
@@ -49,7 +52,7 @@ def use_shell(cmd):
         return False
 
 
-def shell_command(cmd, useShell=False, replaceEnv=True, printOutput=True):
+def shell_command(cmd, useShell=False, replaceEnv=True, printOutput=printOutput):
     if not useShell:
         useShell = use_shell(cmd)
     if replaceEnv:
@@ -90,7 +93,7 @@ def get_shell_command(val):
 
 def export_env(key, val):
     if use_shell_command(val):
-        val = shell_command(get_shell_command(val), True)
+        val = shell_command(get_shell_command(val))
     else:
         val = replace_env_str(val)
     os.environ[key] = val
@@ -131,10 +134,10 @@ def subvalue2(input, output):
             for ln in finput:
                 for m in re_env.finditer(ln):
                     value = os.environ.get(m.group(2))
-                    if value[0] == '"' and value[len(value) - 1] == '"':
-                        value = value[1:len(value) - 1] if len(value) > 2 else ''
                     if value == None:
                         value = ''
+                    elif len(value) > 1 and value[0] == '"' and value[len(value) - 1] == '"':
+                        value = value[1:len(value) - 1] if len(value) > 2 else ''
                     ln = ln.replace(m.group(1), value)
                 foutput.write(ln)
 
@@ -161,9 +164,11 @@ def eim_launcher(jobname, *args):
     export_env('JOBNAME', runjob)
 
     jobexeoption = ''
-    for i, arg in enumerate(args):
-        jobexeoption += arg + ' '
-        export_env('JOB_EXE_OPT' + str(i + 1), arg)
+
+    if args is not None:
+        for i, arg in enumerate(args):
+            jobexeoption += arg + ' '
+            export_env('JOB_EXE_OPT' + str(i + 1), arg)
 
     if runengine.upper() == 'Y':
         # al_engine ${al_engine_param} -s$JOBNAME -Ksp$SYSPROF $JOB_EXE_OPT $JOB_EXE_OPT2 -l${UDS_WORK}/$JOBNAME.log -t${UDS_WORK}/$JOBNAME.err
@@ -193,7 +198,7 @@ def eim_launcher(jobname, *args):
     logger.info('        LINK_DIR : %s' % get_env('LINK_DIR'), also_console=True)
     logger.info('====================================================', also_console=True)
 
-    return shell_command(' '.join(cmd), True)
+    return shell_command(' '.join(cmd))
 
 
 def import_atl(atlFileName, passPhrase='dsplatform'):
@@ -400,7 +405,9 @@ def replace_env(fo, fn):
                         key = match.group(1)
                         if key in dic:
                             value = dic[key]
-                            if value[0] == '"' and value[len(value) - 1] == '"':
+                            if value == None:
+                                value = ''
+                            elif len(value) > 1 and value[0] == '"' and value[len(value) - 1] == '"':
                                 value = value[1:len(value) - 1] if len(value) > 2 else ''
                             line = line.replace(match.group(0), value)
                 fout.write(line)

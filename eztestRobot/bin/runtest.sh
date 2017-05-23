@@ -72,6 +72,7 @@ function print_help
       echo " [-db database type] "
       echo " [-config configuration file] "
       echo " [-lang metadata language] "
+      echo " [-timeout testcase time out value] "
       echo "                               "
       echo "paramfile     -- pathname for the parameters file"
       echo "result folder -- result folder name in $TESTNODE/result."  
@@ -295,12 +296,9 @@ do
     [ -z "$DS_INPUT" ] && export DS_INPUT=$DS_WORK_ROOT/$testsuite/$cases/input
     [ -z "$UDS_INPUT" ] && export UDS_INPUT=$UDS_WORK_ROOT/$testsuite/$cases/input
 
-    mkdir $DS_WORK_ROOT/$testsuite
-	mkdir $DS_WORK_ROOT/$testsuite/$cases
-
-    mkdir $DS_WORK
-    mkdir $DS_GOLD
-    mkdir $DS_INPUT
+    mkdir -p $DS_WORK
+    mkdir -p $DS_GOLD
+    mkdir -p $DS_INPUT
 
     chmod -R 777 $DS_WORK
     chmod -R 777 $DS_GOLD
@@ -325,7 +323,7 @@ do
     fi
 
     java -jar ${ROBOTHOME}/bin/${jythonjar} bin/Converter.py $runtest
-	java -jar ${ROBOTHOME}/bin/${robotframeworkjar} ${ROBOT_OPTION} -d ${test_result_dir} -o ${cases}_output.xml -l ${cases}_log.html -r ${cases}_report.html $runtest/testcase.robot
+	java -jar ${ROBOTHOME}/bin/${robotframeworkjar} ${ROBOT_OPTION} -v ROBOT_TEST_TIMEOUT:${ROBOT_TEST_TIMEOUT} -d ${test_result_dir} -o ${cases}_output.xml -l ${cases}_log.html -r ${cases}_report.html $runtest/testcase.robot
 	java -jar ${ROBOTHOME}/bin/${jythonjar} bin/summary.py ${test_result_dir}/${cases}_output.xml
 done
 

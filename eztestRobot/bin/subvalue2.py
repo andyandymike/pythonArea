@@ -28,6 +28,8 @@ def main():
                     value = os.environ.get(m.group(2))
                     if value == None:
                         value = ''
+                    elif len(value) > 1 and value[0] == '"' and value[len(value) - 1] == '"':
+                        value = value[1:len(value) - 1] if len(value) > 2 else ''
                     ln = ln.replace(m.group(1), value.replace(r'\r', "").replace(r'\n', ""))
                 foutput.write(ln)
 
