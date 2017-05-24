@@ -16,7 +16,7 @@ __all__ = ['shell_command', 'export_env', 'change_working_directory', 'remove_wi
            'diff_unordered_files', 'replace_env', 'eim_launcher']
 
 DEBUG = os.environ.get('DEBUG')
-printOutput = True if DEBUG == '1' else False
+printOutput = True if DEBUG == 'on' else False
 
 ''' Use replace_env_str to workaround shell expansion '''
 
@@ -284,10 +284,11 @@ def diff_unordered_files(gold, work, limit=10):
                 if line != '':
                     wlinesPre2.append(line)
 
-            glinesPre3 = map(lambda line: re.escape(line), glinesPre2)
+            glinesPre3 = map(lambda line: line.replace("\\\\", "\\"), glinesPre2)
+            glinesPre4 = map(lambda line: re.escape(line), glinesPre3)
 
             regex = re.compile(r'\\\*')
-            glines = map(lambda line: regex.sub(".*", line), glinesPre3)
+            glines = map(lambda line: regex.sub(".*", line), glinesPre4)
             wlines = wlinesPre2
 
             lenglines = len(glines)

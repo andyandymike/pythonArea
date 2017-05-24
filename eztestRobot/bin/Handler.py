@@ -1,3 +1,5 @@
+import os
+
 class TestUnit(object):
     def __init__(self, name):
         self._name = name
@@ -24,7 +26,8 @@ class TestUnit(object):
     def __str__(self):
         robotContent = ["| *** Settings *** |"]
         robotContent.append("| Library | ${ROBOTHOME}/OSHelper.py |")
-        robotContent.append("| Suite Setup | Combined Setup |")
+        if os.environ.get('NOSETUP') is None:
+            robotContent.append("| Suite Setup | Combined Setup |")
         robotContent.append("| Force Tags | %s |" % self._name)
         robotContent.append("| Test Timeout | ${ROBOT_TEST_TIMEOUT} |")
         robotContent.append("")

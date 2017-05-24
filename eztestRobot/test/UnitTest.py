@@ -29,8 +29,8 @@ def testProcessOut():
 
 
 def testDiff():
-    gf = os.path.join(testRoot, 'g.txt')
-    wf = os.path.join(testRoot, 'w.txt')
+    gf = os.path.join(testRoot, 'gold_nzblk021.out')
+    wf = os.path.join(testRoot, 'work_nzblk021.out')
     print(diff_unordered_files(gf, wf))
 
 
@@ -106,4 +106,4 @@ def testUseShellCommand():
 
 
 if __name__ == '__main__':
-    testSubvalue2()
+    print(os.)

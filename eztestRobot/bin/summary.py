@@ -3,6 +3,7 @@ from __future__ import with_statement
 
 import os
 import sys
+import platform
 
 import xml.etree.ElementTree as ET
 from datetime import datetime
@@ -15,6 +16,9 @@ def sum(root, fn):
         passed = 0
         failed = 0
         st = []
+        st.append('ENVIRONMENT')
+        st.append('OS: %s %s' % (platform.system(), platform.release()))
+        st.append('')
         st.append('Date : %s' % datetime.strftime(datetime.now(), '%a %b %d %H:%M:%S %Y'))
         st.append('')
         st.append('Testcase                                               Status      Elapsed Time')

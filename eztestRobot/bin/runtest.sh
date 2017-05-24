@@ -1,51 +1,8 @@
 flag=0
-manual_flag=0
 findsuite=0
 findcase=0
 testsuit=""
 TESTCASE=""
-
-function read_alltest
-{
-   if [ $# -eq 0 ] 
-   then
-	 return 0  
-   fi
-
-   temp1=${1%=*}
-   if [ ${#temp1} -eq 0 ]
-   then
-         return 0
-   fi
-
-   if [ $1 = "Test:" ] 
-   then
-	shift 
-	if [ $1 = $testsuite ]
-        then
-	    findsuite=1
-	else
-	    findcase=0
-	    findsuite=0
-        fi
-   fi
-
-   if  [ $findsuite -eq 1 ] 
-   then
-	if [ $1 = "Testcase:"  ]
-	then
-	    if [ $findcase -eq 0 ]
-            then
-	        findcase=1
-	        shift
-	        Testlist="$Testlist $*"
-            fi
-	elif [ $findcase -eq 1 ]
-	then
-	    Testlist="$Testlist $*"
-	fi
-   fi
-}
 
 function print_readme
 {
@@ -54,40 +11,49 @@ function print_readme
 	print "$TESTNODE/$1/readme doesn't exit"
 	return 0
     else
-        print "Opening readme file for $1: $TESTNODE/$1/readme..."
+      print "Opening readme file for $1: $TESTNODE/$1/readme..."
 	print ""
 	print ""
-        cat $TESTNODE/$1/readme
-
+      cat $TESTNODE/$1/readme
     fi
 	
 }
 
 function print_help
 {
-      echo "runtest.sh testgroup testsuite "
+      echo "runtest.sh testsuite testunits "
       echo " [-p paramfile] "
       echo " [-rst result foldler] "
       echo " [-t testcase] "
-      echo " [-db database type] "
       echo " [-config configuration file] "
       echo " [-lang metadata language] "
-      echo " [-timeout testcase time out value] "
+      echo " [-db database type] "
+      echo " [-timeout testunit level time out value] "
+      echo " [-debug] "
+      echo " [-robot robot options] "
+      echo " [-noconvert]"
+      echo " [-nosetup] "
+      echo " [-n TESTNODE] "
       echo "                               "
       echo "paramfile     -- pathname for the parameters file"
       echo "result folder -- result folder name in $TESTNODE/result."  
       echo "                 Default is $TESTNODE/result" 
-      echo "testcase      -- Testcase name in the testsuite to be executed"
+      echo "testcase      -- Testcase name in the testunit to be executed"
+      echo "                 separate cases by \",\" eg. testcase1,testcase2"
+      echo "                 support wild card eg. testcase01*"
+      echo "testunits     -- testunits name in the testsuite to be executed"
+      echo "                 separate cases by \",\" eg. unit1,unit2"
       echo "database type -- specify the database type such as SQL 2000"
+      echo "nosetup       -- skip setup in the testunit, cannot work together with -noconvert"
+      echo "noconvert     -- skip convert testcase/setup to testcase.robot"
+      echo "timeout       -- set timeout value for testcase, this is testunit level"
 }
-
 
 ######################################
 ##  MAIN program
 ######################################
 
 export G_UPDATE='on'
-export XML_JOB='off'
 export TESTCASE=
 export TESTSUITE_SETUP='!call setup'
 export CONFIG=$QAENV/ws.env
@@ -97,76 +63,80 @@ flag=0
 while [ $# -gt 0 ]
 do
   case $1 in
- -nosetup)
-    shift
-    export TESTSUITE_SETUP=
- ;;
- -t)
-    shift
-     TESTCASE=$1
-    export TESTCASE
+    -nosetup)
       shift
-     ;;
- -xmljob)
+      export TESTSUITE_SETUP=
+      export NOSETUP='on'
+      ;;
+    -debug)
       shift
-      XML_JOB='on'
-     ;;
- -noupdate)
+      export DEBUG='on'
+      ;;
+    -noconvert)
+      shift
+      export NOCONVERT='on'
+      ;;
+    -timeout)
+      shift
+      export ROBOT_TEST_TIMEOUT=$1
+      ;;
+    -robot)
+      shift
+      export ROBOT_OPTION_EX=$1
+      ;;
+    -t)
+      shift
+      TESTCASE=$1
+      export TESTCASE
+      shift
+      ;;
+    -noupdate)
       shift
       G_UPDATE='off'
-     ;;
-   -os)
-      shift
-      G_OSPLATFORM=$1
-      export G_OSPLATFORM
-      shift
-     ;;
-  -db)
-      shift
-     G_DBVERSION=$1
-     export G_DBVERSION
-      shift
-     ;;
+      ;;
     -p)
       shift
       PARAMFILE=$1
       export PARAMFILE
       shift
-     ;;
+      ;;
     -h)
       shift
       print_help
       exit 0
       ;;
-    -m)
+    -os)
       shift
-      manual_flag=1
+      G_OSPLATFORM=$1
+      export G_OSPLATFORM
+      shift
+      ;;
+    -db)
+      shift
+      G_DBVERSION=$1
+      export G_DBVERSION
+      shift
       ;;
     -n)
       shift
       export TESTNODE=$1
       shift
       ;;
-   -lang)
-	shift
-	export LANGFILE=$1
-        shift
-     ;;
+    -lang)
+	  shift
+	  export LANGFILE=$1
+      shift
+      ;;
     -rst)
-	shift
-	export test_result_dir=$1
-        shift
-	     ;;
+	  shift
+	  export test_result_dir=$1
+      shift
+	  ;;
     -config)
-	shift
-	export CONFIG=$1
-        shift
-        ;;
-     -release)
-       shift
-       export RELEASE=$1
-       shift
-;;
+	  shift
+	  export CONFIG=$1
+      shift
+      ;;
     -readme)
       shift
       if [ $# -gt 0 ]
@@ -212,7 +182,6 @@ then
   exit 1
 fi
 
-
 ####################################################
 ## Verying result directory exists
 ####################################################
@@ -234,10 +203,9 @@ echo "The result directory is ${test_result_dir}"
 mkdir -p $test_result_dir/$testsuite
 if [ $? -ne 0 ]
 then
-    echo "Error: cannot create directory $test_result_dir/$testsuite"
-    exit 3
+  echo "Error: cannot create directory $test_result_dir/$testsuite"
+  exit 3
 fi
-
 
 ####################################################
 ## Run the test
@@ -251,9 +219,8 @@ fi
 export G_BUILDVERSION="`al_engine -v | cut -d ' ' -f 4`" 
 if [ $G_BUILDVERSION = 'Engine' ]
 then 
-   export G_BUILDVERSION="`al_engine -v | cut -d ' ' -f 6`" 
+  export G_BUILDVERSION="`al_engine -v | cut -d ' ' -f 6`"
 fi
-
  
  . $PARAMFILE
  
@@ -261,40 +228,32 @@ if [ test = test$LANGFILE ]
 then
   echo 'LANGFILE is not specified'
 else 
-            if [ -e $LANGFILE ]
-            then
-            . $LANGFILE
-    	       export all
-            fi
+  if [ -e $LANGFILE ]
+  then
+    . $LANGFILE
+    export all
+  fi
 fi
 
+IFS=',' read -ra TEMP <<< "$testunit"
+for i in "${TEMP[@]}"; do
+  Testlist="$Testlist $i"
+done
 
-if [ "$testunit" = "all" ]
-then
-    exec 5<$TESTNODE/testlist
-    while read -u5 LINE
-    do
-        read_alltest $LINE
-    done
-
-else
-    Testlist=$testunit
-fi
-
-for cases in $Testlist
+for testunits in $Testlist
 do
-    export runtest=$TESTNODE/$testsuite/$cases
-	export unix_runtest=$UTESTNODE/$testsuite/$cases
-    export utestunit=$UTESTNODE/$testsuite/$cases
-    export testunit=$TESTNODE/$testsuite/$cases
+    export runtest=$TESTNODE/$testsuite/$testunits
+	export unix_runtest=$UTESTNODE/$testsuite/$testunits
+    export utestunit=$UTESTNODE/$testsuite/$testunits
+    export testunit=$TESTNODE/$testsuite/$testunits
 	
 	[ -z "$DS_WORK_ROOT" ] && export DS_WORK_ROOT=$TESTNODE
 	[ -z "$UDS_WORK_ROOT" ] && export UDS_WORK_ROOT=$UTESTNODE
-	[ -z "$DS_WORK" ] && export DS_WORK=$DS_WORK_ROOT/$testsuite/$cases/work
-    [ -z "$UDS_WORK" ] && export UDS_WORK=$UDS_WORK_ROOT/$testsuite/$cases/work
-    [ -z "$DS_GOLD" ] && export DS_GOLD=$DS_WORK_ROOT/$testsuite/$cases/gold
-    [ -z "$DS_INPUT" ] && export DS_INPUT=$DS_WORK_ROOT/$testsuite/$cases/input
-    [ -z "$UDS_INPUT" ] && export UDS_INPUT=$UDS_WORK_ROOT/$testsuite/$cases/input
+	[ -z "$DS_WORK" ] && export DS_WORK=$DS_WORK_ROOT/$testsuite/$testunits/work
+    [ -z "$UDS_WORK" ] && export UDS_WORK=$UDS_WORK_ROOT/$testsuite/$testunits/work
+    [ -z "$DS_GOLD" ] && export DS_GOLD=$DS_WORK_ROOT/$testsuite/$testunits/gold
+    [ -z "$DS_INPUT" ] && export DS_INPUT=$DS_WORK_ROOT/$testsuite/$testunits/input
+    [ -z "$UDS_INPUT" ] && export UDS_INPUT=$UDS_WORK_ROOT/$testsuite/$testunits/input
 
     mkdir -p $DS_WORK
     mkdir -p $DS_GOLD
@@ -310,10 +269,10 @@ do
     cp ${runtest}/goldlog/* ${DS_GOLD}
     cp ${runtest}/input/* ${DS_INPUT}
 
-    rm ${test_result_dir}/${cases}_output.xml
-    rm ${test_result_dir}/${cases}_log.html
-    rm ${test_result_dir}/${cases}_report.html
-    rm ${test_result_dir}/${cases}.sum
+    rm ${test_result_dir}/${testunits}_output.xml
+    rm ${test_result_dir}/${testunits}_log.html
+    rm ${test_result_dir}/${testunits}_report.html
+    rm ${test_result_dir}/${testunits}.sum
 
 
     echo "Testsuite=$runtest"
@@ -322,14 +281,36 @@ do
        echo "Error: Testunit $runtest doesn't exist."
     fi
 
-    java -jar ${ROBOTHOME}/bin/${jythonjar} bin/Converter.py $runtest
-	java -jar ${ROBOTHOME}/bin/${robotframeworkjar} ${ROBOT_OPTION} -v ROBOT_TEST_TIMEOUT:${ROBOT_TEST_TIMEOUT} -d ${test_result_dir} -o ${cases}_output.xml -l ${cases}_log.html -r ${cases}_report.html $runtest/testcase.robot
-	java -jar ${ROBOTHOME}/bin/${jythonjar} bin/summary.py ${test_result_dir}/${cases}_output.xml
+    [ -z "$ROBOT_TEST_TIMEOUT" ] && export ROBOT_TEST_TIMEOUT='6000s'
+    [ -n "$ROBOT_OPTION_EX" ] && export ROBOT_OPTION="$ROBOT_OPTION $ROBOT_OPTION_EX"
+
+    if [ -n $TESTCASE ]
+    then
+      IFS=',' read -ra TEMP <<< "$TESTCASE"
+      for i in "${TEMP[@]}"; do
+        TESTCASES="$TESTCASES -t $i"
+      done
+    fi
+
+    [ -z "$NOCONVERT" ] && java -jar ${ROBOTHOME}/bin/${jythonjar} bin/Converter.py $runtest
+	java -jar ${ROBOTHOME}/bin/${robotframeworkjar} ${ROBOT_OPTION} ${TESTCASES} -v ROBOT_TEST_TIMEOUT:${ROBOT_TEST_TIMEOUT} -d ${test_result_dir} -o ${testunits}_output.xml -l ${testunits}_log.html -r ${testunits}_report.html $runtest/testcase.robot
+	java -jar ${ROBOTHOME}/bin/${jythonjar} bin/summary.py ${test_result_dir}/${testunits}_output.xml
+
+	echo ---------------------------------------------------------------------------------
+    echo ${testunits} summary:
+    cat ${test_result_dir}/${testunits}.sum
+    echo
+
+    if [ $G_UPDATE = 'on' ] ;
+    then
+      ezupdate.sh $CONFIG ${test_result_dir}/${testunits}.sum $testunits
+    fi
 done
 
-echo ---------------------------------------------------------------------------------
-echo ${cases} summary:
-cat ${test_result_dir}/${cases}.sum
-echo
+unset ROBOT_TEST_TIMEOUT
+unset ROBOT_OPTION_EX
+unset DEBUG
+unset NOSETUP
+unset TESTCASE
 
 
