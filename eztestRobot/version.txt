@@ -1,0 +1,13 @@
+1.02
+==========
+1.02
+fix reading environment variable contain surrounding quotes
+fix export environment variable who contains slash will missing slash
+add common_test_lib/CopyErrorLog.atl, CopyTraceLog.atl to support copy log operation
+add FORCE_COPY_ROBOT to support force copy latest robot to local
+==========
+1.01
+adiff support 600m file comparsion
+==========
+1.0
+first release

@@ -1,12 +1,15 @@
+# -*- coding: utf-8 -*-
+
 from OSHelper import *
 from bin import summary
 from bin import utils
 import os
 import subprocess
 import re
+from timeit import Timer
 
 root = os.path.abspath('.')
-testRoot = os.path.join(root, 'test')
+testRoot = os.path.join(root, '')
 
 
 def testImportATL():
@@ -14,10 +17,11 @@ def testImportATL():
     export_env('test', '%netezza 7.5%')
     import_atl(atl)
 
+
 def testSubvalue2():
     atl = os.path.join(testRoot, 'test.atl')
     out = os.path.join(testRoot, 'ttest.atl')
-    export_env('test', '"netezza 7.5"')
+    export_env('test', '你好')
     utils.subvalue2(atl, out)
 
 
@@ -29,9 +33,21 @@ def testProcessOut():
 
 
 def testDiff():
-    gf = os.path.join(testRoot, 'gold_nzblk021.out')
-    wf = os.path.join(testRoot, 'work_nzblk021.out')
+    gf = os.path.join(testRoot, 'bg.out')
+    wf = os.path.join(testRoot, 'bw.out')
     print(diff_unordered_files(gf, wf))
+
+
+def testDiff_big():
+    gf = os.path.join(testRoot, '1coreb')
+    wf = os.path.join(testRoot, '2coreb')
+    print(diff_unordered_files(gf, wf))
+
+
+def testDiff_pre():
+    gf = os.path.join(testRoot, 'gb.out')
+    wf = os.path.join(testRoot, 'wb.out')
+    print(utils.diff_unordered_files_pre(gf, wf))
 
 
 def testSplitParams():
@@ -77,7 +93,8 @@ def testGetCheckSum():
 
 
 def testSummary():
-    summary.sum(testRoot, 'hadoop_hive_load_output.xml')
+    export_env('DS_BUILD', 'SAP Data Services Engine Version 14.2.9.1541')
+    summary.sum(testRoot, 'gbq_reader_output.xml')
 
 
 def testGrep():
@@ -105,5 +122,30 @@ def testUseShellCommand():
     print(utils.use_shell_command(cmd))
 
 
+def testSqlite():
+    con = sqlite3.connect(":memory:")
+    con.execute('''CREATE TABLE TEST
+                   (ID INT PRIMARY KEY     NOT NULL,
+                   NAME            TEXT    NOT NULL,
+                   AGE             INT     NOT NULL)''')
+    con.execute('''INSERT INTO TEST (ID,NAME,AGE)
+                   VALUES (1, 'Paul', 32)''')
+    for line in con.execute('''SELECT * FROM TEST'''):
+        print(line)
+
+
+def testBifFileMaker():
+    input = os.path.join(testRoot, '1core')
+    output = os.path.join(testRoot, '1coreb')
+    utils.bigFileMaker(input, output, 4)
+    input = os.path.join(testRoot, '2core')
+    output = os.path.join(testRoot, '2coreb')
+    utils.bigFileMaker(input, output, 4)
+
+
 if __name__ == '__main__':
-    print(os.)
+    # testBifFileMaker()
+    # t1 = Timer("testDiff()", "from __main__ import testDiff")
+    # print t1.timeit(1)
+    t2 = Timer("testDiff_big()", "from __main__ import testDiff_big")
+    print t2.timeit(1)

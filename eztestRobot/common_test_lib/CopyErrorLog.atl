@@ -1,0 +1,38 @@
+#__AW_Repository_Version '14.1.1.0000';
+#__AW_Product_Version '14.1.1.354';
+#__AW_ATL_Locale 'eng_us.utf-8';
+ AlGUIComment ("ActaName_1" = 'RDate_created', "ActaName_2" = 'RDate_modified', "ActaName_3" = 'RSavedAfterCheckOut', "ActaValue_1" = 'Mon Apr 15 16:46:48 2013', "ActaValue_2" = 'Wed May 01 13:26:19 2013', "ActaValue_3" = 'YES', "x" = '-1', "y" = '-1')
+CREATE SESSION CopyErrorLog::'1035e3d4-8652-4582-b536-6814eab916fb'( )
+DECLARE
+     $ds_work VARCHAR(100) ;
+     $errorfile_name VARCHAR(100) ;
+     $errorfile_loc VARCHAR(100) ;
+     $exec_option VARCHAR(400) ;
+BEGIN
+ AlGUIComment ("UI_DATA_XML" = '<UIDATA><MAINICON><LOCATION><X>0</X><Y>0</Y></LOCATION><SIZE><CX>216</CX><CY>-179</CY></SIZE></MAINICON><DESCRIPTION><LOCATION><X>0</X><Y>-190</Y></LOCATION><SIZE><CX>200</CX><CY>200</CY></SIZE><VISIBLE>0</VISIBLE></DESCRIPTION></UIDATA>', "ui_display_name" = 'Script592', "ui_script_text" = '$ds_work = \'%UDS_WORK%/\';
+$errorfile_name = \'%ERRORLOGNAME%\';
+
+$errorfile_loc = substr(get_error_filename(), 1, index(get_error_filename(), \'error_\', 1) -1);
+
+if (index($errorfile_loc, \':\', 1) > 0)
+  begin
+    $exec_option = \'copy "\' || $errorfile_loc || $errorfile_name || \'"  \' || $ds_work || $errorfile_name;
+    $exec_option = replace_substr( $exec_option, \'/\', \'\\\\\');
+    exec( \'cmd\', $exec_option, 8);
+  end
+else
+  begin
+    $exec_option = \'"\' || $errorfile_loc || $errorfile_name || \'"  \' || $ds_work  || $errorfile_name;
+    exec( \'/bin/cp\', $exec_option, 8);
+  end
+', "x" = '519', "y" = '-491')
+BEGIN_SCRIPT
+$ds_work = '%UDS_WORK%/';$errorfile_name = '%ERRORLOGNAME%';$errorfile_loc = substr(get_error_filename(), 1, (index(get_error_filename(), 'error_', 1) - 1));IF ((index($errorfile_loc, ':', 1) > 0) )
+BEGIN
+$exec_option = ((((('copy "' || $errorfile_loc) || $errorfile_name) || '"  ') || $ds_work) || $errorfile_name);$exec_option = replace_substr($exec_option, '/', '\\');exec('cmd', $exec_option, 8);END
+ELSE
+BEGIN
+$exec_option = ((((('"' || $errorfile_loc) || $errorfile_name) || '"  ') || $ds_work) || $errorfile_name);exec('/bin/cp', $exec_option, 8);END
+END
+END
+ SET ("job_checkpoint_enabled" = 'no', "job_collect_statistics" = 'no', "job_collect_statistics_monitor" = 'no', "job_enable_assemblers" = 'yes', "job_enable_audit" = 'yes', "job_enable_dataquality" = 'yes', "job_export_repo" = 'no', "job_export_reports" = 'no', "job_guid" = '1035e3d4-8652-4582-b536-6814eab916fb', "job_isrecoverable" = 'no', "job_mode" = 'Multi-Process', "job_monitor_sample_rate" = '1000', "job_monitor_timer_rate" = '5', "job_name" = 'CopyErrorLog', "job_print_version" = 'no', "job_testmode_enabled" = 'no', "job_trace_abapquery" = 'no', "job_trace_all" = 'no', "job_trace_ascomm" = 'no', "job_trace_assemblers" = 'no', "job_trace_audit" = 'no', "job_trace_dataflow" = 'yes', "job_trace_idoc_file" = 'no', "job_trace_memory_loader" = 'no', "job_trace_memory_reader" = 'no', "job_trace_optimized_dataflow" = 'no', "job_trace_parallel_execution" = 'no', "job_trace_rfc_function" = 'no', "job_trace_row" = 'no', "job_trace_script" = 'no', "job_trace_session" = 'yes', "job_trace_sql_only" = 'no', "job_trace_sqlfunctions" = 'no', "job_trace_sqlloaders" = 'no', "job_trace_sqlreaders" = 'no', "job_trace_sqltransforms" = 'no', "job_trace_stored_procedure" = 'no', "job_trace_table" = 'no', "job_trace_table_reader" = 'no', "job_trace_transform" = 'no', "job_trace_userfunction" = 'no', "job_trace_usertransform" = 'no', "job_trace_workflow" = 'yes', "job_type" = 'batch', "job_use_statistics" = 'yes', "locale_codepage" = '<default>', "locale_language" = '<default>', "locale_territory" = '<default>')

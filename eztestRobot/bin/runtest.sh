@@ -21,7 +21,7 @@ function print_readme
 
 function print_help
 {
-      echo "runtest.sh testsuite testunits "
+      echo "runtest.sh testsuite testunits testcase"
       echo " [-p paramfile] "
       echo " [-rst result foldler] "
       echo " [-t testcase] "
@@ -31,22 +31,29 @@ function print_help
       echo " [-timeout testunit level time out value] "
       echo " [-debug] "
       echo " [-robot robot options] "
+      echo " [-robotcases robot testcase file] "
       echo " [-noconvert]"
       echo " [-nosetup] "
       echo " [-n TESTNODE] "
-      echo "                               "
-      echo "paramfile     -- pathname for the parameters file"
-      echo "result folder -- result folder name in $TESTNODE/result."  
-      echo "                 Default is $TESTNODE/result" 
-      echo "testcase      -- Testcase name in the testunit to be executed"
-      echo "                 separate cases by \",\" eg. testcase1,testcase2"
-      echo "                 support wild card eg. testcase01*"
-      echo "testunits     -- testunits name in the testsuite to be executed"
-      echo "                 separate cases by \",\" eg. unit1,unit2"
-      echo "database type -- specify the database type such as SQL 2000"
-      echo "nosetup       -- skip setup in the testunit, cannot work together with -noconvert"
-      echo "noconvert     -- skip convert testcase/setup to testcase.robot"
-      echo "timeout       -- set timeout value for testcase, this is testunit level"
+      echo " [-rerunfailed] "
+      echo " [-noupdate] "
+      echo "                      "
+      echo "paramfile              -- pathname for the parameters file"
+      echo "result folder          -- result folder name in $TESTNODE/result."
+      echo "                          Default is $TESTNODE/result"
+      echo "testcase               -- Testcase name in the testunit to be executed"
+      echo "                          separate cases by \",\" eg. testcase1,testcase2"
+      echo "                          support wild card eg. testcase01*"
+      echo "testunits              -- testunits name in the testsuite to be executed"
+      echo "                          separate cases by \",\" eg. unit1,unit2"
+      echo "database type          -- specify the database type such as SQL 2000"
+      echo "nosetup                -- skip setup in the testunit, cannot work together with -noconvert"
+      echo "noconvert              -- skip convert testcase/setup to testcase.robot"
+      echo "timeout                -- set timeout value for testcase, this is testunit level"
+      echo "noupdate               -- do not update to ezman automatically"
+      echo "rerunfailed            -- rerun failed cases, must first run tests and have outcome"
+      echo "robot testcase file    -- pathname for your own robot testcase file"
+      echo "                          this will run your robot testcase file instead of default one"
 }
 
 ######################################
@@ -84,6 +91,14 @@ do
       shift
       export ROBOT_OPTION_EX=$1
       ;;
+    -rerunfailed)
+      shift
+      export RERUN_FAILED='on'
+      ;;
+    -robotcases)
+      shift
+      export ROBOT_TESTCASE=$1
+      ;;
     -t)
       shift
       TESTCASE=$1
@@ -94,6 +109,10 @@ do
       shift
       G_UPDATE='off'
       ;;
+	-testunit_4_log)
+	  shift
+	  export testunit_4_log=$1
+	  ;;
     -p)
       shift
       PARAMFILE=$1
@@ -161,7 +180,7 @@ do
         flag=2
       elif [ $flag -eq 2 ]
       then
-        export TESTCASE 
+        export TESTCASE=$1
         flag=3
       fi
       shift
@@ -221,8 +240,22 @@ if [ $G_BUILDVERSION = 'Engine' ]
 then 
   export G_BUILDVERSION="`al_engine -v | cut -d ' ' -f 6`"
 fi
- 
- . $PARAMFILE
+
+if [[ "$G_BUILDVERSION" > "14.2" ]]
+then
+  if [ "$COPYERRORLOG" != "N" ]
+  then
+    export COPYERRORLOG="Y"
+  fi
+fi
+
+if [ -f $PARAMFILE ]
+ then
+   . $PARAMFILE
+ else
+   echo Cannot source parameter file $PARAMFILE
+   exit
+fi
  
 if [ test = test$LANGFILE ]
 then
@@ -264,12 +297,13 @@ do
     chmod -R 777 $DS_INPUT
 
     rm ${DS_WORK}/*
-    rm ${DS_GOLD}/*
-    rm ${DS_INPUT}/*
-    cp ${runtest}/goldlog/* ${DS_GOLD}
-    cp ${runtest}/input/* ${DS_INPUT}
+    if [ ! "$DS_WORK_ROOT"="$TESTNODE" ]
+    then
+      yes | cp -rf ${runtest}/goldlog/* ${DS_GOLD}
+      yes | cp -rf ${runtest}/input/* ${DS_INPUT}
+    fi
 
-    rm ${test_result_dir}/${testunits}_output.xml
+    [ -z "$RERUN_FAILED" ] && rm ${test_result_dir}/${testunits}_output.xml
     rm ${test_result_dir}/${testunits}_log.html
     rm ${test_result_dir}/${testunits}_report.html
     rm ${test_result_dir}/${testunits}.sum
@@ -281,9 +315,6 @@ do
        echo "Error: Testunit $runtest doesn't exist."
     fi
 
-    [ -z "$ROBOT_TEST_TIMEOUT" ] && export ROBOT_TEST_TIMEOUT='6000s'
-    [ -n "$ROBOT_OPTION_EX" ] && export ROBOT_OPTION="$ROBOT_OPTION $ROBOT_OPTION_EX"
-
     if [ -n $TESTCASE ]
     then
       IFS=',' read -ra TEMP <<< "$TESTCASE"
@@ -292,25 +323,35 @@ do
       done
     fi
 
-    [ -z "$NOCONVERT" ] && java -jar ${ROBOTHOME}/bin/${jythonjar} bin/Converter.py $runtest
-	java -jar ${ROBOTHOME}/bin/${robotframeworkjar} ${ROBOT_OPTION} ${TESTCASES} -v ROBOT_TEST_TIMEOUT:${ROBOT_TEST_TIMEOUT} -d ${test_result_dir} -o ${testunits}_output.xml -l ${testunits}_log.html -r ${testunits}_report.html $runtest/testcase.robot
-	java -jar ${ROBOTHOME}/bin/${jythonjar} bin/summary.py ${test_result_dir}/${testunits}_output.xml
+    export ROBOT_OUTPUT="-d ${test_result_dir} -o ${testunits}_output.xml -l ${testunits}_log.html -r ${testunits}_report.html"
+    [ -n "$DEBUG" ] && export ROBOT_OUTPUT="${ROBOT_OUTPUT} -b ${testunits}_debug"
+    [ -z "$ROBOT_TESTCASE" ] && export ROBOT_TESTCASE="$runtest/testcase.robot"
+    [ -z "$ROBOT_TEST_TIMEOUT" ] && export ROBOT_TEST_TIMEOUT=${ROBOT_TIMEOUT_DEF}
+    [ -n "$RERUN_FAILED" ] && export ROBOT_OPTION="$ROBOT_OPTION --rerunfailed ${test_result_dir}/${testunits}_output.xml"
+
+    if [ "$COPYERRORLOG" = "Y" ]
+    then
+      al_engine $al_engine_param -f$QAENV/bin/CopyErrorLog.atl
+    fi
+
+    [ -z "$NOCONVERT" ] && java -jar ${ROBOTHOME}/bin/${jythonjar} ${ROBOTHOME}/bin/Converter.py $runtest
+	java -jar ${ROBOTHOME}/bin/${robotframeworkjar} ${ROBOT_OPTION} ${TESTCASES} -v ROBOT_TEST_TIMEOUT:${ROBOT_TEST_TIMEOUT} ${ROBOT_OUTPUT} ${ROBOT_OPTION_EX} ${ROBOT_TESTCASE}
+	java -jar ${ROBOTHOME}/bin/${jythonjar} ${ROBOTHOME}/bin/summary.py ${test_result_dir}/${testunits}_output.xml
 
 	echo ---------------------------------------------------------------------------------
     echo ${testunits} summary:
     cat ${test_result_dir}/${testunits}.sum
     echo
 
-    if [ $G_UPDATE = 'on' ] ;
+    if [ $G_UPDATE = 'on' ]
     then
-      ezupdate.sh $CONFIG ${test_result_dir}/${testunits}.sum $testunits
+      if [ -n $testunit_4_log ]
+      then
+        ezupdate.sh $CONFIG ${test_result_dir}/${testunits}.sum $testunit_4_log
+      else
+        ezupdate.sh $CONFIG ${test_result_dir}/${testunits}.sum $testunits
+      fi
     fi
 done
-
-unset ROBOT_TEST_TIMEOUT
-unset ROBOT_OPTION_EX
-unset DEBUG
-unset NOSETUP
-unset TESTCASE
 
 

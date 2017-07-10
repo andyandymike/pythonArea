@@ -49,7 +49,7 @@ def converter(root, fileName):
                 return robotTestStep
             m = re_export.match(ln)
             if m:
-                robotTestStep = ExportEnvStep(m.group(1), m.group(2))
+                robotTestStep = ExportEnvStep(m.group(1), m.group(2).replace('\\', '\\\\').replace(r'\\$', r'\$').replace(r'\\|', r'\|'))
                 return robotTestStep
             m = re_adiff.match(ln)
             if m:
@@ -61,7 +61,7 @@ def converter(root, fileName):
                 return robotTestStep
             m = re_export2.match(ln)
             if m:
-                robotTestStep = ExportEnvStep(m.group(1), m.group(2))
+                robotTestStep = ExportEnvStep(m.group(1), m.group(2).replace('\\', '\\\\').replace(r'\\$', r'\$').replace(r'\\|', r'\|'))
                 return robotTestStep
             robotTestStep = RunStep(ln)
             return robotTestStep

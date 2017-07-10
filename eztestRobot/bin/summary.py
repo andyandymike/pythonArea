@@ -3,7 +3,7 @@ from __future__ import with_statement
 
 import os
 import sys
-import platform
+import re
 
 import xml.etree.ElementTree as ET
 from datetime import datetime
@@ -17,12 +17,19 @@ def sum(root, fn):
         failed = 0
         st = []
         st.append('ENVIRONMENT')
-        st.append('OS: %s %s' % (platform.system(), platform.release()))
-        st.append('')
+        re_build_num = re.compile(r'.*\s(\d+\.\d+.\d+.\d+)')
+        ds_build = os.environ.get('DS_BUILD')
+        if ds_build:
+            m = re_build_num.match(os.environ.get('DS_BUILD'))
+            ds_build = (m.group(1) if m else '?')
+        else:
+            ds_build = '?'
+        st.append('BUILD: %s' % ds_build)
+        st.append('\n')
         st.append('Date : %s' % datetime.strftime(datetime.now(), '%a %b %d %H:%M:%S %Y'))
         st.append('')
-        st.append('Testcase                                               Status      Elapsed Time')
-        st.append('-------------------------------------------------------------------------------')
+        st.append('Testcase                                               Status      Elapsed Time      SP')
+        st.append('---------------------------------------------------------------------------------------')
         tree = ET.parse(f)
         for node in tree.findall('.//test'):
             skip = False
@@ -37,7 +44,8 @@ def sum(root, fn):
                 caseStartTime = datetime.strptime(s.attrib['starttime'], '%Y%m%d %H:%M:%S.%f')
                 caseEndTime = datetime.strptime(s.attrib['endtime'], '%Y%m%d %H:%M:%S.%f')
                 elapsedTime = str(caseEndTime - caseStartTime)[:7]
-                st.append("%-55.54s%-12s%-12s" % (node.attrib['name'] + ' ' + doc.text if doc is not None else '', dic[s.attrib['status']], elapsedTime))
+                document = (doc.text if doc is not None else '')
+                st.append("%-55.54s%-12s%-18s%-12s" % (node.attrib['name'] + ' ' + document, dic[s.attrib['status']], elapsedTime, 'NA'))
                 if s.attrib['status'] == 'FAIL':
                     failed += 1
                 else:

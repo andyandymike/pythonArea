@@ -3,11 +3,19 @@ import re
 import hashlib
 import shutil
 
+
 def ignore(fileName):
     m1 = re.compile(r'.*\.jar$')
     if m1.match(fileName):
         return True
+    m2 = re.compile(r'.*\.db$')
+    if m2.match(fileName):
+        return True
+    m3 = re.compile(r'.*\.exe$')
+    if m3.match(fileName):
+        return True
     return False
+
 
 def checksum(fileName):
     hash_md5 = hashlib.md5()
@@ -18,14 +26,21 @@ def checksum(fileName):
 
 
 def main():
-
+    flag = 'sikuli'
+    bk = False
     robotRoot = os.path.abspath('..')
-    des = 'Y:\\landy\\robot\\eztestRobot'
+    syncRoot = robotRoot
+    syncRoot = 'C:\\Users\\i067382\\EIMTest\\eim_ui_testing\\DSSeleniumTests\\src'
+    des = 'Y:\\landy\\keep\\robot\\eztestRobot'
+    des = 'Y:\\landy\\keep\\EIMTest\\eim_ui_testing\\DSSeleniumTests\\src'
 
-    for (root, dirs, files) in os.walk(robotRoot):
+    for (root, dirs, files) in os.walk(syncRoot):
+        print(os.path.basename(root))
+        if flag!= 'sikuli'and os.path.basename(root) == 'test':
+            continue
         for fileName in files:
             if not ignore(fileName):
-                folder = os.path.abspath(root)[len(os.path.abspath(robotRoot)) + 1:]
+                folder = os.path.abspath(root)[len(os.path.abspath(syncRoot)) + 1:]
                 srcfile = os.path.join(os.path.abspath(root), fileName)
                 desfolder = os.path.join(os.path.abspath(des), folder)
                 desfile = os.path.join(desfolder, fileName)
@@ -36,9 +51,12 @@ def main():
                 if os.path.isfile(desfile):
                     print('Sync file: ' + srcfile)
                     if not checksum(desfile) == checksum(srcfile):
-                        if os.path.isfile(desfile + '.bk'):
-                            os.remove(desfile + '.bk')
-                        os.rename(desfile, desfile + '.bk')
+                        if bk:
+                            if os.path.isfile(desfile + '.bk'):
+                                os.remove(desfile + '.bk')
+                            os.rename(desfile, desfile + '.bk')
+                        else:
+                            os.remove(desfile)
                         shutil.copy(srcfile, desfile)
                         continue
                     else:
