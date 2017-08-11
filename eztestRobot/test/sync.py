@@ -2,6 +2,7 @@ import os
 import re
 import hashlib
 import shutil
+from datetime import datetime
 
 
 def ignore(fileName):
@@ -26,13 +27,14 @@ def checksum(fileName):
 
 
 def main():
-    flag = 'sikuli'
+    flag = 'ezrobot'
+    #flag = 'sikuli'
     bk = False
     robotRoot = os.path.abspath('..')
     syncRoot = robotRoot
-    syncRoot = 'C:\\Users\\i067382\\EIMTest\\eim_ui_testing\\DSSeleniumTests\\src'
+    #syncRoot = 'C:\\Users\\i067382\\EIMTest\\eim_ui_testing\\DSSeleniumTests\\src'
     des = 'Y:\\landy\\keep\\robot\\eztestRobot'
-    des = 'Y:\\landy\\keep\\EIMTest\\eim_ui_testing\\DSSeleniumTests\\src'
+    #des = 'Y:\\landy\\keep\\EIMTest\\eim_ui_testing\\DSSeleniumTests\\src'
 
     for (root, dirs, files) in os.walk(syncRoot):
         print(os.path.basename(root))
@@ -68,3 +70,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+    print('Finish time : %s' % datetime.strftime(datetime.now(), '%a %b %d %H:%M:%S %Y'))

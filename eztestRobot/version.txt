@@ -1,4 +1,21 @@
-1.02
+1.06
+=========
+1.06
+fix grep commands sometimes not working in Shell Command
+fix ROBOTHOME setting not correct when local/remote version are the same
+fix Shell Command on redhat cannot found sh problem
+fix read testunits failed will cause no running
+add ROBOTHOME check in setenvRobot
+=========
+1.05
+enhance Shell Command, it's now able to get subprocess's change in environment
+=========
+1.04
+fix NEED_UPDATE logic in setenvRobot.sh
+add unset environment support
+=========
+1.03
+fix expect a None value will give internal error
 ==========
 1.02
 fix reading environment variable contain surrounding quotes

@@ -31,6 +31,8 @@ $TESTSUITE_SETUP
 !sh eim_launcher.sh ${JOBNAME} "-k'HANA 1.x'" "-s\"hana 2.x\""
 !expect any *successfully*
 !sh grep -o "Job <${JOBNAME}> is completed successfully." ${DS_WORK}/${JOBNAME}.log
+!sh export test=
+!sh unset test1
 !endtestcase
 
 !testcase hana002 100_HANA_BKL_Gen_Inp_DataSet 

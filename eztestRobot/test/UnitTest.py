@@ -6,6 +6,8 @@ from bin import utils
 import os
 import subprocess
 import re
+import ConfigParser
+import io
 from timeit import Timer
 
 root = os.path.abspath('.')
@@ -143,9 +145,17 @@ def testBifFileMaker():
     utils.bigFileMaker(input, output, 4)
 
 
+def testReadConfig():
+    config = ConfigParser.RawConfigParser(allow_no_value=True)
+    content = '''[test] t1 = 1'''
+    config.readfp(io.BytesIO(content))
+    print(config.get('test', 't1'))
+
+
 if __name__ == '__main__':
     # testBifFileMaker()
     # t1 = Timer("testDiff()", "from __main__ import testDiff")
     # print t1.timeit(1)
-    t2 = Timer("testDiff_big()", "from __main__ import testDiff_big")
-    print t2.timeit(1)
+    # t2 = Timer("testDiff_big()", "from __main__ import testDiff_big")
+    # print t2.timeit(1)
+    testReadConfig()

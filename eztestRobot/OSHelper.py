@@ -13,7 +13,7 @@ from robot.libraries.BuiltIn import BuiltIn
 from robot.api import logger
 
 __all__ = ['shell_command', 'export_env', 'change_working_directory', 'remove_wildcard_files', 'import_atl',
-           'diff_unordered_files', 'replace_env', 'eim_launcher']
+           'diff_unordered_files', 'replace_env', 'eim_launcher', 'unset']
 __version__ = '1.0'
 
 DEBUG = os.environ.get('DEBUG')
@@ -35,7 +35,8 @@ def replace_env_str(s):
 def command_output(cmd):
     # logger.warn('RUN: %s' % cmd)
     cmd = shlex.split(cmd)
-    process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+    myenv = os.environ.copy()
+    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, env=myenv)
     out = process.communicate()[0].strip()
     # logger.warn('RESULT: %s' % out)
     return out
@@ -53,20 +54,49 @@ def use_shell(cmd):
         return False
 
 
+def get_env_dict(input, starter='ROBOT_ENV_START'):
+    envdict = {}
+    index = input.find(starter)
+    if index == -1:
+        return envdict
+    input = input[index:]
+    for line in input.splitlines()[1:]:
+        env = line.split('=', 1)
+        if env[0] == 'SHLVL':
+            continue
+        envdict[env[0]] = env[1]
+    return envdict
+
+
+def get_pure_output(input, starter='ROBOT_ENV_START'):
+    index = input.find(starter)
+    if index == -1:
+        return input
+    return input[:index]
+
+
 def shell_command(cmd, useShell=False, replaceEnv=True, printOutput=printOutput):
-    if not useShell:
-        useShell = use_shell(cmd)
+    oricmd = cmd
+    # if not useShell:
+    #    useShell = use_shell(cmd)
     if replaceEnv:
         cmd = replace_env_str(cmd)
     # to get around shell problem under cygwin
     if not useShell:
-        cmd = "sh -c \"%s\"" % cmd.replace(r'"', r'\"')
-        cmd = shlex.split(cmd)
+        cmd = ["sh", "-c", "%s && echo ROBOT_ENV_START && printenv" % cmd]
+        # cmd = shlex.split(cmd)
 
-    logger.info('RUN: %s' % cmd, also_console=printOutput)
+    logger.info('RUN: %s Using Shell: %s' % (oricmd, useShell), also_console=printOutput)
+    myenv = os.environ.copy()
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE,
-                               stderr=subprocess.STDOUT, shell=useShell)
+                               stderr=subprocess.STDOUT, shell=useShell, env=myenv)
     status = process.communicate()[0].strip()
+
+    if not useShell:
+        newenvdict = get_env_dict(status)
+        os.environ.update(newenvdict)
+        status = get_pure_output(status)
+
     rc = process.returncode
     if rc != 0 or status != '' or printOutput:
         logger.info("Command exit code: %s" % rc, also_console=printOutput)
@@ -100,6 +130,11 @@ def export_env(key, val):
     if val[0] == '"' and val[-1] == '"':
         val = val[1:-1]
     os.environ[key] = val
+
+
+def unset(key):
+    if os.environ.get(key) is not None:
+        del os.environ[key]
 
 
 def get_env(key):
@@ -137,7 +172,7 @@ def subvalue2(input, output):
             for ln in finput:
                 for m in re_env.finditer(ln):
                     value = os.environ.get(m.group(2))
-                    if value == None:
+                    if value is None:
                         value = ''
                     elif len(value) > 1 and value[0] == '"' and value[len(value) - 1] == '"':
                         value = value[1:len(value) - 1] if len(value) > 2 else ''
@@ -201,7 +236,7 @@ def eim_launcher(jobname, *args):
     logger.info('        LINK_DIR : %s' % get_env('LINK_DIR'), also_console=True)
     logger.info('====================================================', also_console=True)
 
-    return shell_command(' '.join(cmd))
+    return shell_command(' '.join(cmd), printOutput=True)
 
 
 def import_atl(atlFileName, passPhrase='dsplatform'):
@@ -468,7 +503,7 @@ def replace_env(fo, fn):
                         key = match.group(1)
                         if key in dic:
                             value = dic[key]
-                            if value == None:
+                            if value is None:
                                 value = ''
                             elif len(value) > 1 and value[0] == '"' and value[len(value) - 1] == '"':
                                 value = value[1:len(value) - 1] if len(value) > 2 else ''
@@ -483,7 +518,8 @@ def encrypt(password):
     exe = os.path.join(os.environ["DS_COMMON_DIR"], "bin", "AL_Encrypt")
     cmd = [exe, '-e', password, '-p', 'mats']
     # logger.console('RUN: %s' % cmd)
-    process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+    myenv = os.environ.copy()
+    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, env=myenv)
     return process.communicate()[0].strip()
 
 

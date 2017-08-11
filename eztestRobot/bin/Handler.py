@@ -1,5 +1,6 @@
 import os
 
+
 class TestUnit(object):
     def __init__(self, name):
         self._name = name
@@ -35,6 +36,7 @@ class TestUnit(object):
         for keyword in self._keywords:
             robotContent.append(str(keyword))
         robotContent.append("| Combined Setup |")
+        robotContent.append("|  | Shell Command | echo Start Testing ... ")
         for setup in self._setups:
             robotContent.append(str(setup))
         robotContent.append("")
@@ -128,15 +130,23 @@ class ExpectStep(TestStep):
         self._keyword = keyword
         self._steps = []
         if (self._behavior == 'any'):
-            self._steps.append("|  | Should Contain | ${result} | %s " % self._keyword)
+            self._steps.append(
+                "|  | Run Keyword If | $result is not None | Should Contain | ${result} | %s " % self._keyword)
         if (self._behavior == 'no'):
-            self._steps.append("|  | Should Not Contain | ${result} | %s " % self._keyword)
+            self._steps.append(
+                "|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | %s " % self._keyword)
 
     def step2Expect(self, step):
         self._steps.insert(0, "|  | ${result} = %s" % step.getStep())
 
     def __str__(self):
         return "\n".join(self._steps)
+
+
+class UnsetStep(TestStep):
+    def __init__(self, key):
+        self._key = key
+        super(UnsetStep, self).__init__("| Unset | %s " % self._key)
 
 
 class DocStep(TestStep):

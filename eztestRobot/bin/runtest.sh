@@ -273,6 +273,8 @@ for i in "${TEMP[@]}"; do
   Testlist="$Testlist $i"
 done
 
+[ -z "$Testlist" ] && Testlist=$testunit
+
 for testunits in $Testlist
 do
     export runtest=$TESTNODE/$testsuite/$testunits

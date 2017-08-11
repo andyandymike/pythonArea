@@ -17,6 +17,8 @@ def converter(root, fileName):
         keyword = None
 
         re_export = re.compile(r'export\s+(\w+)=(.+)')
+        re_unset1 = re.compile(r'export\s+(\w+)=\s*')
+        re_unset2 = re.compile(r'unset\s+(\w+)\s*')
         re_adiff = re.compile(r'adiff\s+(.+)\s+(.+)')
         re_subvar = re.compile(r'subvalue2\s+(.+)\s+(.+)')
         re_regcheck = re.compile(r'!regcheck\s+(.+)\s+(.+)')
@@ -62,6 +64,14 @@ def converter(root, fileName):
             m = re_export2.match(ln)
             if m:
                 robotTestStep = ExportEnvStep(m.group(1), m.group(2).replace('\\', '\\\\').replace(r'\\$', r'\$').replace(r'\\|', r'\|'))
+                return robotTestStep
+            m = re_unset1.match(ln)
+            if m:
+                robotTestStep = UnsetStep(m.group(1))
+                return robotTestStep
+            m = re_unset2.match(ln)
+            if m:
+                robotTestStep = UnsetStep(m.group(1))
                 return robotTestStep
             robotTestStep = RunStep(ln)
             return robotTestStep

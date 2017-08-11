@@ -7,7 +7,7 @@
   </component>
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$" />
-    <orderEntry type="jdk" jdkName="Jython 2.7.0 (C:\jython2.7.0\bin\jython.exe)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 2.7.13 (C:\Python27\python.exe)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Jython 2.7.0 (C:\jython2.7.0\bin\jython.exe) interpreter library" level="application" />
     <orderEntry type="library" name="robotframework-3.0.2" level="project" />
