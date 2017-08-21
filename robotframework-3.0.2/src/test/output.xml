@@ -1,20 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<robot generated="20170518 19:41:01.173" generator="Robot 3.0.2 (Python 2.7.13 on win32)">
+<robot generated="20170812 16:05:22.146" generator="Robot 3.0.2 (Python 2.7.11 on win32)">
 <suite source="C:\Users\i067382\PycharmProjects\robotframework-3.0.2\src\test\testcase.robot" id="s1" name="tcase01">
 <test id="s1-t1" name="tcase01">
 <kw name="Shell Command" library="OSHelper">
 <arguments>
 <arg>echo hello</arg>
+<arg>False</arg>
+<arg>True</arg>
+<arg>True</arg>
 <arg>True</arg>
 </arguments>
 <assign>
 <var>${result}</var>
 </assign>
-<msg timestamp="20170518 19:41:01.261" level="INFO">RUN: echo hello</msg>
-<msg timestamp="20170518 19:41:01.276" level="INFO">Command exit code: 0</msg>
-<msg timestamp="20170518 19:41:01.276" level="INFO">Command output: hello</msg>
-<msg timestamp="20170518 19:41:01.276" level="INFO">${result} = hello</msg>
-<status status="PASS" endtime="20170518 19:41:01.276" starttime="20170518 19:41:01.261"></status>
+<msg timestamp="20170812 16:05:22.185" level="INFO">RUN: echo hello Using Shell: False</msg>
+<msg timestamp="20170812 16:05:22.204" level="INFO">Command exit code: 0</msg>
+<msg timestamp="20170812 16:05:22.204" level="INFO">Command output: hello</msg>
+<msg timestamp="20170812 16:05:22.205" level="INFO">${result} = hello</msg>
+<status status="PASS" endtime="20170812 16:05:22.205" starttime="20170812 16:05:22.185"></status>
 </kw>
 <kw name="Should Contain" library="BuiltIn">
 <doc>Fails if ``container`` does not contain ``item`` one or more times.</doc>
@@ -22,12 +25,12 @@
 <arg>${result}</arg>
 <arg>hello</arg>
 </arguments>
-<status status="PASS" endtime="20170518 19:41:01.276" starttime="20170518 19:41:01.276"></status>
+<status status="PASS" endtime="20170812 16:05:22.205" starttime="20170812 16:05:22.205"></status>
 </kw>
 <doc>hive_query03 SUM and GROUP BY</doc>
-<status status="PASS" endtime="20170518 19:41:01.276" critical="yes" starttime="20170518 19:41:01.260"></status>
+<status status="PASS" endtime="20170812 16:05:22.205" critical="yes" starttime="20170812 16:05:22.184"></status>
 </test>
-<status status="PASS" endtime="20170518 19:41:01.276" starttime="20170518 19:41:01.182"></status>
+<status status="PASS" endtime="20170812 16:05:22.206" starttime="20170812 16:05:22.150"></status>
 </suite>
 <statistics>
 <total>

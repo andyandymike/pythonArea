@@ -6,6 +6,7 @@ INSTALL.rst
 LICENSE.txt
 MANIFEST.in
 README.rst
+setup.cfg
 setup.py
 tasks.py
 src/bin/ipybot

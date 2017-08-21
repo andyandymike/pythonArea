@@ -75,7 +75,7 @@ def get_pure_output(input, starter='ROBOT_ENV_START'):
     return input[:index]
 
 
-def shell_command(cmd, useShell=False, replaceEnv=True, printOutput=printOutput):
+def shell_command(cmd, useShell=False, replaceEnv=True, disableSubEnvRead=False, printOutput=printOutput):
     oricmd = cmd
     # if not useShell:
     #    useShell = use_shell(cmd)
@@ -84,6 +84,8 @@ def shell_command(cmd, useShell=False, replaceEnv=True, printOutput=printOutput)
     # to get around shell problem under cygwin
     if not useShell:
         cmd = ["sh", "-c", "%s && echo ROBOT_ENV_START && printenv" % cmd]
+        if disableSubEnvRead:
+            cmd = ["sh", "-c", "%s" % cmd]
         # cmd = shlex.split(cmd)
 
     logger.info('RUN: %s Using Shell: %s' % (oricmd, useShell), also_console=printOutput)
