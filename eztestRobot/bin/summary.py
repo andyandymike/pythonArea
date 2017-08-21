@@ -52,6 +52,7 @@ def sum(root, fn):
                     passed += 1
 
         st.append('')
+        st.append('Number of testcase planed:             0')
         st.append('Number of testcase run:                %d' % (passed + failed))
         st.append('Number of testcase passed:             %d' % passed)
         st.append('Number of testcase failed:             %d' % failed)

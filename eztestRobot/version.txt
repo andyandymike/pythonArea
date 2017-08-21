@@ -1,4 +1,18 @@
-1.06
+1.09
+=========
+1.09
+fix !expect handling, when !expect format is not correct, will skip it
+fix !define handling, when !defind format is not correct, will skip it
+=========
+1.08
+add Number of testcase planed in summary file
+add unset DS_WORK logic in setenvRobot
+change local tmp folder to tmp_robot
+=========
+1.07
+fix runtest.sh assign wrong testcase
+add define bash type support (export WHICHBASH="#!/bin/bash")
+add disable specify multi testunits and specific testcase feature
 =========
 1.06
 fix grep commands sometimes not working in Shell Command

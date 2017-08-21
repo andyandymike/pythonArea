@@ -1,236 +1,314 @@
-!sh mkdir ${DS_WORK}
-!sh mkdir ${DS_GOLD}
-!sh mkdir ${DS_INPUT}
-!sh rm ${DS_WORK}/*
-!sh rm ${DS_GOLD}/*
-!sh rm ${DS_INPUT}/*
-!sh cp ${runtest}/goldlog/* ${DS_GOLD}
-!sh cp ${runtest}/input/* ${DS_INPUT}
+!sh rm $DS_WORK/*.*
+
 !sh cd ${runtest}/positive
 
-#!define setup
-#!sh subvalue2 ezTest_HANA_BulkLoad_Datastore.atl ${DS_WORK}/tezTest_HANA_BulkLoad_Datastore.atl
-#!sh subvalue2 HANA_BulkLoad_Functional_Unit.atl ${DS_WORK}/tHANA_BulkLoad_Functional_Unit.atl
-#!sh subvalue2 SubstitutionParam__Signatured.atl ${DS_WORK}/tSubstitutionParam__Signatured.atl
-#!sh al_engine ${al_engine_param} -U$REPOID -P$REPOPW -f${DS_WORK}/tHANA_BulkLoad_Functional_Unit.atl -l${UDS_WORK}/HANA_BulkLoad_Functional_Unit.log -z${UDS_WORK}/HANA_BulkLoad_Functional_Unit.txt
-#!sh al_engine ${al_engine_param} -U$REPOID -P$REPOPW -f${DS_WORK}/tezTest_HANA_BulkLoad_Datastore.atl -l${UDS_WORK}/ezTest_HANA_BulkLoad_Datastore.log -z${UDS_WORK}/ezTest_HANA_BulkLoad_Datastore.txt
-#!sh al_engine ${al_engine_param} -U$REPOID -P$REPOPW -f${DS_WORK}/tSubstitutionParam__Signatured.atl -l${UDS_WORK}/SubstitutionParam__Signatured.log -z${UDS_WORK}/SubstitutionParam__Signatured.txt
-#!sh al_engine ${al_engine_param} -U$REPOID -P$REPOPW -f${runtest}/positive/sysconfig.atl -l${UDS_WORK}/sysconfig.log -z${UDS_WORK}/sysconfig.txt
-#!end
+!timeout 20000
 
-!sh import_atl.sh ezTest_HANA_BulkLoad_Datastore.atl
-!sh import_atl.sh HANA_BulkLoad_Functional_Unit.atl
-!sh import_atl.sh SubstitutionParam__Signatured.atl
-!sh import_atl.sh sysconfig.atl
+!sh subvalue2 openhub.atl ${DS_WORK}/openhub_4.0_Dec_1_2011.atl
 
-$TESTSUITE_SETUP
+!sh al_engine ${al_engine_param} -U$REPOID -P$REPOPW -f${DS_WORK}/openhub_4.0_Dec_1_2011.atl -z${runtest}/work/openhub_4.0_Dec_1_2011.txt -passphrasedsplatform
 
-!testcase hana001 001__HANA_BKL_DDL_CreateTables 
-## Create Table Schema, default is column base.
-!sh export JOBNAME=001__HANA_BKL_DDL_CreateTables
-!sh eim_launcher.sh ${JOBNAME} "-k'HANA 1.x'" "-s\"hana 2.x\""
-!expect any *successfully*
-!sh grep -o "Job <${JOBNAME}> is completed successfully." ${DS_WORK}/${JOBNAME}.log
-!sh export test=
-!sh unset test1
-!endtestcase
+!sh al_engine ${al_engine_param} -U$REPOID -P$REPOPW -fsubstitution_parameters_openhub_4.0.atl -z${runtest}/work/substitution_parameters_openhub_4.0.txt -passphrasedsplatform
 
-!testcase hana002 100_HANA_BKL_Gen_Inp_DataSet 
-## Truncate target table, load base rows
-## Delete output file before job run
-!sh rm ${DS_WORK}/HANA_BKL_Job.out
-!sh export JOBNAME=100_HANA_BKL_Gen_Inp_DataSet
-!sh eim_launcher.sh ${JOBNAME} "-KspS1 -T2062 -l${UDS_WORK}/${JOBNAME}.log -z${UDS_WORK}/${JOBNAME}.txt"
+!testcase openhub01
+!sh eim_launcher.sh openhub01_script
+
+!sh sleep 120
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/100_HANA_BKL_Glod.out ${DS_WORK}/HANA_BKL_Job.out
-!sh cut -c38-200 ${DS_WORK}/${JOBNAME}.log | tr -d '\r'
+!sh adiff ${runtest}/goldlog/openhub01.out ${DS_WORK}/openhub01.out
 !endtestcase
 
-!testcase hana003 101_HANA_BKL_AutoCorrect_Insert
+!testcase openhub02
+!sh eim_launcher.sh openhub02_table32
 
-## // Delete output file before job run
-!sh rm ${DS_WORK}/HANA_BKL_Job.out
-
-## append rows
-!sh export JOBNAME=101_HANA_BKL_AutoCorrect_Insert
-!sh eim_launcher.sh ${JOBNAME} "-KspS1 -T2062 -l${UDS_WORK}/${JOBNAME}.log -z${UDS_WORK}/${JOBNAME}.txt"
-
+!sh sleep 120
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/101_HANA_BKL_Glod.out ${DS_WORK}/HANA_BKL_Job.out
-!sh cut -c38-200 ${DS_WORK}/${JOBNAME}.log | tr -d '\r'
+!sh adiff ${runtest}/goldlog/openhub_table32.out ${DS_WORK}/openhub_table32.out
 !endtestcase
 
-!testcase hana004 102_HANA_BKL_AutoCorrect_Update
 
-## // Delete output file before job run
-!sh rm ${DS_WORK}/HANA_BKL_Job.out
+!testcase openhub03
+!sh eim_launcher.sh openhub03_table32
 
-## Auto_correct = Yes, update = update
-!sh export JOBNAME=102_HANA_BKL_AutoCorrect_Update
-!sh eim_launcher.sh ${JOBNAME} "-KspS1 -T2062 -l${UDS_WORK}/${JOBNAME}.log -z${UDS_WORK}/${JOBNAME}.txt"
-
+!sh sleep 120
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/102_HANA_BKL_Glod.out ${DS_WORK}/HANA_BKL_Job.out
-!sh cut -c38-200 ${DS_WORK}/${JOBNAME}.log | tr -d '\r'
+!sh adiff ${runtest}/goldlog/openhub03_table32.out ${DS_WORK}/openhub03_table32.out
 !endtestcase
 
-!testcase hana005 103_HANA_BKL_AutoCorrect_DeleteInsert
 
-## // Delete output file before job run
-!sh rm ${DS_WORK}/HANA_BKL_Job.out
+!testcase openhub04
+!sh eim_launcher.sh openhub04_subsparam
 
-## Auto_correct = Yes, update = update
-!sh export JOBNAME=103_HANA_BKL_AutoCorrect_DeleteInsert
-!sh eim_launcher.sh ${JOBNAME} "-KspS1 -T2062 -l${UDS_WORK}/${JOBNAME}.log -z${UDS_WORK}/${JOBNAME}.txt"
+!sh sleep 120
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/openhub04_subsparam.out ${DS_WORK}/openhub04_subsparam.out
+!endtestcase
+
+
+!testcase openhub05
+!sh eim_launcher.sh openhub05_changedest
+
+## Checked with Srini, this is supposed to be negative testcase
+!sh sleep 120
+!expect *Failed*
+!sh adiff ${runtest}/goldlog/openhub12.out ${DS_WORK}/openhub12.out
+!endtestcase
+
+
+!testcase openhub06
+!sh eim_launcher.sh openhub06_readparallel
+
+!sh sleep 120
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/openhub12_read1.out ${DS_WORK}/openhub12_read1.out
+!sh sleep 120
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/openhub12_read2.out ${DS_WORK}/openhub12_read2.out
+!endtestcase
+
+
+!testcase openhub07
 
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/103_HANA_BKL_Glod.out ${DS_WORK}/HANA_BKL_Job.out
-!sh cut -c38-200 ${DS_WORK}/${JOBNAME}.log | tr -d '\r'
+!sh eim_launcher.sh openhub07_multpc
+
 !endtestcase
 
-!testcase hana006 104_HANA_BKL_DeleteInsert
 
-## // Delete output file before job run
-!sh rm ${DS_WORK}/HANA_BKL_Job.out
-
-## Auto_correct = Yes, update = update
-!sh export JOBNAME=104_HANA_BKL_DeleteInsert
-!sh eim_launcher.sh ${JOBNAME} "-KspS1 -T2062 -l${UDS_WORK}/${JOBNAME}.log -z${UDS_WORK}/${JOBNAME}.txt"
-!expect no *Failed*
-!sh adiff ${runtest}/goldlog/104_HANA_BKL_Glod.out ${DS_WORK}/HANA_BKL_Job.out
-!sh cut -c38-200 ${DS_WORK}/${JOBNAME}.log | tr -d '\r'
-!endtestcase
-
-!testcase hana007 105_HANA_BKL_Update
-
-## // Delete output file before job run
-!sh rm ${DS_WORK}/HANA_BKL_Job.out
-
-## Auto_correct = Yes, update = update
-!sh export JOBNAME=105_HANA_BKL_Update
-!sh eim_launcher.sh ${JOBNAME} "-KspS1 -T2062 -l${UDS_WORK}/${JOBNAME}.log -z${UDS_WORK}/${JOBNAME}.txt"
+!testcase openhub08
 
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/105_HANA_BKL_Glod.out ${DS_WORK}/HANA_BKL_Job.out
-!sh cut -c38-200 ${DS_WORK}/${JOBNAME}.log | tr -d '\r'
+!sh eim_launcher.sh openhub08_subsparam
+
 !endtestcase
 
-!testcase hana008 106_HANA_BKL_Delete
 
-## // Delete output file before job run
-!sh rm ${DS_WORK}/HANA_BKL_Job.out
-
-## delete
-!sh export JOBNAME=106_HANA_BKL_Delete
-!sh eim_launcher.sh ${JOBNAME} "-KspS1 -T2062 -l${UDS_WORK}/${JOBNAME}.log -z${UDS_WORK}/${JOBNAME}.txt"
+!testcase openhub09
 
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/106_HANA_BKL_Glod.out ${DS_WORK}/HANA_BKL_Job.out
-!sh cut -c38-200 ${DS_WORK}/${JOBNAME}.log | tr -d '\r'
+!sh eim_launcher.sh openhub09_multpc2
+
 !endtestcase
 
-!testcase hana009 002__HANA_BKL_DDL_2_RowBase
-## Change table to row base, then repeat above test
-!sh export JOBNAME=002__HANA_BKL_DDL_2_RowBase
-!sh eim_launcher.sh ${JOBNAME} "-KspS1 -l${UDS_WORK}/${JOBNAME}.log -z${UDS_WORK}/${JOBNAME}.txt"
-!expect any *successfully*
-!sh grep -o "Job <${JOBNAME}> is completed successfully." ${DS_WORK}/${JOBNAME}.log
-!endtestcase
 
-!testcase hana009 100_HANA_BKL_Gen_Inp_DataSet 
-## Truncate target table, load base rows
+!testcase openhub10
+!sh eim_launcher.sh openhub10_where
 
-## // Delete output file before job run
-!sh rm ${DS_WORK}/HANA_BKL_Job.out
-
-!sh export JOBNAME=100_HANA_BKL_Gen_Inp_DataSet
-!sh eim_launcher.sh ${JOBNAME} "-KspS1 -T2062 -l${UDS_WORK}/${JOBNAME}.log -z${UDS_WORK}/${JOBNAME}.txt"
-
-
+!sh sleep 120
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/100_HANA_BKL_Glod.out ${DS_WORK}/HANA_BKL_Job.out
-!sh cut -c38-200 ${DS_WORK}/${JOBNAME}.log | tr -d '\r'
+!sh adiff ${runtest}/goldlog/openhub10_where.out ${DS_WORK}/openhub10_where.out
 !endtestcase
 
-!testcase hana010 101_HANA_BKL_AutoCorrect_Insert
 
-## // Delete output file before job run
-!sh rm ${DS_WORK}/HANA_BKL_Job.out
+!testcase openhub11
+!sh eim_launcher.sh openhub11_groupby
 
-## append rows
-!sh export JOBNAME=101_HANA_BKL_AutoCorrect_Insert
-!sh eim_launcher.sh ${JOBNAME} "-KspS1 -T2062 -l${UDS_WORK}/${JOBNAME}.log -z${UDS_WORK}/${JOBNAME}.txt"
-
+!sh sleep 120
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/101_HANA_BKL_Glod.out ${DS_WORK}/HANA_BKL_Job.out
-!sh cut -c38-200 ${DS_WORK}/${JOBNAME}.log | tr -d '\r'
+!sh adiff ${runtest}/goldlog/openhub11_groupby.out ${DS_WORK}/openhub11_groupby.out
 !endtestcase
 
-!testcase hana011 102_HANA_BKL_AutoCorrect_Update
 
-## // Delete output file before job run
-!sh rm ${DS_WORK}/HANA_BKL_Job.out
+!testcase openhub13
+!sh eim_launcher.sh openhub13_packets
 
-## Auto_correct = Yes, update = update
-!sh export JOBNAME=102_HANA_BKL_AutoCorrect_Update
-!sh eim_launcher.sh ${JOBNAME} "-KspS1 -T2062 -l${UDS_WORK}/${JOBNAME}.log -z${UDS_WORK}/${JOBNAME}.txt"
-
+!sh sleep 120
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/102_HANA_BKL_Glod.out ${DS_WORK}/HANA_BKL_Job.out
-!sh cut -c38-200 ${DS_WORK}/${JOBNAME}.log | tr -d '\r'
+!sh adiff ${runtest}/goldlog/openhub13_packets_16.out ${DS_WORK}/openhub13_packets_16.out
 !endtestcase
 
-!testcase haan012 103_HANA_BKL_AutoCorrect_DeleteInsert
 
-## // Delete output file before job run
-!sh rm ${DS_WORK}/HANA_BKL_Job.out
+!testcase openhub14
+!sh eim_launcher.sh openhub14_PCinsequence
 
-## Auto_correct = Yes, update = update
-!sh export JOBNAME=103_HANA_BKL_AutoCorrect_DeleteInsert
-!sh eim_launcher.sh ${JOBNAME} "-KspS1 -T2062 -l${UDS_WORK}/${JOBNAME}.log -z${UDS_WORK}/${JOBNAME}.txt"
-
+!sh sleep 120
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/103_HANA_BKL_Glod.out ${DS_WORK}/HANA_BKL_Job.out
-!sh cut -c38-200 ${DS_WORK}/${JOBNAME}.log | tr -d '\r'
-!endtestcase
-
-!testcase hana013 104_HANA_BKL_DeleteInsert
-
-## // Delete output file before job run
-!sh rm ${DS_WORK}/HANA_BKL_Job.out
-
-## Auto_correct = Yes, update = update
-!sh export JOBNAME=104_HANA_BKL_DeleteInsert
-!sh eim_launcher.sh ${JOBNAME} "-KspS1 -T2062 -l${UDS_WORK}/${JOBNAME}.log -z${UDS_WORK}/${JOBNAME}.txt"
+!sh adiff ${runtest}/goldlog/openhub_table342.out ${DS_WORK}/openhub_table342.out
+!sh sleep 120
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/104_HANA_BKL_Glod.out ${DS_WORK}/HANA_BKL_Job.out
-!sh cut -c38-200 ${DS_WORK}/${JOBNAME}.log | tr -d '\r'
+!sh adiff ${runtest}/goldlog/openhub13_packets_16.out ${DS_WORK}/openhub13_packets_16.out
 !endtestcase
 
-!testcase hana014 105_HANA_BKL_Update
 
-## // Delete output file before job run
-!sh rm ${DS_WORK}/HANA_BKL_Job.out
+!testcase openhub15a
+!sh eim_launcher.sh openhub15_parallelwf
 
-## Auto_correct = Yes, update = update
-!sh export JOBNAME=105_HANA_BKL_Update
-!sh eim_launcher.sh ${JOBNAME} "-KspS1 -T2062 -l${UDS_WORK}/${JOBNAME}.log -z${UDS_WORK}/${JOBNAME}.txt"
-
+!sh sleep 120
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/105_HANA_BKL_Glod.out ${DS_WORK}/HANA_BKL_Job.out
-!sh cut -c38-200 ${DS_WORK}/${JOBNAME}.log | tr -d '\r'
-!endtestcase
-
-!testcase hana015 106_HANA_BKL_Delete
-
-## // Delete output file before job run
-!sh rm ${DS_WORK}/HANA_BKL_Job.out
-
-## delete
-!sh export JOBNAME=106_HANA_BKL_Delete
-!sh eim_launcher.sh ${JOBNAME} "-KspS1 -T2062 -l${UDS_WORK}/${JOBNAME}.log -z${UDS_WORK}/${JOBNAME}.txt"
-
+!sh adiff ${runtest}/goldlog/openhub15_parallel1.out ${DS_WORK}/openhub15_parallel1.out
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/106_HANA_BKL_Glod.out ${DS_WORK}/HANA_BKL_Job.out
-!sh cut -c38-200 ${DS_WORK}/${JOBNAME}.log | tr -d '\r'
+!sh adiff ${runtest}/goldlog/openhub15_parallel2.out ${DS_WORK}/openhub15_parallel2.out
 !endtestcase
+
+
+!testcase openhub15
+!sh eim_launcher.sh openhub15_samedf
+
+!sh sleep 120
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/openhub15_1.out ${DS_WORK}/openhub15_1.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/openhub15_2.out ${DS_WORK}/openhub15_2.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/openhub15_3.out ${DS_WORK}/openhub15_3.out
+!endtestcase
+
+
+!testcase openhub16
+!sh eim_launcher.sh openhub16_read2tables
+
+!sh sleep 120
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/openhub13_packets_16.out ${DS_WORK}/openhub13_packets_16.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/openhub_16_2.out ${DS_WORK}/openhub_16_2.out
+!endtestcase
+
+
+!testcase openhub17
+!sh eim_launcher.sh openhub17_scriptreader
+
+!sh sleep 120
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/openhub01.out ${DS_WORK}/openhub01.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/openhub03_table32.out ${DS_WORK}/openhub03_table32.out
+!endtestcase
+
+
+!testcase openhub18
+!sh eim_launcher.sh openhub18_join
+
+!sh sleep 120
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/openhub18_join.out ${DS_WORK}/openhub18_join.out
+!endtestcase
+
+
+!testcase openhub19
+!sh eim_launcher.sh openhub19_delta
+
+!sh sleep 120
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/openhub19_delta.out ${DS_WORK}/openhub19_delta.out
+!endtestcase
+
+
+!testcase openhub20
+!sh eim_launcher.sh openhub20_lesscolumns
+
+!sh sleep 120
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/openhub20_lesscolumns.out ${DS_WORK}/openhub20_lesscolumns.out
+!endtestcase
+
+
+!testcase openhub22
+!sh eim_launcher.sh openhub22_diffschema
+
+!sh sleep 120
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/oherr03_difftable.out ${DS_WORK}/oherr03_difftable.out
+!endtestcase
+
+
+!testcase openhub22a
+!sh eim_launcher.sh openhub22_table13
+
+!sh sleep 120
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/openhub13.out ${DS_WORK}/openhub13.out
+!endtestcase
+
+
+!testcase openhub23
+!expect no *Failed*
+!sh eim_launcher.sh openhub23_optionalfields
+
+!endtestcase
+
+
+!testcase openhub24
+!expect no *Failed*
+!sh eim_launcher.sh openhub24_audit
+
+!endtestcase
+
+
+!testcase openhub25
+!sh eim_launcher.sh openhub25_emb
+
+!sh sleep 120
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/openhub25_emb.out ${DS_WORK}/openhub25_emb.out
+!endtestcase
+
+
+!testcase openhub26
+!sh eim_launcher.sh openhub26_emb
+
+!sh sleep 120
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/openhub26_emb.out ${DS_WORK}/openhub26_emb.out
+!endtestcase
+
+
+!testcase openhub27
+!sh eim_launcher.sh openhub27_subsparam1
+
+!sh sleep 120
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/openhub01.out ${DS_WORK}/openhub01.out
+!endtestcase
+
+
+!testcase openhub28
+!sh eim_launcher.sh openhub28_readinparallel
+
+!sh sleep 120
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/openhub03_table32.out ${DS_WORK}/openhub03_table32.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/openhub_table342.out ${DS_WORK}/openhub_table342.out
+!endtestcase
+
+
+!testcase openhub29
+!sh eim_launcher.sh openhub29_table32full
+
+!sh sleep 120
+#!expect no *Failed*
+#!sh adiff ${runtest}/goldlog/openhub_table32full.out ${DS_WORK}/openhub_table32full.out
+
+#we should only check if there are rows returned and its sufficient
+!expect no 0
+!sh du ${DS_WORK}/openhub30_errordtp2.out | awk '{ print $1 }'
+
+!endtestcase
+
+
+!testcase openhub30
+!sh eim_launcher.sh openhub30_witherrordtp
+
+!sh sleep 120
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/openhub30_errordtp1.out ${DS_WORK}/openhub30_errordtp1.out
+#we should only check if there are rows returned and its sufficient
+!expect no 0
+!sh du ${DS_WORK}/openhub30_errordtp2.out | awk '{ print $1 }'
+
+#!expect no *Failed*
+#!sh adiff ${runtest}/goldlog/openhub30_errordtp2.out ${DS_WORK}/openhub30_errordtp2.out
+!endtestcase
+
+
+!testcase openhub31
+!sh eim_launcher.sh openhub31_parallelsamerfc
+
+!sh sleep 120
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/openhub_table342.out ${DS_WORK}/openhub_table342.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/openhub20_lesscolumns.out ${DS_WORK}/openhub20_lesscolumns.out
+!endtestcase
+

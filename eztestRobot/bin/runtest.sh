@@ -1,3 +1,5 @@
+${WHICHBASH}
+
 flag=0
 findsuite=0
 findcase=0
@@ -74,30 +76,37 @@ do
       shift
       export TESTSUITE_SETUP=
       export NOSETUP='on'
+      shift
       ;;
     -debug)
       shift
       export DEBUG='on'
+      shift
       ;;
     -noconvert)
       shift
       export NOCONVERT='on'
+      shift
       ;;
     -timeout)
       shift
       export ROBOT_TEST_TIMEOUT=$1
+      shift
       ;;
     -robot)
       shift
       export ROBOT_OPTION_EX=$1
+      shift
       ;;
     -rerunfailed)
       shift
       export RERUN_FAILED='on'
+      shift
       ;;
     -robotcases)
       shift
       export ROBOT_TESTCASE=$1
+      shift
       ;;
     -t)
       shift
@@ -108,10 +117,12 @@ do
     -noupdate)
       shift
       G_UPDATE='off'
+      shift
       ;;
 	-testunit_4_log)
 	  shift
 	  export testunit_4_log=$1
+	  shift
 	  ;;
     -p)
       shift
@@ -268,10 +279,13 @@ else
   fi
 fi
 
-IFS=',' read -ra TEMP <<< "$testunit"
-for i in "${TEMP[@]}"; do
-  Testlist="$Testlist $i"
-done
+if [ -z "$ROBOT_DISABLE_SPECIFY_UNITS_CASES" ]
+then
+  IFS=',' read -ra TEMP <<< "$testunit"
+  for i in "${TEMP[@]}"; do
+    Testlist="$Testlist $i"
+  done
+fi
 
 [ -z "$Testlist" ] && Testlist=$testunit
 
@@ -317,7 +331,7 @@ do
        echo "Error: Testunit $runtest doesn't exist."
     fi
 
-    if [ -n $TESTCASE ]
+    if [ -z "$ROBOT_DISABLE_SPECIFY_UNITS_CASES" ] && [ -n $TESTCASE ]
     then
       IFS=',' read -ra TEMP <<< "$TESTCASE"
       for i in "${TEMP[@]}"; do

@@ -6,14 +6,14 @@ fi
 
 export ROBOTFOLDERNAME=${ROBOTHOME##*/}
 
-if [ -e "${TESTNODE}/tmp/$ROBOTFOLDERNAME/version.txt" ]
+if [ -e "${TESTNODE}/tmp_robot/$ROBOTFOLDERNAME/version.txt" ]
 then
-  cmp --silent "${ROBOTHOME}/version.txt" "${TESTNODE}/tmp/$ROBOTFOLDERNAME/version.txt"
+  cmp --silent "${ROBOTHOME}/version.txt" "${TESTNODE}/tmp_robot/$ROBOTFOLDERNAME/version.txt"
   status=$?
   [ $status -eq 1 ] && export NEED_UPDATE='TRUE'
 fi
 
-if [ -z "$NOT_COPY_ROBOT" ] && [ -n "$NEED_UPDATE" ] || [ ! -e "${TESTNODE}/tmp/$ROBOTFOLDERNAME/version.txt" ] || [ -n "$FORCE_COPY_ROBOT" ]
+if [ -z "$NOT_COPY_ROBOT" ] && [ -n "$NEED_UPDATE" ] || [ ! -e "${TESTNODE}/tmp_robot/$ROBOTFOLDERNAME/version.txt" ] || [ -n "$FORCE_COPY_ROBOT" ]
 then
   rm -r ${TESTNODE}/tmp_robot
   mkdir ${TESTNODE}/tmp_robot
@@ -44,6 +44,11 @@ export ROBOT_OPTION="-v ROBOTHOME:${ROBOTHOME} --noncritical InTestingSetup"
 export ROBOT_TIMEOUT_DEF='3600s'
 export DS_BUILD=`al_engine -v`
 
+unset DS_WORK
+unset UDS_WORK
+unset DS_GOLD
+unset DS_INPUT
+unset UDS_INPUT
 
 if [ "$TERM" = "cygwin" ]
 then

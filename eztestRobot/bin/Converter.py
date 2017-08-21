@@ -163,22 +163,26 @@ def converter(root, fileName):
                 elif ln[:7] == "!expect":
                     expectNextResult = True
                     m = re_expect.match(ln)
-                    if m.group(1).lower() == 'no':
-                        expectStep = ExpectStep('no', m.group(2).strip())
-                    elif m.group(1).lower() == 'any':
-                        expectStep = ExpectStep('any', m.group(2).strip())
+                    if m:
+                        if m.group(1).lower() == 'no':
+                            expectStep = ExpectStep('no', m.group(2).strip())
+                        elif m.group(1).lower() == 'any':
+                            expectStep = ExpectStep('any', m.group(2).strip())
+                        else:
+                            expectNextResult = False
                     else:
                         expectNextResult = False
 
                 elif ln[:7] == "!define":
                     m = re_define.match(ln)
-                    if m.group(1).strip() != 'setup':
-                        skipKeyWord = False
-                        if keyword:
-                            testunit.addKeyWord(keyword)
-                        keyword = KeyWord(m.group(1))
-                    else:
-                        skipKeyWord = True
+                    if m:
+                        if m.group(1).strip() != 'setup':
+                            skipKeyWord = False
+                            if keyword:
+                                testunit.addKeyWord(keyword)
+                            keyword = KeyWord(m.group(1))
+                        else:
+                            skipKeyWord = True
 
                 elif ln[:4] == "!end":
                     if not skipKeyWord:
