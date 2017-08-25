@@ -3,6 +3,7 @@
 1.09
 fix !expect handling, when !expect format is not correct, will skip it
 fix !define handling, when !defind format is not correct, will skip it
+fix no value options in runtest.sh sometimes doesn't work problem
 =========
 1.08
 add Number of testcase planed in summary file

@@ -76,17 +76,14 @@ do
       shift
       export TESTSUITE_SETUP=
       export NOSETUP='on'
-      shift
       ;;
     -debug)
       shift
       export DEBUG='on'
-      shift
       ;;
     -noconvert)
       shift
       export NOCONVERT='on'
-      shift
       ;;
     -timeout)
       shift
@@ -101,7 +98,6 @@ do
     -rerunfailed)
       shift
       export RERUN_FAILED='on'
-      shift
       ;;
     -robotcases)
       shift
@@ -117,7 +113,6 @@ do
     -noupdate)
       shift
       G_UPDATE='off'
-      shift
       ;;
 	-testunit_4_log)
 	  shift
