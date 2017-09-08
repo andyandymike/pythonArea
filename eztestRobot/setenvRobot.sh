@@ -6,22 +6,24 @@ fi
 
 export ROBOTFOLDERNAME=${ROBOTHOME##*/}
 
-if [ -e "${TESTNODE}/tmp_robot/$ROBOTFOLDERNAME/version.txt" ]
+[ -z "$ROBOT_LOCAL_TEMP_FOLDER" ] && export ROBOT_LOCAL_TEMP_FOLDER=tmp_robot
+
+if [ -e "${TESTNODE}/$ROBOT_LOCAL_TEMP_FOLDER/$ROBOTFOLDERNAME/version.txt" ]
 then
-  cmp --silent "${ROBOTHOME}/version.txt" "${TESTNODE}/tmp_robot/$ROBOTFOLDERNAME/version.txt"
+  cmp --silent "${ROBOTHOME}/version.txt" "${TESTNODE}/$ROBOT_LOCAL_TEMP_FOLDER/$ROBOTFOLDERNAME/version.txt"
   status=$?
   [ $status -eq 1 ] && export NEED_UPDATE='TRUE'
 fi
 
-if [ -z "$NOT_COPY_ROBOT" ] && [ -n "$NEED_UPDATE" ] || [ ! -e "${TESTNODE}/tmp_robot/$ROBOTFOLDERNAME/version.txt" ] || [ -n "$FORCE_COPY_ROBOT" ]
+if [ -z "$NOT_COPY_ROBOT" ] && [ -n "$NEED_UPDATE" ] || [ ! -e "${TESTNODE}/$ROBOT_LOCAL_TEMP_FOLDER/$ROBOTFOLDERNAME/version.txt" ] || [ -n "$FORCE_COPY_ROBOT" ]
 then
-  rm -r ${TESTNODE}/tmp_robot
-  mkdir ${TESTNODE}/tmp_robot
-  chmod -R 777 ${TESTNODE}/tmp_robot
+  rm -r ${TESTNODE}/$ROBOT_LOCAL_TEMP_FOLDER
+  mkdir ${TESTNODE}/$ROBOT_LOCAL_TEMP_FOLDER
+  chmod -R 777 ${TESTNODE}/$ROBOT_LOCAL_TEMP_FOLDER
   echo Due to version update, will copy latest Robot, please wait ...
-  cp -r ${ROBOTHOME} ${TESTNODE}/tmp_robot
-  chmod -R 777 ${TESTNODE}/tmp_robot/$ROBOTFOLDERNAME
-  export ROBOTHOME=${TESTNODE}/tmp_robot/$ROBOTFOLDERNAME
+  cp -r ${ROBOTHOME} ${TESTNODE}/$ROBOT_LOCAL_TEMP_FOLDER
+  chmod -R 777 ${TESTNODE}/$ROBOT_LOCAL_TEMP_FOLDER/$ROBOTFOLDERNAME
+  export ROBOTHOME=${TESTNODE}/$ROBOT_LOCAL_TEMP_FOLDER/$ROBOTFOLDERNAME
 
   export ROBOT_COPYED='TRUE'
 
@@ -31,7 +33,7 @@ fi
 
 if [ -z "$NEED_UPDATE" ] && [ -z "$NOT_COPY_ROBOT" ]
 then
-  export ROBOTHOME=${TESTNODE}/tmp_robot/$ROBOTFOLDERNAME
+  export ROBOTHOME=${TESTNODE}/$ROBOT_LOCAL_TEMP_FOLDER/$ROBOTFOLDERNAME
 fi
 
 export QAENV="$ROBOTHOME"
@@ -49,6 +51,8 @@ unset UDS_WORK
 unset DS_GOLD
 unset DS_INPUT
 unset UDS_INPUT
+
+unset ROBOT_LOCAL_TEMP_FOLDER
 
 if [ "$TERM" = "cygwin" ]
 then

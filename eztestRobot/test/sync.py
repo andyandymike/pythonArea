@@ -29,7 +29,7 @@ def checksum(fileName):
 def main():
     flag = 'ezrobot'
     #flag = 'sikuli'
-    bk = False
+    bk = True
     robotRoot = os.path.abspath('..')
     syncRoot = robotRoot
     #syncRoot = 'C:\\Users\\i067382\\EIMTest\\eim_ui_testing\\DSSeleniumTests\\src'

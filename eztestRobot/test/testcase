@@ -1,314 +1,548 @@
-!sh rm $DS_WORK/*.*
-
+!define setup
+!sh rm -rf ${DS_WORK}/*
+!sh mkdir ${DS_WORK}
+!sh chmod -R 777 ${DS_WORK}
 !sh cd ${runtest}/positive
 
-!timeout 20000
+#!sh subvalue2 ${runtest}/positive/ds_atl.atl ${DS_WORK}/tds_atl.atl
+#!sh al_engine ${al_engine_param} -passphrasedsplatform -f${DS_WORK}/tds_atl.atl -z${DS_WORK}/ds_atl.txt
+!sh import_atl.sh ds_atl.atl
 
-!sh subvalue2 openhub.atl ${DS_WORK}/openhub_4.0_Dec_1_2011.atl
+#!sh subvalue2 ${runtest}/positive/table_atl.atl ${DS_WORK}/ttable_atl.atl
+#!sh al_engine ${al_engine_param} -passphrasedsplatform -f${DS_WORK}/ttable_atl.atl -z${DS_WORK}/table_atl.txt
+!sh import_atl.sh table_atl.atl
 
-!sh al_engine ${al_engine_param} -U$REPOID -P$REPOPW -f${DS_WORK}/openhub_4.0_Dec_1_2011.atl -z${runtest}/work/openhub_4.0_Dec_1_2011.txt -passphrasedsplatform
+#!sh subvalue2 ${runtest}/positive/hanacalcjoinview_jobs.atl ${DS_WORK}/thanacalcjoinview_jobs.atl
+#!sh al_engine ${al_engine_param} -passphrasedsplatform -f${DS_WORK}/thanacalcjoinview_jobs.atl -z${DS_WORK}/hanacalcjoinview_jobs.txt
+!sh import_atl.sh hanacalcjoinview_jobs.atl
+!sh import_atl.sh HANA_CalcJoinView_AT_MATERIAL.atl
+!sh
+!end
 
-!sh al_engine ${al_engine_param} -U$REPOID -P$REPOPW -fsubstitution_parameters_openhub_4.0.atl -z${runtest}/work/substitution_parameters_openhub_4.0.txt -passphrasedsplatform
+!call setup
 
-!testcase openhub01
-!sh eim_launcher.sh openhub01_script
+############################
+###  HANA CALCJOINVIEW   ###
+############################
 
-!sh sleep 120
+!testcase tcase001 AN_CUSTOMER_LINE_ITEM
+!sh export JOBNAME=AN_CUSTOMER_LINE_ITEM
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/openhub01.out ${DS_WORK}/openhub01.out
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out "${DS_WORK}/test space/${JOBNAME}_NS.out"
 !endtestcase
 
-!testcase openhub02
-!sh eim_launcher.sh openhub02_table32
-
-!sh sleep 120
+!testcase tcase002 AN_CUSTOMER_LINE_ITEM_CR
+!sh export JOBNAME=AN_CUSTOMER_LINE_ITEM_CR
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/openhub_table32.out ${DS_WORK}/openhub_table32.out
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
 !endtestcase
 
-
-!testcase openhub03
-!sh eim_launcher.sh openhub03_table32
-
-!sh sleep 120
+!testcase tcase003 AN_OVERDUE_ITEM_ANALYSIS
+!sh export JOBNAME=AN_OVERDUE_ITEM_ANALYSIS
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/openhub03_table32.out ${DS_WORK}/openhub03_table32.out
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
 !endtestcase
 
-
-!testcase openhub04
-!sh eim_launcher.sh openhub04_subsparam
-
-!sh sleep 120
+!testcase tcase004 AN_OVERDUE_ITEM_ANALYSIS_DA
+!sh export JOBNAME=AN_OVERDUE_ITEM_ANALYSIS_DA
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/openhub04_subsparam.out ${DS_WORK}/openhub04_subsparam.out
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
 !endtestcase
 
-
-!testcase openhub05
-!sh eim_launcher.sh openhub05_changedest
-
-## Checked with Srini, this is supposed to be negative testcase
-!sh sleep 120
-!expect *Failed*
-!sh adiff ${runtest}/goldlog/openhub12.out ${DS_WORK}/openhub12.out
+!testcase tcase005 AN_VENDOR_LINE_ITEM
+!sh export JOBNAME=AN_VENDOR_LINE_ITEM
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
 !endtestcase
 
-
-!testcase openhub06
-!sh eim_launcher.sh openhub06_readparallel
-
-!sh sleep 120
+!testcase tcase006 AN_VENDOR_LINE_ITEM_CR
+!sh export JOBNAME=AN_VENDOR_LINE_ITEM_CR
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/openhub12_read1.out ${DS_WORK}/openhub12_read1.out
-!sh sleep 120
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/openhub12_read2.out ${DS_WORK}/openhub12_read2.out
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
 !endtestcase
 
-
-!testcase openhub07
-
+!testcase tcase007 AT_LEDGER_GL
+!sh export JOBNAME=AT_LEDGER_GL
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
 !expect no *Failed*
-!sh eim_launcher.sh openhub07_multpc
-
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
 !endtestcase
 
-
-!testcase openhub08
-
+!testcase tcase008 AT_NEW_GL_LINE_ITEM
+!sh export JOBNAME=AT_NEW_GL_LINE_ITEM
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
 !expect no *Failed*
-!sh eim_launcher.sh openhub08_subsparam
-
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
 !endtestcase
 
-
-!testcase openhub09
-
+!testcase tcase009 AT_BUSINESS_AREA
+!sh export JOBNAME=AT_BUSINESS_AREA
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
 !expect no *Failed*
-!sh eim_launcher.sh openhub09_multpc2
-
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
 !endtestcase
 
-
-!testcase openhub10
-!sh eim_launcher.sh openhub10_where
-
-!sh sleep 120
+!testcase tcase010 AT_CCY_GL_ASSIGNMENT
+!sh export JOBNAME=AT_CCY_GL_ASSIGNMENT
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/openhub10_where.out ${DS_WORK}/openhub10_where.out
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
 !endtestcase
 
-
-!testcase openhub11
-!sh eim_launcher.sh openhub11_groupby
-
-!sh sleep 120
+!testcase tcase011 AT_CLIENT
+!sh export JOBNAME=AT_CLIENT
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/openhub11_groupby.out ${DS_WORK}/openhub11_groupby.out
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
 !endtestcase
 
-
-!testcase openhub13
-!sh eim_launcher.sh openhub13_packets
-
-!sh sleep 120
+!testcase tcase012 AT_CUSTOMER_COMPANY_CODE_FIN
+!sh export JOBNAME=AT_CUSTOMER_COMPANY_CODE_FIN
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/openhub13_packets_16.out ${DS_WORK}/openhub13_packets_16.out
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
 !endtestcase
 
-
-!testcase openhub14
-!sh eim_launcher.sh openhub14_PCinsequence
-
-!sh sleep 120
+!testcase tcase013 AT_DOCUMENT_STATUS_FIN
+!sh export JOBNAME=AT_DOCUMENT_STATUS_FIN
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/openhub_table342.out ${DS_WORK}/openhub_table342.out
-!sh sleep 120
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/openhub13_packets_16.out ${DS_WORK}/openhub13_packets_16.out
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
 !endtestcase
 
-
-!testcase openhub15a
-!sh eim_launcher.sh openhub15_parallelwf
-
-!sh sleep 120
+!testcase tcase014 AT_GLOBAL_COMPANY
+!sh export JOBNAME=AT_GLOBAL_COMPANY
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/openhub15_parallel1.out ${DS_WORK}/openhub15_parallel1.out
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/openhub15_parallel2.out ${DS_WORK}/openhub15_parallel2.out
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
 !endtestcase
 
-
-!testcase openhub15
-!sh eim_launcher.sh openhub15_samedf
-
-!sh sleep 120
+!testcase tcase015 AT_VENDOR_COMPANY_CODE_FIN
+!sh export JOBNAME=AT_VENDOR_COMPANY_CODE_FIN
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/openhub15_1.out ${DS_WORK}/openhub15_1.out
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/openhub15_2.out ${DS_WORK}/openhub15_2.out
-!expect no *Failed*
-!sh adiff ${runtest}/goldlog/openhub15_3.out ${DS_WORK}/openhub15_3.out
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
 !endtestcase
 
-
-!testcase openhub16
-!sh eim_launcher.sh openhub16_read2tables
-
-!sh sleep 120
+!testcase tcase016 AT_MATERIAL_VALUATED_STOCK
+!sh export JOBNAME=AT_MATERIAL_VALUATED_STOCK
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/openhub13_packets_16.out ${DS_WORK}/openhub13_packets_16.out
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/openhub_16_2.out ${DS_WORK}/openhub_16_2.out
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
 !endtestcase
 
-
-!testcase openhub17
-!sh eim_launcher.sh openhub17_scriptreader
-
-!sh sleep 120
+!testcase tcase017 AT_MATERIAL_VALUATION
+!sh export JOBNAME=AT_MATERIAL_VALUATION
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/openhub01.out ${DS_WORK}/openhub01.out
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/openhub03_table32.out ${DS_WORK}/openhub03_table32.out
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
 !endtestcase
 
-
-!testcase openhub18
-!sh eim_launcher.sh openhub18_join
-
-!sh sleep 120
+!testcase tcase018 AT_COMPANY_CODE
+!sh export JOBNAME=AT_COMPANY_CODE
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/openhub18_join.out ${DS_WORK}/openhub18_join.out
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
 !endtestcase
 
-
-!testcase openhub19
-!sh eim_launcher.sh openhub19_delta
-
-!sh sleep 120
+!testcase tcase019 AT_CURRENCY_KEY
+!sh export JOBNAME=AT_CURRENCY_KEY
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/openhub19_delta.out ${DS_WORK}/openhub19_delta.out
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
 !endtestcase
 
-
-!testcase openhub20
-!sh eim_launcher.sh openhub20_lesscolumns
-
-!sh sleep 120
+!testcase tcase020 AT_CUSTOMER
+!sh export JOBNAME=AT_CUSTOMER
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/openhub20_lesscolumns.out ${DS_WORK}/openhub20_lesscolumns.out
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
 !endtestcase
 
-
-!testcase openhub22
-!sh eim_launcher.sh openhub22_diffschema
-
-!sh sleep 120
+!testcase tcase021 AT_CUSTOMER_BASIC
+!sh export JOBNAME=AT_CUSTOMER_BASIC
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/oherr03_difftable.out ${DS_WORK}/oherr03_difftable.out
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
 !endtestcase
 
-
-!testcase openhub22a
-!sh eim_launcher.sh openhub22_table13
-
-!sh sleep 120
+!testcase tcase022 AT_DEBIT_CREDIT_INDICATOR
+!sh export JOBNAME=AT_DEBIT_CREDIT_INDICATOR
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/openhub13.out ${DS_WORK}/openhub13.out
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
 !endtestcase
 
-
-!testcase openhub23
+!testcase tcase023 AT_MATERIAL
+!sh export JOBNAME=AT_MATERIAL
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
 !expect no *Failed*
-!sh eim_launcher.sh openhub23_optionalfields
-
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
 !endtestcase
 
-
-!testcase openhub24
+!testcase tcase024 AT_MATERIAL_BASIC
+!sh export JOBNAME=AT_MATERIAL_BASIC
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
 !expect no *Failed*
-!sh eim_launcher.sh openhub24_audit
-
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
 !endtestcase
 
-
-!testcase openhub25
-!sh eim_launcher.sh openhub25_emb
-
-!sh sleep 120
+!testcase tcase025 AT_MATERIAL_DESC
+!sh export JOBNAME=AT_MATERIAL_DESC
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/openhub25_emb.out ${DS_WORK}/openhub25_emb.out
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
 !endtestcase
 
-
-!testcase openhub26
-!sh eim_launcher.sh openhub26_emb
-
-!sh sleep 120
+!testcase tcase026 AT_MATERIAL_GROUP
+!sh export JOBNAME=AT_MATERIAL_GROUP
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/openhub26_emb.out ${DS_WORK}/openhub26_emb.out
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
 !endtestcase
 
-
-!testcase openhub27
-!sh eim_launcher.sh openhub27_subsparam1
-
-!sh sleep 120
+!testcase tcase027 AT_MEASURE_UNIT
+!sh export JOBNAME=AT_MEASURE_UNIT
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/openhub01.out ${DS_WORK}/openhub01.out
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
 !endtestcase
 
-
-!testcase openhub28
-!sh eim_launcher.sh openhub28_readinparallel
-
-!sh sleep 120
+!testcase tcase028 AT_PLANT
+!sh export JOBNAME=AT_PLANT
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/openhub03_table32.out ${DS_WORK}/openhub03_table32.out
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/openhub_table342.out ${DS_WORK}/openhub_table342.out
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
 !endtestcase
 
-
-!testcase openhub29
-!sh eim_launcher.sh openhub29_table32full
-
-!sh sleep 120
-#!expect no *Failed*
-#!sh adiff ${runtest}/goldlog/openhub_table32full.out ${DS_WORK}/openhub_table32full.out
-
-#we should only check if there are rows returned and its sufficient
-!expect no 0
-!sh du ${DS_WORK}/openhub30_errordtp2.out | awk '{ print $1 }'
-
+!testcase tcase029 AT_STORAGE_LOCATION
+!sh export JOBNAME=AT_STORAGE_LOCATION
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
 !endtestcase
 
-
-!testcase openhub30
-!sh eim_launcher.sh openhub30_witherrordtp
-
-!sh sleep 120
+!testcase tcase030 AT_TIME
+!sh export JOBNAME=AT_TIME
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/openhub30_errordtp1.out ${DS_WORK}/openhub30_errordtp1.out
-#we should only check if there are rows returned and its sufficient
-!expect no 0
-!sh du ${DS_WORK}/openhub30_errordtp2.out | awk '{ print $1 }'
-
-#!expect no *Failed*
-#!sh adiff ${runtest}/goldlog/openhub30_errordtp2.out ${DS_WORK}/openhub30_errordtp2.out
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
 !endtestcase
 
-
-!testcase openhub31
-!sh eim_launcher.sh openhub31_parallelsamerfc
-
-!sh sleep 120
+!testcase tcase031 AT_VENDOR
+!sh export JOBNAME=AT_VENDOR
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/openhub_table342.out ${DS_WORK}/openhub_table342.out
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
 !expect no *Failed*
-!sh adiff ${runtest}/goldlog/openhub20_lesscolumns.out ${DS_WORK}/openhub20_lesscolumns.out
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
 !endtestcase
 
+!testcase tcase032 AT_VENDOR_BASIC
+!sh export JOBNAME=AT_VENDOR_BASIC
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
+!endtestcase
+
+!testcase tcase033 AT_VENDOR_COMPANY_CODE
+!sh export JOBNAME=AT_VENDOR_COMPANY_CODE
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
+!endtestcase
+
+!testcase tcase034 AT_VENDOR_PURCHASE_ORG
+!sh export JOBNAME=AT_VENDOR_PURCHASE_ORG
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
+!endtestcase
+
+!testcase tcase035 AT_FS_CHART_OF_ACCOUNTS
+!sh export JOBNAME=AT_FS_CHART_OF_ACCOUNTS
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
+!endtestcase
+
+!testcase tcase036 AT_FS_PO_HEADER
+!sh export JOBNAME=AT_FS_PO_HEADER
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
+!endtestcase
+
+!testcase tcase037 AT_FS_VENDOR_BSAK
+!sh export JOBNAME=AT_FS_VENDOR_BSAK
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
+!endtestcase
+
+!testcase tcase038 AT_FS_VENDOR_BSIK
+!sh export JOBNAME=AT_FS_VENDOR_BSIK
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
+!endtestcase
+
+!testcase tcase039 AT_LOGISTICS_INVOICE_HEADER
+!sh export JOBNAME=AT_LOGISTICS_INVOICE_HEADER
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
+!endtestcase
+
+!testcase tcase040 AT_MOVEMENT_TYPE
+!sh export JOBNAME=AT_MOVEMENT_TYPE
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
+!endtestcase
+
+!testcase tcase041 AT_PLANT_COMP_CODE
+!sh export JOBNAME=AT_PLANT_COMP_CODE
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
+!endtestcase
+
+!testcase tcase042 AT_PO_HEADER_ORG_DATA
+!sh export JOBNAME=AT_PO_HEADER_ORG_DATA
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
+!endtestcase
+
+!testcase tcase043 AT_PO_ITEM
+!sh export JOBNAME=AT_PO_ITEM
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
+!endtestcase
+
+!testcase tcase044 AT_PO_ITEM_CATEGORY
+!sh export JOBNAME=AT_PO_ITEM_CATEGORY
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
+!endtestcase
+
+!testcase tcase045 AT_PURCHASING_DOCUMENT_TYPE
+!sh export JOBNAME=AT_PURCHASING_DOCUMENT_TYPE
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
+!endtestcase
+
+!testcase tcase046 AT_PURCH_GRP
+!sh export JOBNAME=AT_PURCH_GRP
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
+!endtestcase
+
+!testcase tcase047 AT_PURCH_ORG
+!sh export JOBNAME=AT_PURCH_ORG
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
+!endtestcase
+
+!testcase tcase048 AT_VENDOR_BASIC_FOR_CALC
+!sh export JOBNAME=AT_VENDOR_BASIC_FOR_CALC
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
+!endtestcase
+
+!testcase tcase049 AT_DIS_CHANNEL
+!sh export JOBNAME=AT_DIS_CHANNEL
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
+!endtestcase
+
+!testcase tcase050 AT_SALES_DISTRICT
+!sh export JOBNAME=AT_SALES_DISTRICT
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
+!endtestcase
+
+!testcase tcase051 AT_SALES_DIVISION
+!sh export JOBNAME=AT_SALES_DIVISION
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
+!endtestcase
+
+!testcase tcase052 AT_SALES_ORG
+!sh export JOBNAME=AT_SALES_ORG
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
+!endtestcase
+
+!testcase tcase053 AT_STAT_DELIVERY_HEADER
+!sh export JOBNAME=AT_STAT_DELIVERY_HEADER
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
+!endtestcase
+
+!testcase tcase054 AT_STAT_DELIVERY_ITEM
+!sh export JOBNAME=AT_STAT_DELIVERY_ITEM
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
+!endtestcase
+
+!testcase tcase055 AT_STAT_DEL_BILLING
+!sh export JOBNAME=AT_STAT_DEL_BILLING
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
+!endtestcase
+
+!testcase tcase056 AT_STAT_HEADER
+!sh export JOBNAME=AT_STAT_HEADER
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
+!endtestcase
+
+!testcase tcase057 AT_STAT_ITEM
+!sh export JOBNAME=AT_STAT_ITEM
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
+!endtestcase
+
+!testcase tcase058 AT_STAT_ORD_BILLING
+!sh export JOBNAME=AT_STAT_ORD_BILLING
+!sh eim_launcher.sh HANA_CalcJoinView_${JOBNAME}
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out
+!expect no *Failed*
+!sh adiff ${runtest}/goldlog/${JOBNAME}_NS.out ${DS_WORK}/${JOBNAME}_NS.out
+!endtestcase

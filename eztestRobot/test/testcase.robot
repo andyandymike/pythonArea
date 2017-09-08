@@ -7,208 +7,536 @@
 | *** Keywords *** |
 | Combined Setup |
 |  | Shell Command | echo Start Testing ... 
-|  | Shell Command | rm \$DS_WORK/*.* 
+|  | Shell Command | rm -rf \${DS_WORK}/* 
+|  | Shell Command | mkdir \${DS_WORK} 
+|  | Shell Command | chmod -R 777 \${DS_WORK} 
 |  | Change Working Directory | \${runtest}/positive 
-|  | Replace Env | openhub.atl | \${DS_WORK}/openhub_4.0_Dec_1_2011.atl 
-|  | Shell Command | al_engine \${al_engine_param} -U\$REPOID -P\$REPOPW -f\${DS_WORK}/openhub_4.0_Dec_1_2011.atl -z\${runtest}/work/openhub_4.0_Dec_1_2011.txt -passphrasedsplatform 
-|  | Shell Command | al_engine \${al_engine_param} -U\$REPOID -P\$REPOPW -fsubstitution_parameters_openhub_4.0.atl -z\${runtest}/work/substitution_parameters_openhub_4.0.txt -passphrasedsplatform 
+|  | Import ATL | ds_atl.atl 
+|  | Import ATL | table_atl.atl 
+|  | Import ATL | hanacalcjoinview_jobs.atl 
+|  | Import ATL | HANA_CalcJoinView_AT_MATERIAL.atl 
 
 | *** Test Cases *** |
-| openhub01 |
-|  | EIM Launcher | openhub01_script 
-|  | Shell Command | sleep 120 
-|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/openhub01.out | \${DS_WORK}/openhub01.out 
+| tcase001 |
+|  | [Documentation] | AN_CUSTOMER_LINE_ITEM 
+|  | Export Env | JOBNAME | AN_CUSTOMER_LINE_ITEM 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/test space/\${JOBNAME}_NS.out 
 |  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
 
-| openhub02 |
-|  | EIM Launcher | openhub02_table32 
-|  | Shell Command | sleep 120 
-|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/openhub_table32.out | \${DS_WORK}/openhub_table32.out 
+| tcase002 |
+|  | [Documentation] | AN_CUSTOMER_LINE_ITEM_CR 
+|  | Export Env | JOBNAME | AN_CUSTOMER_LINE_ITEM_CR 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
 |  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
 
-| openhub03 |
-|  | EIM Launcher | openhub03_table32 
-|  | Shell Command | sleep 120 
-|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/openhub03_table32.out | \${DS_WORK}/openhub03_table32.out 
+| tcase003 |
+|  | [Documentation] | AN_OVERDUE_ITEM_ANALYSIS 
+|  | Export Env | JOBNAME | AN_OVERDUE_ITEM_ANALYSIS 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
 |  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
 
-| openhub04 |
-|  | EIM Launcher | openhub04_subsparam 
-|  | Shell Command | sleep 120 
-|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/openhub04_subsparam.out | \${DS_WORK}/openhub04_subsparam.out 
+| tcase004 |
+|  | [Documentation] | AN_OVERDUE_ITEM_ANALYSIS_DA 
+|  | Export Env | JOBNAME | AN_OVERDUE_ITEM_ANALYSIS_DA 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
 |  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
 
-| openhub05 |
-|  | EIM Launcher | openhub05_changedest 
-|  | Shell Command | sleep 120 
-|  | Diff Unordered Files | \${runtest}/goldlog/openhub12.out | \${DS_WORK}/openhub12.out 
-
-| openhub06 |
-|  | EIM Launcher | openhub06_readparallel 
-|  | Shell Command | sleep 120 
-|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/openhub12_read1.out | \${DS_WORK}/openhub12_read1.out 
+| tcase005 |
+|  | [Documentation] | AN_VENDOR_LINE_ITEM 
+|  | Export Env | JOBNAME | AN_VENDOR_LINE_ITEM 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
 |  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
-|  | Shell Command | sleep 120 
-|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/openhub12_read2.out | \${DS_WORK}/openhub12_read2.out 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
 |  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
 
-| openhub07 |
-|  | ${result} = | EIM Launcher | openhub07_multpc 
+| tcase006 |
+|  | [Documentation] | AN_VENDOR_LINE_ITEM_CR 
+|  | Export Env | JOBNAME | AN_VENDOR_LINE_ITEM_CR 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
 |  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
 
-| openhub08 |
-|  | ${result} = | EIM Launcher | openhub08_subsparam 
+| tcase007 |
+|  | [Documentation] | AT_LEDGER_GL 
+|  | Export Env | JOBNAME | AT_LEDGER_GL 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
 |  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
 
-| openhub09 |
-|  | ${result} = | EIM Launcher | openhub09_multpc2 
+| tcase008 |
+|  | [Documentation] | AT_NEW_GL_LINE_ITEM 
+|  | Export Env | JOBNAME | AT_NEW_GL_LINE_ITEM 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
 |  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
 
-| openhub10 |
-|  | EIM Launcher | openhub10_where 
-|  | Shell Command | sleep 120 
-|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/openhub10_where.out | \${DS_WORK}/openhub10_where.out 
+| tcase009 |
+|  | [Documentation] | AT_BUSINESS_AREA 
+|  | Export Env | JOBNAME | AT_BUSINESS_AREA 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
 |  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
 
-| openhub11 |
-|  | EIM Launcher | openhub11_groupby 
-|  | Shell Command | sleep 120 
-|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/openhub11_groupby.out | \${DS_WORK}/openhub11_groupby.out 
+| tcase010 |
+|  | [Documentation] | AT_CCY_GL_ASSIGNMENT 
+|  | Export Env | JOBNAME | AT_CCY_GL_ASSIGNMENT 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
 |  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
 
-| openhub13 |
-|  | EIM Launcher | openhub13_packets 
-|  | Shell Command | sleep 120 
-|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/openhub13_packets_16.out | \${DS_WORK}/openhub13_packets_16.out 
+| tcase011 |
+|  | [Documentation] | AT_CLIENT 
+|  | Export Env | JOBNAME | AT_CLIENT 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
 |  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
 
-| openhub14 |
-|  | EIM Launcher | openhub14_PCinsequence 
-|  | Shell Command | sleep 120 
-|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/openhub_table342.out | \${DS_WORK}/openhub_table342.out 
+| tcase012 |
+|  | [Documentation] | AT_CUSTOMER_COMPANY_CODE_FIN 
+|  | Export Env | JOBNAME | AT_CUSTOMER_COMPANY_CODE_FIN 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
 |  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
-|  | Shell Command | sleep 120 
-|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/openhub13_packets_16.out | \${DS_WORK}/openhub13_packets_16.out 
-|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
-
-| openhub15a |
-|  | EIM Launcher | openhub15_parallelwf 
-|  | Shell Command | sleep 120 
-|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/openhub15_parallel1.out | \${DS_WORK}/openhub15_parallel1.out 
-|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
-|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/openhub15_parallel2.out | \${DS_WORK}/openhub15_parallel2.out 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
 |  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
 
-| openhub15 |
-|  | EIM Launcher | openhub15_samedf 
-|  | Shell Command | sleep 120 
-|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/openhub15_1.out | \${DS_WORK}/openhub15_1.out 
+| tcase013 |
+|  | [Documentation] | AT_DOCUMENT_STATUS_FIN 
+|  | Export Env | JOBNAME | AT_DOCUMENT_STATUS_FIN 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
 |  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
-|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/openhub15_2.out | \${DS_WORK}/openhub15_2.out 
-|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
-|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/openhub15_3.out | \${DS_WORK}/openhub15_3.out 
-|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
-
-| openhub16 |
-|  | EIM Launcher | openhub16_read2tables 
-|  | Shell Command | sleep 120 
-|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/openhub13_packets_16.out | \${DS_WORK}/openhub13_packets_16.out 
-|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
-|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/openhub_16_2.out | \${DS_WORK}/openhub_16_2.out 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
 |  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
 
-| openhub17 |
-|  | EIM Launcher | openhub17_scriptreader 
-|  | Shell Command | sleep 120 
-|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/openhub01.out | \${DS_WORK}/openhub01.out 
+| tcase014 |
+|  | [Documentation] | AT_GLOBAL_COMPANY 
+|  | Export Env | JOBNAME | AT_GLOBAL_COMPANY 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
 |  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
-|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/openhub03_table32.out | \${DS_WORK}/openhub03_table32.out 
-|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
-
-| openhub18 |
-|  | EIM Launcher | openhub18_join 
-|  | Shell Command | sleep 120 
-|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/openhub18_join.out | \${DS_WORK}/openhub18_join.out 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
 |  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
 
-| openhub19 |
-|  | EIM Launcher | openhub19_delta 
-|  | Shell Command | sleep 120 
-|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/openhub19_delta.out | \${DS_WORK}/openhub19_delta.out 
+| tcase015 |
+|  | [Documentation] | AT_VENDOR_COMPANY_CODE_FIN 
+|  | Export Env | JOBNAME | AT_VENDOR_COMPANY_CODE_FIN 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
 |  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
 
-| openhub20 |
-|  | EIM Launcher | openhub20_lesscolumns 
-|  | Shell Command | sleep 120 
-|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/openhub20_lesscolumns.out | \${DS_WORK}/openhub20_lesscolumns.out 
+| tcase016 |
+|  | [Documentation] | AT_MATERIAL_VALUATED_STOCK 
+|  | Export Env | JOBNAME | AT_MATERIAL_VALUATED_STOCK 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
 |  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
 
-| openhub22 |
-|  | EIM Launcher | openhub22_diffschema 
-|  | Shell Command | sleep 120 
-|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/oherr03_difftable.out | \${DS_WORK}/oherr03_difftable.out 
+| tcase017 |
+|  | [Documentation] | AT_MATERIAL_VALUATION 
+|  | Export Env | JOBNAME | AT_MATERIAL_VALUATION 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
 |  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
 
-| openhub22a |
-|  | EIM Launcher | openhub22_table13 
-|  | Shell Command | sleep 120 
-|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/openhub13.out | \${DS_WORK}/openhub13.out 
+| tcase018 |
+|  | [Documentation] | AT_COMPANY_CODE 
+|  | Export Env | JOBNAME | AT_COMPANY_CODE 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
 |  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
 
-| openhub23 |
-|  | ${result} = | EIM Launcher | openhub23_optionalfields 
+| tcase019 |
+|  | [Documentation] | AT_CURRENCY_KEY 
+|  | Export Env | JOBNAME | AT_CURRENCY_KEY 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
 |  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
 
-| openhub24 |
-|  | ${result} = | EIM Launcher | openhub24_audit 
+| tcase020 |
+|  | [Documentation] | AT_CUSTOMER 
+|  | Export Env | JOBNAME | AT_CUSTOMER 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
 |  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
 
-| openhub25 |
-|  | EIM Launcher | openhub25_emb 
-|  | Shell Command | sleep 120 
-|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/openhub25_emb.out | \${DS_WORK}/openhub25_emb.out 
+| tcase021 |
+|  | [Documentation] | AT_CUSTOMER_BASIC 
+|  | Export Env | JOBNAME | AT_CUSTOMER_BASIC 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
 |  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
 
-| openhub26 |
-|  | EIM Launcher | openhub26_emb 
-|  | Shell Command | sleep 120 
-|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/openhub26_emb.out | \${DS_WORK}/openhub26_emb.out 
+| tcase022 |
+|  | [Documentation] | AT_DEBIT_CREDIT_INDICATOR 
+|  | Export Env | JOBNAME | AT_DEBIT_CREDIT_INDICATOR 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
 |  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
 
-| openhub27 |
-|  | EIM Launcher | openhub27_subsparam1 
-|  | Shell Command | sleep 120 
-|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/openhub01.out | \${DS_WORK}/openhub01.out 
+| tcase023 |
+|  | [Documentation] | AT_MATERIAL 
+|  | Export Env | JOBNAME | AT_MATERIAL 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
 |  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
 
-| openhub28 |
-|  | EIM Launcher | openhub28_readinparallel 
-|  | Shell Command | sleep 120 
-|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/openhub03_table32.out | \${DS_WORK}/openhub03_table32.out 
+| tcase024 |
+|  | [Documentation] | AT_MATERIAL_BASIC 
+|  | Export Env | JOBNAME | AT_MATERIAL_BASIC 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
 |  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
-|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/openhub_table342.out | \${DS_WORK}/openhub_table342.out 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
 |  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
 
-| openhub29 |
-|  | EIM Launcher | openhub29_table32full 
-|  | Shell Command | sleep 120 
-|  | ${result} = | Shell Command | du \${DS_WORK}/openhub30_errordtp2.out \| awk '{ print \$1 }' 
-|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | 0 
-
-| openhub30 |
-|  | EIM Launcher | openhub30_witherrordtp 
-|  | Shell Command | sleep 120 
-|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/openhub30_errordtp1.out | \${DS_WORK}/openhub30_errordtp1.out 
+| tcase025 |
+|  | [Documentation] | AT_MATERIAL_DESC 
+|  | Export Env | JOBNAME | AT_MATERIAL_DESC 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
 |  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
-|  | ${result} = | Shell Command | du \${DS_WORK}/openhub30_errordtp2.out \| awk '{ print \$1 }' 
-|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | 0 
-
-| openhub31 |
-|  | EIM Launcher | openhub31_parallelsamerfc 
-|  | Shell Command | sleep 120 
-|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/openhub_table342.out | \${DS_WORK}/openhub_table342.out 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
 |  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
-|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/openhub20_lesscolumns.out | \${DS_WORK}/openhub20_lesscolumns.out 
+
+| tcase026 |
+|  | [Documentation] | AT_MATERIAL_GROUP 
+|  | Export Env | JOBNAME | AT_MATERIAL_GROUP 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+
+| tcase027 |
+|  | [Documentation] | AT_MEASURE_UNIT 
+|  | Export Env | JOBNAME | AT_MEASURE_UNIT 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+
+| tcase028 |
+|  | [Documentation] | AT_PLANT 
+|  | Export Env | JOBNAME | AT_PLANT 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+
+| tcase029 |
+|  | [Documentation] | AT_STORAGE_LOCATION 
+|  | Export Env | JOBNAME | AT_STORAGE_LOCATION 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+
+| tcase030 |
+|  | [Documentation] | AT_TIME 
+|  | Export Env | JOBNAME | AT_TIME 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+
+| tcase031 |
+|  | [Documentation] | AT_VENDOR 
+|  | Export Env | JOBNAME | AT_VENDOR 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+
+| tcase032 |
+|  | [Documentation] | AT_VENDOR_BASIC 
+|  | Export Env | JOBNAME | AT_VENDOR_BASIC 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+
+| tcase033 |
+|  | [Documentation] | AT_VENDOR_COMPANY_CODE 
+|  | Export Env | JOBNAME | AT_VENDOR_COMPANY_CODE 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+
+| tcase034 |
+|  | [Documentation] | AT_VENDOR_PURCHASE_ORG 
+|  | Export Env | JOBNAME | AT_VENDOR_PURCHASE_ORG 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+
+| tcase035 |
+|  | [Documentation] | AT_FS_CHART_OF_ACCOUNTS 
+|  | Export Env | JOBNAME | AT_FS_CHART_OF_ACCOUNTS 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+
+| tcase036 |
+|  | [Documentation] | AT_FS_PO_HEADER 
+|  | Export Env | JOBNAME | AT_FS_PO_HEADER 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+
+| tcase037 |
+|  | [Documentation] | AT_FS_VENDOR_BSAK 
+|  | Export Env | JOBNAME | AT_FS_VENDOR_BSAK 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+
+| tcase038 |
+|  | [Documentation] | AT_FS_VENDOR_BSIK 
+|  | Export Env | JOBNAME | AT_FS_VENDOR_BSIK 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+
+| tcase039 |
+|  | [Documentation] | AT_LOGISTICS_INVOICE_HEADER 
+|  | Export Env | JOBNAME | AT_LOGISTICS_INVOICE_HEADER 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+
+| tcase040 |
+|  | [Documentation] | AT_MOVEMENT_TYPE 
+|  | Export Env | JOBNAME | AT_MOVEMENT_TYPE 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+
+| tcase041 |
+|  | [Documentation] | AT_PLANT_COMP_CODE 
+|  | Export Env | JOBNAME | AT_PLANT_COMP_CODE 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+
+| tcase042 |
+|  | [Documentation] | AT_PO_HEADER_ORG_DATA 
+|  | Export Env | JOBNAME | AT_PO_HEADER_ORG_DATA 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+
+| tcase043 |
+|  | [Documentation] | AT_PO_ITEM 
+|  | Export Env | JOBNAME | AT_PO_ITEM 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+
+| tcase044 |
+|  | [Documentation] | AT_PO_ITEM_CATEGORY 
+|  | Export Env | JOBNAME | AT_PO_ITEM_CATEGORY 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+
+| tcase045 |
+|  | [Documentation] | AT_PURCHASING_DOCUMENT_TYPE 
+|  | Export Env | JOBNAME | AT_PURCHASING_DOCUMENT_TYPE 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+
+| tcase046 |
+|  | [Documentation] | AT_PURCH_GRP 
+|  | Export Env | JOBNAME | AT_PURCH_GRP 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+
+| tcase047 |
+|  | [Documentation] | AT_PURCH_ORG 
+|  | Export Env | JOBNAME | AT_PURCH_ORG 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+
+| tcase048 |
+|  | [Documentation] | AT_VENDOR_BASIC_FOR_CALC 
+|  | Export Env | JOBNAME | AT_VENDOR_BASIC_FOR_CALC 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+
+| tcase049 |
+|  | [Documentation] | AT_DIS_CHANNEL 
+|  | Export Env | JOBNAME | AT_DIS_CHANNEL 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+
+| tcase050 |
+|  | [Documentation] | AT_SALES_DISTRICT 
+|  | Export Env | JOBNAME | AT_SALES_DISTRICT 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+
+| tcase051 |
+|  | [Documentation] | AT_SALES_DIVISION 
+|  | Export Env | JOBNAME | AT_SALES_DIVISION 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+
+| tcase052 |
+|  | [Documentation] | AT_SALES_ORG 
+|  | Export Env | JOBNAME | AT_SALES_ORG 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+
+| tcase053 |
+|  | [Documentation] | AT_STAT_DELIVERY_HEADER 
+|  | Export Env | JOBNAME | AT_STAT_DELIVERY_HEADER 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+
+| tcase054 |
+|  | [Documentation] | AT_STAT_DELIVERY_ITEM 
+|  | Export Env | JOBNAME | AT_STAT_DELIVERY_ITEM 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+
+| tcase055 |
+|  | [Documentation] | AT_STAT_DEL_BILLING 
+|  | Export Env | JOBNAME | AT_STAT_DEL_BILLING 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+
+| tcase056 |
+|  | [Documentation] | AT_STAT_HEADER 
+|  | Export Env | JOBNAME | AT_STAT_HEADER 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+
+| tcase057 |
+|  | [Documentation] | AT_STAT_ITEM 
+|  | Export Env | JOBNAME | AT_STAT_ITEM 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+
+| tcase058 |
+|  | [Documentation] | AT_STAT_ORD_BILLING 
+|  | Export Env | JOBNAME | AT_STAT_ORD_BILLING 
+|  | EIM Launcher | HANA_CalcJoinView_\${JOBNAME} 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}.out | \${DS_WORK}/\${JOBNAME}.out 
+|  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
+|  | ${result} = | Diff Unordered Files | \${runtest}/goldlog/\${JOBNAME}_NS.out | \${DS_WORK}/\${JOBNAME}_NS.out 
 |  | Run Keyword If | $result is not None | Should Not Contain | ${result} | Failed 
 
 

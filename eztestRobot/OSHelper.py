@@ -13,11 +13,16 @@ from robot.libraries.BuiltIn import BuiltIn
 from robot.api import logger
 
 __all__ = ['shell_command', 'export_env', 'change_working_directory', 'remove_wildcard_files', 'import_atl',
-           'diff_unordered_files', 'replace_env', 'eim_launcher', 'unset']
+           'diff_unordered_files', 'replace_env', 'eim_launcher', 'unset', 'test']
 __version__ = '1.0'
 
 DEBUG = os.environ.get('DEBUG')
 printOutput = True if DEBUG == 'on' else False
+
+
+def test(input):
+    logger.info('output is %s' % os.path.abspath(input), also_console=printOutput)
+
 
 ''' Use replace_env_str to workaround shell expansion '''
 
@@ -86,7 +91,7 @@ def shell_command(cmd, useShell=False, replaceEnv=True, disableSubEnvRead=False,
         cmd = ["sh", "-c", "%s && echo ROBOT_ENV_START && printenv" % cmd]
         if disableSubEnvRead:
             cmd = ["sh", "-c", "%s" % cmd]
-        # cmd = shlex.split(cmd)
+            # cmd = shlex.split(cmd)
 
     logger.info('RUN: %s Using Shell: %s' % (oricmd, useShell), also_console=printOutput)
     myenv = os.environ.copy()
@@ -194,14 +199,16 @@ def eim_launcher(jobname, *args):
     JOBSERVERHOST = get_env('JOBSERVERHOST')
     JOBSERVERPORT = get_env('JOBSERVERPORT')
 
-    m_jobname = re.compile(r'\$\{(\w+)\}')
-    m = m_jobname.match(jobname)
-    if m:
-        runjob = get_env(m.group(1))
-    else:
-        runjob = jobname
+    runjob = replace_env_str(jobname)
 
-    export_env('JOBNAME', runjob)
+    # m_jobname = re.compile(r'\$\{(\w+)\}')
+    # m = m_jobname.match(jobname)
+    # if m:
+    #    runjob = get_env(m.group(1))
+    # else:
+    #    runjob = replace_env_str(jobname)
+
+    export_env('ROBOT_JOBNAME', runjob)
 
     jobexeoption = ''
 
@@ -212,9 +219,9 @@ def eim_launcher(jobname, *args):
 
     if runengine.upper() == 'Y':
         # al_engine ${al_engine_param} -s$JOBNAME -Ksp$SYSPROF $JOB_EXE_OPT $JOB_EXE_OPT2 -l${UDS_WORK}/$JOBNAME.log -t${UDS_WORK}/$JOBNAME.err
-        cmd = ['al_engine', al_engine_param, '-s' + jobname, '-Ksp' + SYSPROF]
-        cmd.append('-l' + UDS_WORK + '/' + jobname + '.log')
-        cmd.append('-t' + UDS_WORK + '/' + jobname + '.err')
+        cmd = ['al_engine', al_engine_param, '-s' + runjob, '-Ksp' + SYSPROF]
+        cmd.append('-l' + UDS_WORK + '/' + runjob + '.log')
+        cmd.append('-t' + UDS_WORK + '/' + runjob + '.err')
         for arg in args:
             cmd.append(arg)
     else:
@@ -287,10 +294,10 @@ class adiff():
         self.lenglines = 0
         self.lenwlines = 0
         self.limit = 10
-        self.lineNumbers = 10000
+        self.lineNumbers = 20000
         self.mode = 'small'
         self.EXSIZE_LIMIT = 600000000L
-        self.SMALLSIZE_LIMIT = 10000000L
+        self.SMALLSIZE_LIMIT = 20000000L
 
     def _diff_small_unordered_files(self):
         with open(self.gold, 'rU') as fGoldFile:
@@ -315,12 +322,15 @@ class adiff():
                 glinesPre2 = map(lambda line: re_xml.sub("", line), self.glinesPre1)
                 wlinesPre2 = map(lambda line: re_xml.sub("", line), self.wlinesPre1)
 
-                glinesPre3 = map(lambda line: line.replace("\\\\", "\\"), glinesPre2)
-                glinesPre4 = map(lambda line: re.escape(line), glinesPre3)
+                re_multi_star = re.compile(r'\*+')
+                glinesPre3 = map(lambda line: re_multi_star.sub('*', line), glinesPre2)
+
+                glinesPre4 = map(lambda line: line.replace("\\\\", "\\"), glinesPre3)
+                glinesPre5 = map(lambda line: re.escape(line), glinesPre4)
 
                 re_multi = re.compile(r'\\\*')
                 re_single = re.compile(r'\\\?')
-                glines = map(lambda line: re_multi.sub(".*", line), glinesPre4)
+                glines = map(lambda line: re_multi.sub(".*", line), glinesPre5)
                 glines = map(lambda line: re_single.sub(".?", line), glines)
                 wlines = wlinesPre2
 

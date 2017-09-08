@@ -35,8 +35,8 @@ def testProcessOut():
 
 
 def testDiff():
-    gf = os.path.join(testRoot, 'bg.out')
-    wf = os.path.join(testRoot, 'bw.out')
+    gf = os.path.join(testRoot, 'testcase021_1_wf110-g.out')
+    wf = os.path.join(testRoot, 'testcase021_1_wf110-w.out')
     print(diff_unordered_files(gf, wf))
 
 
@@ -154,8 +154,7 @@ def testReadConfig():
 
 if __name__ == '__main__':
     # testBifFileMaker()
-    # t1 = Timer("testDiff()", "from __main__ import testDiff")
-    # print t1.timeit(1)
+    t1 = Timer("testDiff()", "from __main__ import testDiff")
+    print t1.timeit(1)
     # t2 = Timer("testDiff_big()", "from __main__ import testDiff_big")
     # print t2.timeit(1)
-    testReadConfig()

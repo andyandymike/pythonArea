@@ -19,7 +19,7 @@ def converter(root, fileName):
         re_export = re.compile(r'export\s+(\w+)=(.+)')
         re_unset1 = re.compile(r'export\s+(\w+)=\s*')
         re_unset2 = re.compile(r'unset\s+(\w+)\s*')
-        re_adiff = re.compile(r'adiff\s+(.+)\s+(.+)')
+        re_adiff = re.compile(r"adiff\s+(\"[^\"]*\"|'[^']*'|[^\s\"']+)\s+(\"[^\"]*\"|'[^']*'|[^\s\"']+)")
         re_subvar = re.compile(r'subvalue2\s+(.+)\s+(.+)')
         re_regcheck = re.compile(r'!regcheck\s+(.+)\s+(.+)')
         re_export2 = re.compile(r'(\w+)=(.+)')
@@ -55,7 +55,13 @@ def converter(root, fileName):
                 return robotTestStep
             m = re_adiff.match(ln)
             if m:
-                robotTestStep = DiffStep(m.group(1), m.group(2))
+                gold = m.group(1)
+                if gold[0] == '"' and gold[-1] == '"':
+                    gold = gold[1:-1]
+                work = m.group(2)
+                if work[0] == '"' and work[-1] == '"':
+                    work = work[1:-1]
+                robotTestStep = DiffStep(gold, work)
                 return robotTestStep
             m = re_subvar.match(ln)
             if m:

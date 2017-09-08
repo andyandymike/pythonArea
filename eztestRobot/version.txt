@@ -1,4 +1,11 @@
-1.09
+1.10
+=========
+1.10
+fix job name contains global variable support logic
+add adiff support space in file path
+change JOBNAME export internal to ROBOT_JOBNAME
+enhance adiff logic, avoid continuous star mark in goldlog lines ( ***** -> * )
+add change robot local copy folder support (export ROBOT_LOCAL_TEMP_FOLDER in setenv.sh)
 =========
 1.09
 fix !expect handling, when !expect format is not correct, will skip it
