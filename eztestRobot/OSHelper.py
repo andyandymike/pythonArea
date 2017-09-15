@@ -20,8 +20,11 @@ DEBUG = os.environ.get('DEBUG')
 printOutput = True if DEBUG == 'on' else False
 
 
-def test(input):
-    logger.info('output is %s' % os.path.abspath(input), also_console=printOutput)
+def test(gold, work):
+    try:
+        diff_unordered_files(gold, work)
+    except AssertionError:
+        print(AssertionError)
 
 
 ''' Use replace_env_str to workaround shell expansion '''
@@ -325,13 +328,20 @@ class adiff():
                 re_multi_star = re.compile(r'\*+')
                 glinesPre3 = map(lambda line: re_multi_star.sub('*', line), glinesPre2)
 
+                for i, gline in enumerate(glinesPre3):
+                    if gline.strip() == '*':
+                        del glinesPre3[i]
+                        del wlinesPre2[i]
+
                 glinesPre4 = map(lambda line: line.replace("\\\\", "\\"), glinesPre3)
                 glinesPre5 = map(lambda line: re.escape(line), glinesPre4)
 
                 re_multi = re.compile(r'\\\*')
                 re_single = re.compile(r'\\\?')
+                re_singleNum = re.compile(r'\\\#')
                 glines = map(lambda line: re_multi.sub(".*", line), glinesPre5)
                 glines = map(lambda line: re_single.sub(".?", line), glines)
+                glines = map(lambda line: re_singleNum.sub("[0-9]", line), glines)
                 wlines = wlinesPre2
 
                 if self.lenglines != self.lenwlines:
