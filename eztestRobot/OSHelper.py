@@ -8,6 +8,8 @@ import subprocess
 import difflib
 import shlex
 import hashlib
+import random
+import math
 
 from robot.libraries.BuiltIn import BuiltIn
 from robot.api import logger
@@ -17,14 +19,16 @@ __all__ = ['shell_command', 'export_env', 'change_working_directory', 'remove_wi
 __version__ = '1.0'
 
 DEBUG = os.environ.get('DEBUG')
-printOutput = True if DEBUG == 'on' else False
+printOutput = True if DEBUG is not None else False
 
 
 def test(gold, work):
     try:
-        diff_unordered_files(gold, work)
+        print(diff_unordered_files(gold, work))
     except AssertionError:
         print(AssertionError)
+    except OrderedSmallFileNotMatch:
+        print(OrderedSmallFileNotMatch)
 
 
 ''' Use replace_env_str to workaround shell expansion '''
@@ -292,57 +296,79 @@ def diff_unordered_files(gold, work, limit=10):
     return adiff().diff_unordered_files(gold, work, limit)
 
 
-class adiff():
+class OrderedSmallFileNotMatch(Exception):
+    def __init__(self, msg):
+        self.msg = msg
+
+    def __str__(self):
+        return repr(self.msg)
+
+
+class adiff:
     def __init__(self):
+        self.isOrdered = False
         self.lenglines = 0
         self.lenwlines = 0
         self.limit = 10
-        self.lineNumbers = 20000
-        self.mode = 'small'
+        self.UO_SMALL_LINENUM_LIMIT = 20000
+        self.O_SMALL_LINENUM_LIMIT = 300000
+        self.CARELESS_LINENUM_LIMIT = 400000
+        self.MODE = 'uosmall'
         self.EXSIZE_LIMIT = 600000000L
-        self.SMALLSIZE_LIMIT = 20000000L
+        self.ORDER_SAMPLE_RATE = 0.25
+        self.DIFFLIB_MATCH_CUTOFF = 0.8
+        self.ORDER_MATCH_CUTOFF = 0.2
 
-    def _diff_small_unordered_files(self):
+    def _contain_wild_card(self, line):
+        hasStar = line.find('*')
+        hasQues = line.find('?')
+        hasSharp = line.find('#')
+        return hasStar != -1 or hasQues != -1 or hasSharp != -1
+
+    def _is_ordered(self):
         with open(self.gold, 'rU') as fGoldFile:
             with open(self.work, 'rU') as fWorkFile:
-                if self.lenglines == 0:
-                    self.glinesPre1 = filter(lambda x: not re.match(r'\r?\n$|\r+$', x), fGoldFile.readlines())
-                    self.lenglines = len(self.glinesPre1)
+                re_xml = re.compile(r'<!--.*-->|xsi:schemaLocation=".*">|<ID>.*</ID>|<TableIndex Name=".*"')
 
-                    if self.lenglines > self.lineNumbers:
-                        self.mode = 'big'
-                        return
+                if self.lenglines == 0:
+                    self.glinesPre = map(lambda line: re_xml.sub("", line), fGoldFile.readlines())
+                    self.glinesPre = filter(lambda x: not re.match(r'\r?\n$|\r+$', x), self.glinesPre)
+                    self.lenglines = len(self.glinesPre)
 
                 if self.lenwlines == 0:
-                    self.wlinesPre1 = filter(lambda x: not re.match(r'\r?\n$|\r+$', x), fWorkFile.readlines())
-                    self.lenwlines = len(self.wlinesPre1)
+                    self.wlinesPre = map(lambda line: re_xml.sub("", line), fWorkFile.readlines())
+                    self.wlinesPre = filter(lambda x: not re.match(r'\r?\n$|\r+$', x), self.wlinesPre)
+                    self.lenwlines = len(self.wlinesPre)
 
-                    if self.lenwlines > self.lineNumbers:
-                        self.mode = 'big'
-                        return
+                if self.lenglines == self.lenwlines and self.lenglines > self.UO_SMALL_LINENUM_LIMIT:
+                    self.isOrdered = True
+                    noMatchCount = 0
+                    totoalCheckNum = int(math.ceil(self.lenglines * self.ORDER_SAMPLE_RATE))
+                    for _ in range(totoalCheckNum):
+                        temp = []
+                        randomLineNum = random.randint(0, self.lenglines - 1)
+                        temp.append(self.wlinesPre[randomLineNum])
+                        temp = difflib.get_close_matches(self.glinesPre[randomLineNum], temp, n=1,
+                                                         cutoff=self.DIFFLIB_MATCH_CUTOFF)
+                        if len(temp) == 0 and not self._contain_wild_card(self.glinesPre[randomLineNum]):
+                            noMatchCount += 1
+                    if noMatchCount / totoalCheckNum > self.ORDER_MATCH_CUTOFF:
+                        self.isOrdered = False
 
+    def _files_prepare(self):
+        with open(self.gold, 'rU') as fGoldFile:
+            with open(self.work, 'rU') as fWorkFile:
                 re_xml = re.compile(r'<!--.*-->|xsi:schemaLocation=".*">|<ID>.*</ID>|<TableIndex Name=".*"')
-                glinesPre2 = map(lambda line: re_xml.sub("", line), self.glinesPre1)
-                wlinesPre2 = map(lambda line: re_xml.sub("", line), self.wlinesPre1)
 
-                re_multi_star = re.compile(r'\*+')
-                glinesPre3 = map(lambda line: re_multi_star.sub('*', line), glinesPre2)
+                if self.lenglines == 0:
+                    self.glinesPre = map(lambda line: re_xml.sub("", line), fGoldFile.readlines())
+                    self.glinesPre = filter(lambda x: not re.match(r'\r?\n$|\r+$', x), self.glinesPre)
+                    self.lenglines = len(self.glinesPre)
 
-                for i, gline in enumerate(glinesPre3):
-                    if gline.strip() == '*':
-                        del glinesPre3[i]
-                        del wlinesPre2[i]
-
-                glinesPre4 = map(lambda line: line.replace("\\\\", "\\"), glinesPre3)
-                glinesPre5 = map(lambda line: re.escape(line), glinesPre4)
-
-                re_multi = re.compile(r'\\\*')
-                re_single = re.compile(r'\\\?')
-                re_singleNum = re.compile(r'\\\#')
-                glines = map(lambda line: re_multi.sub(".*", line), glinesPre5)
-                glines = map(lambda line: re_single.sub(".?", line), glines)
-                glines = map(lambda line: re_singleNum.sub("[0-9]", line), glines)
-                wlines = wlinesPre2
+                if self.lenwlines == 0:
+                    self.wlinesPre = map(lambda line: re_xml.sub("", line), fWorkFile.readlines())
+                    self.wlinesPre = filter(lambda x: not re.match(r'\r?\n$|\r+$', x), self.wlinesPre)
+                    self.lenwlines = len(self.wlinesPre)
 
                 if self.lenglines != self.lenwlines:
                     diffInfo = []
@@ -354,103 +380,181 @@ class adiff():
                     logger.info('\n'.join(diffInfo), also_console=True)
                     raise AssertionError("Files are different: %s %s" % (self.gold, self.work))
 
-                while True:
-                    gfStartLen = len(glines)
-                    for i, gline in enumerate(glines):
-                        for j, wline in enumerate(wlines):
-                            m = re.match(gline, wline)
-                            s = re.split(gline, wline)
-                            if m is not None and s[0] == '' and s[1] == '':
-                                del glines[i]
-                                del wlines[j]
-                                break
-                    gfEndLen = len(glines)
-                    if gfStartLen == gfEndLen:
-                        break
+    def _wildcard_prepare(self):
+        re_multi_star = re.compile(r'\*+')
+        glinesPre = map(lambda line: re_multi_star.sub('*', line), self.glinesPre)
 
-                if len(glines) > 0 or len(wlines) > 0:
-                    i = 0
-                    setDiffs = set()
-                    for gline in glines:
-                        diffInfo = []
-                        diffInfo.append("gold: %.100s ..." % unescape(gline))
-                        wline = difflib.get_close_matches(gline, wlines, n=1)
-                        if len(wline) == 1 and gline != wline[0]:
-                            diffInfo.append("work: %.100s ..." % wline[0])
-                        else:
-                            diffInfo.append("work: Missing!")
-                        diffInfo.append("----------------------")
-                        setDiffs.add('\n'.join(diffInfo))
-                        i += 1
-                        if i > self.limit:
-                            break
+        for i, gline in enumerate(glinesPre):
+            if gline.strip() == '*':
+                del glinesPre[i]
+                del self.wlinesPre[i]
+        self.lenglines = len(glinesPre)
+        self.lenwlines = len(self.wlinesPre)
 
-                    for wline in wlines:
-                        diffInfo = []
-                        gline = difflib.get_close_matches(wline, glines, n=1)
-                        if len(gline) == 1 and gline[0] != wline:
-                            diffInfo.append("gold: %.100s ..." % unescape(gline[0]))
-                        else:
-                            diffInfo.append("gold: Missing!")
-                        diffInfo.append("work: %.100s ..." % wline[:100])
-                        diffInfo.append("----------------------")
-                        setDiffs.add('\n'.join(diffInfo))
-                        i += 1
-                        if i > self.limit:
-                            break
+        glinesPre = map(lambda line: line.replace("\\\\", "\\"), glinesPre)
+        glinesPre = map(lambda line: re.escape(line), glinesPre)
 
-                    logger.info('\n', also_console=True)
-                    for diff in setDiffs:
-                        logger.info(diff, also_console=True)
+        re_multi = re.compile(r'\\\*')
+        re_single = re.compile(r'\\\?')
+        re_singleNum = re.compile(r'\\\#')
+        self.glines = map(lambda line: re_multi.sub(".*", line), glinesPre)
+        self.glines = map(lambda line: re_single.sub(".?", line), self.glines)
+        self.glines = map(lambda line: re_singleNum.sub("[0-9#]", line), self.glines)
+        self.wlines = self.wlinesPre
 
-                        raise AssertionError("Files are different: %s %s" % (self.work, self.gold))
+    def _diff_small_ordered_files(self):
+
+        if self.lenglines > self.O_SMALL_LINENUM_LIMIT or self.isOrdered is False:
+            self.MODE = 'big'
+            return
+
+        if self.lenwlines > self.O_SMALL_LINENUM_LIMIT or self.isOrdered is False:
+            self.MODE = 'big'
+            return
+
+        self._wildcard_prepare()
+
+        for lineNum in range(self.lenglines):
+            gline = self.glines[lineNum]
+            wline = self.wlines[lineNum]
+            m = re.match(gline, wline)
+            s = re.split(gline, wline)
+            if m is None or s[0] != '' or s[1] != '':
+                diffInfo = []
+                diffInfo.append("gold: %.100s ..." % unescape(gline))
+                diffInfo.append("work: %.100s ..." % wline)
+                diffInfo.append("----------------------")
+                logger.info('\n', also_console=True)
+                for diff in diffInfo:
+                    logger.info(diff, also_console=True)
+                raise AssertionError("Files are different: %s %s" % (self.work, self.gold))
 
         return 'Success'
 
-    def _diff_big_unordered_files(self):
-        logger.info('Diff in Big File Mode (Do not support wildcard)',
+    def _diff_unordered_files_careless(self):
+        logger.info('Diff in unordered file careless Mode (support wildcard but can be wrong in very rare conditions)',
                     also_console=True)
-        with open(self.gold, 'rU') as fGoldFile:
-            with open(self.work, 'rU') as fWorkFile:
-                if self.lenglines == 0:
-                    self.glinesPre1 = filter(lambda x: not re.match(r'\r?\n$|\r+$', x), fGoldFile.readlines())
-                    self.lenglines = len(self.glinesPre1)
 
-                if self.lenwlines == 0:
-                    self.wlinesPre1 = filter(lambda x: not re.match(r'\r?\n$|\r+$', x), fWorkFile.readlines())
-                    self.lenwlines = len(self.wlinesPre1)
+        if self.lenglines > self.CARELESS_LINENUM_LIMIT:
+            self.MODE = 'big'
+            return
 
-                if self.lenglines != self.lenwlines:
-                    diffInfo = []
-                    diffInfo.append("gold and work has different line number")
-                    diffInfo.append("glod has %d lines" % self.lenglines)
-                    diffInfo.append("work has %d lines" % self.lenwlines)
-                    diffInfo.append("----------------------")
-                    logger.info('\n', also_console=True)
-                    logger.info('\n'.join(diffInfo), also_console=True)
-                    raise AssertionError("Files are different: %s %s" % (self.gold, self.work))
+        if self.lenwlines > self.CARELESS_LINENUM_LIMIT:
+            self.MODE = 'big'
+            return
 
-                glines = sorted(self.glinesPre1)
-                wlines = sorted(self.wlinesPre1)
+        self._wildcard_prepare()
 
-                setDiffs = set()
-                j = 0
-                for i in range(self.lenglines):
-                    diffInfo = []
-                    if glines[i] != wlines[i] and j < self.limit:
-                        diffInfo.append("gold: %.100s ..." % delLB(glines[i]))
-                        diffInfo.append("work: %.100s ..." % delLB(wlines[i]))
-                        diffInfo.append("----------------------")
-                        setDiffs.add('\n'.join(diffInfo))
-                        j += 1
-                    if j == self.limit:
+        for i in range(self.lenglines):
+            gline = self.glines[i]
+            match = False
+            for j in range(self.lenwlines):
+                wline = self.wlines[j]
+                m = re.match(gline, wline)
+                if m:
+                    match = True
+                    break
+            if not match:
+                diffInfo = []
+                diffInfo.append("gold: %.100s ..." % unescape(gline))
+                diffInfo.append("work: %.100s ..." % wline)
+                diffInfo.append("----------------------")
+                logger.info('\n', also_console=True)
+                for diff in diffInfo:
+                    logger.info(diff, also_console=True)
+                raise AssertionError("Files are different: %s %s" % (self.work, self.gold))
+
+        return 'Success'
+
+    def _diff_small_unordered_files(self):
+        if self.lenglines > self.UO_SMALL_LINENUM_LIMIT:
+            self.MODE = 'osmall'
+            return
+
+        if self.lenwlines > self.UO_SMALL_LINENUM_LIMIT:
+            self.MODE = 'osmall'
+            return
+
+        self._wildcard_prepare()
+
+        while True:
+            gfStartLen = len(self.glines)
+            for i, gline in enumerate(self.glines):
+                for j, wline in enumerate(self.wlines):
+                    m = re.match(gline, wline)
+                    s = re.split(gline, wline)
+                    if m is not None and s[0] == '' and s[1] == '':
+                        del self.glines[i]
+                        del self.wlines[j]
                         break
+            gfEndLen = len(self.glines)
+            if gfStartLen == gfEndLen:
+                break
 
-                if j > 0:
-                    logger.info('\n', also_console=True)
-                    for diff in setDiffs:
-                        logger.info(diff, also_console=True)
-                        raise AssertionError("Files are different: %s %s" % (self.gold, self.work))
+        if len(self.glines) > 0 or len(self.wlines) > 0:
+            i = 0
+            setDiffs = set()
+            for gline in self.glines:
+                diffInfo = []
+                diffInfo.append("gold: %.100s ..." % unescape(gline))
+                wline = difflib.get_close_matches(gline, self.wlines, n=1, cutoff=self.DIFFLIB_MATCH_CUTOFF)
+                if len(wline) == 1 and gline != wline[0]:
+                    diffInfo.append("work: %.100s ..." % wline[0])
+                else:
+                    diffInfo.append("work: Missing!")
+                diffInfo.append("----------------------")
+                setDiffs.add('\n'.join(diffInfo))
+                i += 1
+                if i > self.limit:
+                    break
+
+            for wline in self.wlines:
+                diffInfo = []
+                gline = difflib.get_close_matches(wline, self.glines, n=1, cutoff=self.DIFFLIB_MATCH_CUTOFF)
+                if len(gline) == 1 and gline[0] != wline:
+                    diffInfo.append("gold: %.100s ..." % unescape(gline[0]))
+                else:
+                    diffInfo.append("gold: Missing!")
+                diffInfo.append("work: %.100s ..." % wline[:100])
+                diffInfo.append("----------------------")
+                setDiffs.add('\n'.join(diffInfo))
+                i += 1
+                if i > self.limit:
+                    break
+
+            logger.info('\n', also_console=True)
+            for diff in setDiffs:
+                logger.info(diff, also_console=True)
+
+                raise AssertionError("Files are different: %s %s" % (self.work, self.gold))
+
+        return 'Success'
+
+    def _diff_big_ordered_files(self):
+        logger.info('Diff in Big File Mode (Do not support wildcard and unordered)',
+                    also_console=True)
+
+        glines = sorted(self.glinesPre)
+        wlines = sorted(self.wlinesPre)
+
+        setDiffs = set()
+        j = 0
+        for i in range(self.lenglines):
+            diffInfo = []
+            if glines[i] != wlines[i] and j < self.limit:
+                diffInfo.append("gold: %.100s ..." % delLB(glines[i]))
+                diffInfo.append("work: %.100s ..." % delLB(wlines[i]))
+                diffInfo.append("----------------------")
+                setDiffs.add('\n'.join(diffInfo))
+                j += 1
+            if j == self.limit:
+                break
+
+        if j > 0:
+            logger.info('\n', also_console=True)
+            for diff in setDiffs:
+                logger.info(diff, also_console=True)
+                raise AssertionError("Files are different: %s %s" % (self.gold, self.work))
 
         return 'Success'
 
@@ -485,17 +589,32 @@ class adiff():
         logger.info('----------------------', also_console=True)
 
         if self.gsize > self.EXSIZE_LIMIT or self.wsize > self.EXSIZE_LIMIT:
-            self._diff_ex_unordered_files()
+            return self._diff_ex_unordered_files()
 
         if checksum(self.gold) == checksum(self.work):
             return 'Success'
         try:
-            if self.gsize < self.SMALLSIZE_LIMIT and self.wsize < self.SMALLSIZE_LIMIT and self.mode == 'small':
+            self._files_prepare()
+
+            if self.MODE == 'uosmall':
+                logger.info('Try compare files in unordered small mode', also_console=printOutput)
                 result = self._diff_small_unordered_files()
-            if self.gsize >= self.SMALLSIZE_LIMIT or self.wsize >= self.SMALLSIZE_LIMIT or self.mode == 'big':
-                result = self._diff_big_unordered_files()
+            if self.MODE == 'osmall':
+                logger.info('Try compare files in ordered small mode', also_console=printOutput)
+                self._is_ordered()
+                result = self._diff_small_ordered_files()
+            # if self.MODE == 'careless':
+            #    logger.info('Try compare files in careless mode', also_console=printOutput)
+            #    result = self._diff_unordered_files_careless()
+            if self.MODE == 'big':
+                logger.info('Try compare files in ordered big mode', also_console=printOutput)
+                result = self._diff_big_ordered_files()
+        # except OrderedSmallFileNotMatch:
+        #    logger.info('Try compare files in careless mode', also_console=printOutput)
+        #    return self._diff_unordered_files_careless()
         except MemoryError:
-            self._diff_ex_unordered_files()
+            logger.info('Try compare files in unordered ex mode', also_console=printOutput)
+            return self._diff_ex_unordered_files()
 
         return result
 

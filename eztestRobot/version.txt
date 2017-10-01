@@ -1,9 +1,26 @@
-1.11
+1.13
+=========
+1.13
+2017.09.28
+fix xml header casue adiff fails problem
+restructure code for adiff
+add testname as global variable
+=========
+1.12
+2017.09.19
+extend wildcard # support for goldlog diff, now it match (0 - 9 or #)
+2017.09.20
+enhance adiff, now if a file is bigger than unordered file with wildcard support scope,
+adiff will find out whether it is ordered, if it is, still try to support wildcard, but
+consider it ordered
+fix several bugs in adiff
+2017.09.21
+restructure code for adiff
 =========
 1.11
 2017.09.14
 fix goldlog file with lines which have only * in it cause adiff fails problem
-add wildcard # support (one number 0-9) for goldlob diff
+add wildcard # support (one number 0-9) for goldlog diff
 =========
 1.10
 fix job name contains global variable support logic

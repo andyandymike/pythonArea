@@ -153,8 +153,25 @@ def testReadConfig():
 
 
 def testTest():
-    gf = os.path.join(testRoot, 'json_goldlog.json')
-    wf = os.path.join(testRoot, 'json.json')
+    gf = os.path.join(testRoot, 'ksql_server002_job-g.txt')
+    wf = os.path.join(testRoot, 'ksql_server002_job-w.txt')
+    print(test(gf, wf))
+
+def testadiff():
+    gf = os.path.join(testRoot, 'g.txt')
+    wf = os.path.join(testRoot, 'w.txt')
+    print(test(gf, wf))
+    gf = os.path.join(testRoot, 'english_document_tc24_out-g-n')
+    wf = os.path.join(testRoot, 'english_document_tc24_out-w')
+    print(test(gf, wf))
+    with open(r'C:\Users\i067382\PycharmProjects\eztestRobot\test\obg', 'w') as g:
+        for i in range(80646):
+            g.write(str(i) + 'xxxxxxxxxa\n')
+    with open(r'C:\Users\i067382\PycharmProjects\eztestRobot\test\obw', 'w') as g:
+        for i in range(80646):
+            g.write(str(i) + 'xxxxxxxxxx\n')
+    gf = os.path.join(testRoot, 'obg')
+    wf = os.path.join(testRoot, 'obw')
     print(test(gf, wf))
 
 
@@ -164,3 +181,4 @@ if __name__ == '__main__':
     print t1.timeit(1)
     # t2 = Timer("testDiff_big()", "from __main__ import testDiff_big")
     # print t2.timeit(1)
+    pass

@@ -290,6 +290,7 @@ do
 	export unix_runtest=$UTESTNODE/$testsuite/$testunits
     export utestunit=$UTESTNODE/$testsuite/$testunits
     export testunit=$TESTNODE/$testsuite/$testunits
+    export testname=$testunits
 	
 	[ -z "$DS_WORK_ROOT" ] && export DS_WORK_ROOT=$TESTNODE
 	[ -z "$UDS_WORK_ROOT" ] && export UDS_WORK_ROOT=$UTESTNODE
