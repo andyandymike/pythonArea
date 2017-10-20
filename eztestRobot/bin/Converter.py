@@ -112,6 +112,7 @@ def converter(root, fileName):
 
         # testcase file
         tempCaseNum = 0
+        tempCase2ResolveNum = 0
         expectNextResult = False
         skipKeyWord = False
         for ln in fInputFile:
@@ -206,6 +207,7 @@ def converter(root, fileName):
             elif testcase:
                 if temptestcase is not None:
                     testunit.addCase(temptestcase)
+                    tempCase2ResolveNum -= 1
                     temptestcase = None
                 testcase.addStep(robotTestStep)
             elif testunit.numCases():
@@ -226,6 +228,7 @@ def converter(root, fileName):
                     temptestcase.addStep(TagStep('InTestingSetup'))
                     temptestcase.addStep(robotTestStep)
                     tempCaseNum += 1
+                    tempCase2ResolveNum += 1
                 else:
                     temptestcase.addStep(robotTestStep)
                 pass
@@ -233,10 +236,13 @@ def converter(root, fileName):
                 testunit.addSetup(robotTestStep)
 
         if testunit.numCases() == 0:
-            temptestcase = TestCase('A temp testcase')
-            temptestcase.addStep(DocStep('Create a temp testcase to run setup'))
-            temptestcase.addStep(TagStep('InTestingSetup'))
-            temptestcase.addStep(RunStep('echo A temp testcase'))
+            ntemptestcase = TestCase('A temp testcase')
+            ntemptestcase.addStep(DocStep('Create a temp testcase to run setup'))
+            ntemptestcase.addStep(TagStep('InTestingSetup'))
+            ntemptestcase.addStep(RunStep('echo A temp testcase'))
+            testunit.addCase(ntemptestcase)
+
+        if tempCase2ResolveNum > 0:
             testunit.addCase(temptestcase)
 
         outputFile = inputFile + ".robot"

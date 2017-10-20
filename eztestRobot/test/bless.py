@@ -1,38 +1,53 @@
-import random
-
-class WIFE:
-    def __init__(self, name):
-        self.name = name
-
-    def be_beautiful(self):
-        return True
+class oldstyleBase(object):
+    def foo(self):
+        print("oldstyleBase foo")
 
 
-class HUSBAND:
-    def __init__(self, name):
-        self.name = name
-
-    def earn_money(self):
-        return True
+class oldstyleChildA(oldstyleBase):
+    pass
 
 
-def give_birth(wife, husband):
-    return random.randint(0, 1)
+class oldstyleChildB(oldstyleBase):
+    def foo(self):
+        print("oldstyleChildB foo")
 
 
-if __name__ == '__life__':
-    babys = 0
-    cooldown = 0
+class test(oldstyleChildA, oldstyleChildB, list):
+    def __getattribute__(self, item):
+        if item == 'append':
+            print('getting append')
+        return super(test, self).__getattribute__(item)
 
-    wife = WIFE('LFH')
-    husband = HUSBAND('ZY')
 
-    for day in range(100 * 365):
-        wife.be_beautiful()
-        husband.earn_money()
+class inn(object):
+    def __init__(self, value=1):
+        self.value = value
 
-        if give_birth(wife, husband) == 1 and cooldown <= 0:
-            babys += 1
-            cooldown = 365
+    def __get__(self, instance, owner):
+        print('get inn')
+        return self.value
 
-        cooldown -= 1
+    def __set__(self, instance, value):
+        print('set inn')
+        self.__dict__['value'] = value
+
+
+class testInn(object):
+    tinn = inn()
+
+class base(object):
+    def __init__(self):
+        self.attr1 = 1
+
+class child(base):
+    def __init__(self):
+        print(super(child, self).attr1)
+
+if __name__ == '__main__':
+    t = test()
+    t.foo()
+    t.append(1)
+    temp = testInn()
+    temp.tinn = 2
+    print(temp.tinn)
+    c = child()

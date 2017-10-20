@@ -15,7 +15,7 @@ from robot.libraries.BuiltIn import BuiltIn
 from robot.api import logger
 
 __all__ = ['shell_command', 'export_env', 'change_working_directory', 'remove_wildcard_files', 'import_atl',
-           'diff_unordered_files', 'replace_env', 'eim_launcher', 'unset', 'test']
+           'diff_unordered_files', 'replace_env', 'eim_launcher', 'unset', 'test', 'replace_env_str']
 __version__ = '1.0'
 
 DEBUG = os.environ.get('DEBUG')
@@ -35,12 +35,14 @@ def test(gold, work):
 
 
 def replace_env_str(s):
+    s = s.replace(r'\$', 'ROBOT_PLACEHOLDER')
     ns = os.path.expandvars(s)
     regex = re.compile(r'`(.*)`')
     it = regex.finditer(ns)
     for match in it:
         cmd = "sh -c \"%s\"" % match.group(1).replace(r'"', r'\"')
         ns = ns.replace(match.group(0), command_output(cmd))
+    ns = ns.replace('ROBOT_PLACEHOLDER', r'$')
     return ns
 
 
@@ -148,7 +150,8 @@ def export_env(key, val):
 
 def unset(key):
     if os.environ.get(key) is not None:
-        del os.environ[key]
+        # del os.environ[key]
+        os.environ[key] = ""
 
 
 def get_env(key):
@@ -205,8 +208,14 @@ def eim_launcher(jobname, *args):
     JOBSERVERNAME = get_env('JOBSERVERNAME')
     JOBSERVERHOST = get_env('JOBSERVERHOST')
     JOBSERVERPORT = get_env('JOBSERVERPORT')
+    SERVERGROUPNAME = get_env('SERVERGROUPNAME')
+    SERVERGROUPDISTLEVEL = get_env('SERVERGROUPDISTLEVEL')
+    SERVERGROUPJOBSERVERS = get_env('SERVERGROUPJOBSERVERS')
 
     runjob = replace_env_str(jobname)
+
+    if get_env('KSQL') and get_env('KSQL') == 'TRUE':
+        export_env('KSQLPARAM', "-KSQL{UDS_WORK}/{JOBNAME}.sql".format(UDS_WORK=UDS_WORK, JOBNAME=runjob))
 
     # m_jobname = re.compile(r'\$\{(\w+)\}')
     # m = m_jobname.match(jobname)
@@ -232,9 +241,20 @@ def eim_launcher(jobname, *args):
         for arg in args:
             cmd.append(arg)
     else:
+        if SERVERGROUPNAME:
+            if not SERVERGROUPDISTLEVEL:
+                export_env(SERVERGROUPDISTLEVEL, 'JOB')
+                SERVERGROUPDISTLEVEL = 'JOB'
+            INETADDR = '"-S {SERVERGROUPNAME};inet:{JOBSERVERHOST}:{JOBSERVERPORT};{SERVERGROUPJOBSERVERS}"'.format(
+                SERVERGROUPNAME=SERVERGROUPNAME, JOBSERVERHOST=JOBSERVERHOST, JOBSERVERPORT=JOBSERVERPORT,
+                SERVERGROUPJOBSERVERS=SERVERGROUPJOBSERVERS)
+            export_env('SERVERGROUP_PARAM', "-ClusterLevel{SERVERGROUPDISTLEVEL} -ServerGroup{SERVERGROUPNAME}".format(
+                SERVERGROUPDISTLEVEL=SERVERGROUPDISTLEVEL, SERVERGROUPNAME=SERVERGROUPNAME))
+        else:
+            INETADDR = '"inet:' + JOBSERVERHOST + ':' + JOBSERVERPORT + '"'
         subvalue2(ROBOTHOME + '/bin/launcher.txt', DS_WORK + '/tlauncher.txt')
         # AL_RWJobLauncher.exe "$DS_COMMON_DIR/log/$JOBSERVERNAME/" -w "inet:$JOBSERVERHOST:$JOBSERVERPORT" -t5 -C "${DS_WORK}/tlauncher.txt"
-        cmd = ['AL_RWJobLauncher.exe', '"inet:' + JOBSERVERHOST + ':' + JOBSERVERPORT + '"',
+        cmd = ['AL_RWJobLauncher.exe', INETADDR,
                '"' + DS_COMMON_DIR + '/log/' + JOBSERVERNAME + '/"', '-w',
                '-t5', '-C', '"' + DS_WORK + '/tlauncher.txt"']
 
@@ -329,15 +349,18 @@ class adiff:
         with open(self.gold, 'rU') as fGoldFile:
             with open(self.work, 'rU') as fWorkFile:
                 re_xml = re.compile(r'<!--.*-->|xsi:schemaLocation=".*">|<ID>.*</ID>|<TableIndex Name=".*"')
+                re_break = re.compile(r'\r?\n$|\r+$')
 
                 if self.lenglines == 0:
                     self.glinesPre = map(lambda line: re_xml.sub("", line), fGoldFile.readlines())
                     self.glinesPre = filter(lambda x: not re.match(r'\r?\n$|\r+$', x), self.glinesPre)
+                    self.glinesPre = map(lambda line: re_break.sub("", line), self.glinesPre)
                     self.lenglines = len(self.glinesPre)
 
                 if self.lenwlines == 0:
                     self.wlinesPre = map(lambda line: re_xml.sub("", line), fWorkFile.readlines())
                     self.wlinesPre = filter(lambda x: not re.match(r'\r?\n$|\r+$', x), self.wlinesPre)
+                    self.wlinesPre = map(lambda line: re_break.sub("", line), self.wlinesPre)
                     self.lenwlines = len(self.wlinesPre)
 
                 if self.lenglines == self.lenwlines and self.lenglines > self.UO_SMALL_LINENUM_LIMIT:
@@ -359,15 +382,18 @@ class adiff:
         with open(self.gold, 'rU') as fGoldFile:
             with open(self.work, 'rU') as fWorkFile:
                 re_xml = re.compile(r'<!--.*-->|xsi:schemaLocation=".*">|<ID>.*</ID>|<TableIndex Name=".*"')
+                re_break = re.compile(r'\r?\n$|\r+$')
 
                 if self.lenglines == 0:
                     self.glinesPre = map(lambda line: re_xml.sub("", line), fGoldFile.readlines())
                     self.glinesPre = filter(lambda x: not re.match(r'\r?\n$|\r+$', x), self.glinesPre)
+                    self.glinesPre = map(lambda line: re_break.sub("", line), self.glinesPre)
                     self.lenglines = len(self.glinesPre)
 
                 if self.lenwlines == 0:
                     self.wlinesPre = map(lambda line: re_xml.sub("", line), fWorkFile.readlines())
                     self.wlinesPre = filter(lambda x: not re.match(r'\r?\n$|\r+$', x), self.wlinesPre)
+                    self.wlinesPre = map(lambda line: re_break.sub("", line), self.wlinesPre)
                     self.lenwlines = len(self.wlinesPre)
 
                 if self.lenglines != self.lenwlines:
@@ -391,6 +417,7 @@ class adiff:
         self.lenglines = len(glinesPre)
         self.lenwlines = len(self.wlinesPre)
 
+        glinesPre = map(lambda line: replace_env_str(line), glinesPre)
         glinesPre = map(lambda line: line.replace("\\\\", "\\"), glinesPre)
         glinesPre = map(lambda line: re.escape(line), glinesPre)
 

@@ -1,4 +1,16 @@
-1.13
+1.14
+=========
+1.14
+2017.10.13
+fix testcase file has commands in tail but not in a case fail to convert problem
+change call keyword logic, will continue on keyword failure
+2017.10.19
+add %KSQLPARAM% in launcher.txt
+using \$var in shell command will not replace itself with environment variable
+change unset behavior, unset will replace environment variable to empty string (not deleting it)
+add more options in launcher.txt (including jobserver group)
+add environment variable support in goldlog file
+adiff will delete \r\n at the end of line
 =========
 1.13
 2017.09.28

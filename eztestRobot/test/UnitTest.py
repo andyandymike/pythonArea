@@ -8,6 +8,7 @@ import subprocess
 import re
 import ConfigParser
 import io
+from bin import Converter
 from timeit import Timer
 
 root = os.path.abspath('.')
@@ -153,8 +154,9 @@ def testReadConfig():
 
 
 def testTest():
-    gf = os.path.join(testRoot, 'ksql_server002_job-g.txt')
-    wf = os.path.join(testRoot, 'ksql_server002_job-w.txt')
+    os.environ['ICC_PROJECT_NAME'] = 'ICCMats_mssql_1'
+    gf = os.path.join(testRoot, 'tcase002-g.out')
+    wf = os.path.join(testRoot, 'tcase002-w.out')
     print(test(gf, wf))
 
 def testadiff():
@@ -174,9 +176,17 @@ def testadiff():
     wf = os.path.join(testRoot, 'obw')
     print(test(gf, wf))
 
+def testConverter():
+    export_env('RUNTYPE', 'FIRST-DELTA')
+    export_env('LOADTYPE', "'DELTA'")
+    export_env('G_SDATE', "'2007.07.01'")
+    export_env('G_EDATE', "'2007.12.31'")
+    export_env('EXECUTEJOB', 'General_Ledger_New_Load_SAP')
+    export_env('TESTSUITE_COMPARES', '!call Compares_Files')
+    export_env('TESTSUITE_INITIALIZE_DB', '!call Initialize_DB')
+    Converter.converter(root, 'testcase')
 
 if __name__ == '__main__':
-    # testBifFileMaker()
     t1 = Timer("testTest()", "from __main__ import testTest")
     print t1.timeit(1)
     # t2 = Timer("testDiff_big()", "from __main__ import testDiff_big")
