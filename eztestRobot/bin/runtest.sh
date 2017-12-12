@@ -63,6 +63,7 @@ function print_help
 ######################################
 
 export G_UPDATE='on'
+export XML_JOB='off'
 export TESTCASE=
 export TESTSUITE_SETUP='!call setup'
 export CONFIG=$QAENV/ws.env
@@ -109,6 +110,10 @@ do
       TESTCASE=$1
       export TESTCASE
       shift
+      ;;
+    -xmljob)
+      shift
+      XML_JOB='on'
       ;;
     -noupdate)
       shift
@@ -309,10 +314,10 @@ do
     chmod -R 777 $DS_INPUT
 
     rm ${DS_WORK}/*
-    if [ ! "$DS_WORK_ROOT"="$TESTNODE" ]
+    if [ ! "$DS_WORK_ROOT" = "$TESTNODE" ]
     then
-      yes | cp -rf ${runtest}/goldlog/* ${DS_GOLD}
-      yes | cp -rf ${runtest}/input/* ${DS_INPUT}
+      cp -rf ${runtest}/goldlog/* ${DS_GOLD}
+      cp -rf ${runtest}/input/* ${DS_INPUT}
     fi
 
     [ -z "$RERUN_FAILED" ] && rm ${test_result_dir}/${testunits}_output.xml
@@ -357,11 +362,21 @@ do
 
     if [ $G_UPDATE = 'on' ]
     then
-      if [ -n $testunit_4_log ]
+      if [ $XML_JOB = 'on' ]
       then
-        ezupdate.sh $CONFIG ${test_result_dir}/${testunits}.sum $testunit_4_log
+        if [ -n $testunit_4_log ]
+        then
+          ezupdate.sh $CONFIG ${test_result_dir}/${testunits}_xml.sum $testunit_4_log
+        else
+          ezupdate.sh $CONFIG ${test_result_dir}/${testunits}_xml.sum $testunits
+        fi
       else
-        ezupdate.sh $CONFIG ${test_result_dir}/${testunits}.sum $testunits
+        if [ -n $testunit_4_log ]
+        then
+          ezupdate.sh $CONFIG ${test_result_dir}/${testunits}.sum $testunit_4_log
+        else
+          ezupdate.sh $CONFIG ${test_result_dir}/${testunits}.sum $testunits
+        fi
       fi
     fi
 done

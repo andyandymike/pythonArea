@@ -154,10 +154,11 @@ def testReadConfig():
 
 
 def testTest():
-    os.environ['ICC_PROJECT_NAME'] = 'ICCMats_mssql_1'
-    gf = os.path.join(testRoot, 'tcase002-g.out')
-    wf = os.path.join(testRoot, 'tcase002-w.out')
+    #os.environ['ICC_PROJECT_NAME'] = 'ICCMats_mssql_1'
+    gf = os.path.join(testRoot, 'zion_hd-g.txt')
+    wf = os.path.join(testRoot, 'zion_hd_sort-w.txt')
     print(test(gf, wf))
+
 
 def testadiff():
     gf = os.path.join(testRoot, 'g.txt')
@@ -176,6 +177,7 @@ def testadiff():
     wf = os.path.join(testRoot, 'obw')
     print(test(gf, wf))
 
+
 def testConverter():
     export_env('RUNTYPE', 'FIRST-DELTA')
     export_env('LOADTYPE', "'DELTA'")
@@ -186,9 +188,26 @@ def testConverter():
     export_env('TESTSUITE_INITIALIZE_DB', '!call Initialize_DB')
     Converter.converter(root, 'testcase')
 
+def createTestcase():
+    file = os.path.join(testRoot, 'output.txt')
+    with open(file, 'w') as f:
+        for i in range(49):
+            if i < 10:
+                f.write('!testcase voraodbc00{}\n'.format(i))
+                f.write('!sh export JOBNAME=voraodbc00{}\n'.format(i))
+            else:
+                f.write('!testcase voraodbc0{}\n'.format(i))
+                f.write('!sh export JOBNAME=voraodbc0{}\n'.format(i))
+            f.write('!sh eim_launcher.sh ${JOBNAME}\n')
+            f.write('#!expect no *Failed*\n')
+            f.write('#!sh adiff ${runtest}/goldlog/${JOBNAME}.out ${DS_WORK}/${JOBNAME}.out\n')
+            f.write('!endtestcase\n')
+            f.write('\n')
+
 if __name__ == '__main__':
     t1 = Timer("testTest()", "from __main__ import testTest")
     print t1.timeit(1)
     # t2 = Timer("testDiff_big()", "from __main__ import testDiff_big")
     # print t2.timeit(1)
+    # testDecFunc2("andy")
     pass
