@@ -169,7 +169,7 @@ class IgnoreErrorStep(TestStep):
 class CallStep(TestStep):
     def __init__(self, call):
         self._call = call
-        super(CallStep, self).__init__("| %s |" % self._call)
+        super(CallStep, self).__init__("| Run Keyword And Continue On Failure | %s |" % self._call)
 
 
 class ImportATLStep(TestStep):

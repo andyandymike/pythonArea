@@ -15,7 +15,7 @@ from robot.libraries.BuiltIn import BuiltIn
 from robot.api import logger
 
 __all__ = ['shell_command', 'export_env', 'change_working_directory', 'remove_wildcard_files', 'import_atl',
-           'diff_unordered_files', 'replace_env', 'eim_launcher', 'unset', 'test']
+           'diff_unordered_files', 'replace_env', 'eim_launcher', 'unset', 'test', 'replace_env_str']
 __version__ = '1.0'
 
 DEBUG = os.environ.get('DEBUG')
@@ -34,13 +34,16 @@ def test(gold, work):
 ''' Use replace_env_str to workaround shell expansion '''
 
 
-def replace_env_str(s):
+def replace_env_str(s, expandExecutable=True):
+    s = s.replace(r'\$', 'ROBOT_PLACEHOLDER')
     ns = os.path.expandvars(s)
     regex = re.compile(r'`(.*)`')
     it = regex.finditer(ns)
     for match in it:
         cmd = "sh -c \"%s\"" % match.group(1).replace(r'"', r'\"')
-        ns = ns.replace(match.group(0), command_output(cmd))
+        if expandExecutable:
+            ns = ns.replace(match.group(0), command_output(cmd))
+    ns = ns.replace('ROBOT_PLACEHOLDER', r'$')
     return ns
 
 
@@ -141,14 +144,15 @@ def export_env(key, val):
         val = shell_command(get_shell_command(val))
     else:
         val = replace_env_str(val)
-    if val[0] == '"' and val[-1] == '"':
+    if len(val) > 0 and val[0] == '"' and val[-1] == '"':
         val = val[1:-1]
     os.environ[key] = val
 
 
 def unset(key):
     if os.environ.get(key) is not None:
-        del os.environ[key]
+        # del os.environ[key]
+        os.environ[key] = ""
 
 
 def get_env(key):
@@ -205,8 +209,15 @@ def eim_launcher(jobname, *args):
     JOBSERVERNAME = get_env('JOBSERVERNAME')
     JOBSERVERHOST = get_env('JOBSERVERHOST')
     JOBSERVERPORT = get_env('JOBSERVERPORT')
+    SERVERGROUPNAME = get_env('SERVERGROUPNAME')
+    SERVERGROUPDISTLEVEL = get_env('SERVERGROUPDISTLEVEL')
+    SERVERGROUPJOBSERVERS = get_env('SERVERGROUPJOBSERVERS')
 
     runjob = replace_env_str(jobname)
+
+    export_env('KSQLPARAM', '')
+    if get_env('KSQL') and get_env('KSQL') == 'TRUE':
+        export_env('KSQLPARAM', "-KSQL{UDS_WORK}/{JOBNAME}.sql".format(UDS_WORK=UDS_WORK, JOBNAME=runjob))
 
     # m_jobname = re.compile(r'\$\{(\w+)\}')
     # m = m_jobname.match(jobname)
@@ -232,9 +243,20 @@ def eim_launcher(jobname, *args):
         for arg in args:
             cmd.append(arg)
     else:
+        if SERVERGROUPNAME:
+            if not SERVERGROUPDISTLEVEL:
+                export_env(SERVERGROUPDISTLEVEL, 'JOB')
+                SERVERGROUPDISTLEVEL = 'JOB'
+            INETADDR = '"-S {SERVERGROUPNAME};inet:{JOBSERVERHOST}:{JOBSERVERPORT};{SERVERGROUPJOBSERVERS}"'.format(
+                SERVERGROUPNAME=SERVERGROUPNAME, JOBSERVERHOST=JOBSERVERHOST, JOBSERVERPORT=JOBSERVERPORT,
+                SERVERGROUPJOBSERVERS=SERVERGROUPJOBSERVERS)
+            export_env('SERVERGROUP_PARAM', "-ClusterLevel{SERVERGROUPDISTLEVEL} -ServerGroup{SERVERGROUPNAME}".format(
+                SERVERGROUPDISTLEVEL=SERVERGROUPDISTLEVEL, SERVERGROUPNAME=SERVERGROUPNAME))
+        else:
+            INETADDR = '"inet:' + JOBSERVERHOST + ':' + JOBSERVERPORT + '"'
         subvalue2(ROBOTHOME + '/bin/launcher.txt', DS_WORK + '/tlauncher.txt')
         # AL_RWJobLauncher.exe "$DS_COMMON_DIR/log/$JOBSERVERNAME/" -w "inet:$JOBSERVERHOST:$JOBSERVERPORT" -t5 -C "${DS_WORK}/tlauncher.txt"
-        cmd = ['AL_RWJobLauncher.exe', '"inet:' + JOBSERVERHOST + ':' + JOBSERVERPORT + '"',
+        cmd = ['AL_RWJobLauncher.exe', INETADDR,
                '"' + DS_COMMON_DIR + '/log/' + JOBSERVERNAME + '/"', '-w',
                '-t5', '-C', '"' + DS_WORK + '/tlauncher.txt"']
 
@@ -304,14 +326,15 @@ class OrderedSmallFileNotMatch(Exception):
         return repr(self.msg)
 
 
-class adiff:
+class adiff(object):
     def __init__(self):
         self.isOrdered = False
+        self.isXML = False
         self.lenglines = 0
         self.lenwlines = 0
         self.limit = 10
         self.UO_SMALL_LINENUM_LIMIT = 20000
-        self.O_SMALL_LINENUM_LIMIT = 300000
+        self.O_SMALL_LINENUM_LIMIT = 400000
         self.CARELESS_LINENUM_LIMIT = 400000
         self.MODE = 'uosmall'
         self.EXSIZE_LIMIT = 600000000L
@@ -325,19 +348,38 @@ class adiff:
         hasSharp = line.find('#')
         return hasStar != -1 or hasQues != -1 or hasSharp != -1
 
+    def _is_xml(self):
+        with open(self.gold, 'rU') as fGoldFile:
+            re_xml = re.compile(r'<\?xml\sversion=.*')
+            max_exam_lines = 100
+            for line in fGoldFile:
+                if max_exam_lines < 0:
+                    return
+                if re_xml.match(line):
+                    self.isOrdered = True
+                    self.isXML = True
+                    return
+                if line:
+                    max_exam_lines -= 1
+
     def _is_ordered(self):
+        if self.isOrdered:
+            return
         with open(self.gold, 'rU') as fGoldFile:
             with open(self.work, 'rU') as fWorkFile:
                 re_xml = re.compile(r'<!--.*-->|xsi:schemaLocation=".*">|<ID>.*</ID>|<TableIndex Name=".*"')
+                re_break = re.compile(r'\r?\n$|\r+$')
 
                 if self.lenglines == 0:
                     self.glinesPre = map(lambda line: re_xml.sub("", line), fGoldFile.readlines())
                     self.glinesPre = filter(lambda x: not re.match(r'\r?\n$|\r+$', x), self.glinesPre)
+                    self.glinesPre = map(lambda line: re_break.sub("", line), self.glinesPre)
                     self.lenglines = len(self.glinesPre)
 
                 if self.lenwlines == 0:
                     self.wlinesPre = map(lambda line: re_xml.sub("", line), fWorkFile.readlines())
                     self.wlinesPre = filter(lambda x: not re.match(r'\r?\n$|\r+$', x), self.wlinesPre)
+                    self.wlinesPre = map(lambda line: re_break.sub("", line), self.wlinesPre)
                     self.lenwlines = len(self.wlinesPre)
 
                 if self.lenglines == self.lenwlines and self.lenglines > self.UO_SMALL_LINENUM_LIMIT:
@@ -359,15 +401,18 @@ class adiff:
         with open(self.gold, 'rU') as fGoldFile:
             with open(self.work, 'rU') as fWorkFile:
                 re_xml = re.compile(r'<!--.*-->|xsi:schemaLocation=".*">|<ID>.*</ID>|<TableIndex Name=".*"')
+                re_break = re.compile(r'\r?\n$|\r+$')
 
                 if self.lenglines == 0:
                     self.glinesPre = map(lambda line: re_xml.sub("", line), fGoldFile.readlines())
                     self.glinesPre = filter(lambda x: not re.match(r'\r?\n$|\r+$', x), self.glinesPre)
+                    self.glinesPre = map(lambda line: re_break.sub("", line), self.glinesPre)
                     self.lenglines = len(self.glinesPre)
 
                 if self.lenwlines == 0:
                     self.wlinesPre = map(lambda line: re_xml.sub("", line), fWorkFile.readlines())
                     self.wlinesPre = filter(lambda x: not re.match(r'\r?\n$|\r+$', x), self.wlinesPre)
+                    self.wlinesPre = map(lambda line: re_break.sub("", line), self.wlinesPre)
                     self.lenwlines = len(self.wlinesPre)
 
                 if self.lenglines != self.lenwlines:
@@ -391,6 +436,7 @@ class adiff:
         self.lenglines = len(glinesPre)
         self.lenwlines = len(self.wlinesPre)
 
+        glinesPre = map(lambda line: replace_env_str(line, False), glinesPre)
         glinesPre = map(lambda line: line.replace("\\\\", "\\"), glinesPre)
         glinesPre = map(lambda line: re.escape(line), glinesPre)
 
@@ -402,15 +448,15 @@ class adiff:
         self.glines = map(lambda line: re_singleNum.sub("[0-9#]", line), self.glines)
         self.wlines = self.wlinesPre
 
-    def _diff_small_ordered_files(self):
+    def _diff_small_ordered_files(self, Force=False):
+        if not Force:
+            if self.lenglines > self.O_SMALL_LINENUM_LIMIT or self.isOrdered is False:
+                self.MODE = 'big'
+                return
 
-        if self.lenglines > self.O_SMALL_LINENUM_LIMIT or self.isOrdered is False:
-            self.MODE = 'big'
-            return
-
-        if self.lenwlines > self.O_SMALL_LINENUM_LIMIT or self.isOrdered is False:
-            self.MODE = 'big'
-            return
+            if self.lenwlines > self.O_SMALL_LINENUM_LIMIT or self.isOrdered is False:
+                self.MODE = 'big'
+                return
 
         self._wildcard_prepare()
 
@@ -419,7 +465,7 @@ class adiff:
             wline = self.wlines[lineNum]
             m = re.match(gline, wline)
             s = re.split(gline, wline)
-            if m is None or s[0] != '' or s[1] != '':
+            if not self.isXML and (m is None or s[0] != '' or s[1] != ''):
                 diffInfo = []
                 diffInfo.append("gold: %.100s ..." % unescape(gline))
                 diffInfo.append("work: %.100s ..." % wline)
@@ -428,20 +474,23 @@ class adiff:
                 for diff in diffInfo:
                     logger.info(diff, also_console=True)
                 raise AssertionError("Files are different: %s %s" % (self.work, self.gold))
+            if self.isXML and m is None:
+                self.isOrdered = False
+                return self._diff_small_unordered_files(Force=True)
 
         return 'Success'
 
-    def _diff_unordered_files_careless(self):
+    def _diff_unordered_files_careless(self, Force=False):
         logger.info('Diff in unordered file careless Mode (support wildcard but can be wrong in very rare conditions)',
                     also_console=True)
+        if not Force:
+            if self.lenglines > self.CARELESS_LINENUM_LIMIT:
+                self.MODE = 'big'
+                return
 
-        if self.lenglines > self.CARELESS_LINENUM_LIMIT:
-            self.MODE = 'big'
-            return
-
-        if self.lenwlines > self.CARELESS_LINENUM_LIMIT:
-            self.MODE = 'big'
-            return
+            if self.lenwlines > self.CARELESS_LINENUM_LIMIT:
+                self.MODE = 'big'
+                return
 
         self._wildcard_prepare()
 
@@ -466,14 +515,15 @@ class adiff:
 
         return 'Success'
 
-    def _diff_small_unordered_files(self):
-        if self.lenglines > self.UO_SMALL_LINENUM_LIMIT:
-            self.MODE = 'osmall'
-            return
+    def _diff_small_unordered_files(self, Force=False):
+        if not Force:
+            if self.lenglines > self.UO_SMALL_LINENUM_LIMIT or self.isOrdered is True:
+                self.MODE = 'osmall'
+                return
 
-        if self.lenwlines > self.UO_SMALL_LINENUM_LIMIT:
-            self.MODE = 'osmall'
-            return
+            if self.lenwlines > self.UO_SMALL_LINENUM_LIMIT or self.isOrdered is True:
+                self.MODE = 'osmall'
+                return
 
         self._wildcard_prepare()
 
@@ -594,6 +644,7 @@ class adiff:
         if checksum(self.gold) == checksum(self.work):
             return 'Success'
         try:
+            self._is_xml()
             self._files_prepare()
 
             if self.MODE == 'uosmall':

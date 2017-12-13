@@ -1,4 +1,30 @@
-1.13
+1.15
+=========
+2017.10.23
+KSQL option will only take effect when set it to TRUE
+Add concurrent lock when robot is trying to upgrade itself
+2017.11.7
+adiff will consider xml file as ordered
+adiff will not try to expand `(.*)` in goldlog lines
+2017.11.13
+modify adiff xml logic, now adiff will first consider xml file as ordered
+if fails, try unodered
+2017.12.5
+add xml job update
+2017.12.11
+fix fail to copy local gold/input
+=========
+1.14
+2017.10.13
+fix testcase file has commands in tail but not in a case fail to convert problem
+change call keyword logic, will continue on keyword failure
+2017.10.19
+add %KSQLPARAM% in launcher.txt
+using \$var in shell command will not replace itself with environment variable
+change unset behavior, unset will replace environment variable to empty string (not deleting it)
+add more options in launcher.txt (including jobserver group)
+add environment variable support in goldlog file
+adiff will delete \r\n at the end of line
 =========
 1.13
 2017.09.28

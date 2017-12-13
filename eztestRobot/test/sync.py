@@ -28,17 +28,27 @@ def checksum(fileName):
 
 def main():
     flag = 'ezrobot'
-    #flag = 'sikuli'
+    # flag = 'sikuli'
     bk = True
     robotRoot = os.path.abspath('..')
     syncRoot = robotRoot
-    #syncRoot = 'C:\\Users\\i067382\\EIMTest\\eim_ui_testing\\DSSeleniumTests\\src'
+    ignoreDir = ['selenium']
+    # syncRoot = 'C:\\Users\\i067382\\EIMTest\\eim_ui_testing\\DSSeleniumTests\\src'
     des = 'Y:\\landy\\keep\\robot\\eztestRobot'
-    #des = 'Y:\\landy\\keep\\EIMTest\\eim_ui_testing\\DSSeleniumTests\\src'
+    # des = 'Y:\\landy\\keep\\EIMTest\\eim_ui_testing\\DSSeleniumTests\\src'
 
-    for (root, dirs, files) in os.walk(syncRoot):
+    isContinue = False
+    for root, dirs, files in os.walk(syncRoot, topdown=True):
+        for dir in ignoreDir:
+            if root.find(dir) != -1:
+                isContinue = True
+                break
+        if isContinue:
+            isContinue = False
+            continue
+
         print(os.path.basename(root))
-        if flag!= 'sikuli'and os.path.basename(root) == 'test':
+        if flag != 'sikuli' and os.path.basename(root) == 'test':
             continue
         for fileName in files:
             if not ignore(fileName):
