@@ -1,0 +1,12 @@
+xcopy /s/y "eztestRobot" "..\..\eztestRobot"
+rmdir /s/q "..\..\eztestRobot\test"
+rmdir /s/q "..\..\eztestRobot\.idea"
+rmdir /s/q "..\..\eztestRobot\__pycache__"
+del /s "..\..\eztestRobot\*.bk"
+del /s "..\..\eztestRobot\*.pyc"
+del /s "..\..\eztestRobot\*.class"
+del /s "..\..\eztestRobot\*.iml"
+del /s "..\..\eztestRobot\*.db"
+del /s "..\..\eztestRobot\bin\utils.py"
+
+dos2unix "..\..\eztestRobot\bin\*.sh"

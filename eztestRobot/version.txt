@@ -13,6 +13,8 @@ if fails, try unodered
 add xml job update
 2017.12.11
 fix fail to copy local gold/input
+2017.12.14
+fix escape wildcard in goldlog cause file not match problem
 =========
 1.14
 2017.10.13

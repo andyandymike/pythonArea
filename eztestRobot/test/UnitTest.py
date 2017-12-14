@@ -155,8 +155,8 @@ def testReadConfig():
 
 def testTest():
     #os.environ['ICC_PROJECT_NAME'] = 'ICCMats_mssql_1'
-    gf = os.path.join(testRoot, 'zion_hd-g.txt')
-    wf = os.path.join(testRoot, 'zion_hd_sort-w.txt')
+    gf = os.path.join(testRoot, 'cobolredef004_HPH_sorted_g.out')
+    wf = os.path.join(testRoot, 'cobolredef004_HPH_sorted_w.out')
     print(test(gf, wf))
 
 

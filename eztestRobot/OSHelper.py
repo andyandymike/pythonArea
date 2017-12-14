@@ -437,7 +437,11 @@ class adiff(object):
         self.lenwlines = len(self.wlinesPre)
 
         glinesPre = map(lambda line: replace_env_str(line, False), glinesPre)
-        glinesPre = map(lambda line: line.replace("\\\\", "\\"), glinesPre)
+        #glinesPre = map(lambda line: line.replace("\\\\", "\\"), glinesPre)
+        glinesPre = map(lambda line: line.replace("\\\\", "ROBOTSLASH"), glinesPre)
+        glinesPre = map(lambda line: line.replace("\\*", "ROBOTSTAR"), glinesPre)
+        glinesPre = map(lambda line: line.replace("\\?", "ROBOTQM"), glinesPre)
+        glinesPre = map(lambda line: line.replace("\\#", "ROBOTSP"), glinesPre)
         glinesPre = map(lambda line: re.escape(line), glinesPre)
 
         re_multi = re.compile(r'\\\*')
@@ -446,6 +450,10 @@ class adiff(object):
         self.glines = map(lambda line: re_multi.sub(".*", line), glinesPre)
         self.glines = map(lambda line: re_single.sub(".?", line), self.glines)
         self.glines = map(lambda line: re_singleNum.sub("[0-9#]", line), self.glines)
+        self.glines = map(lambda line: line.replace("ROBOTSLASH", "\\\\"), self.glines)
+        self.glines = map(lambda line: line.replace("ROBOTSTAR", "\\*"), self.glines)
+        self.glines = map(lambda line: line.replace("ROBOTQM", "\\?"), self.glines)
+        self.glines = map(lambda line: line.replace("ROBOTSP", "\\#"), self.glines)
         self.wlines = self.wlinesPre
 
     def _diff_small_ordered_files(self, Force=False):
