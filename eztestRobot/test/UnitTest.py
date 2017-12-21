@@ -155,8 +155,8 @@ def testReadConfig():
 
 def testTest():
     #os.environ['ICC_PROJECT_NAME'] = 'ICCMats_mssql_1'
-    gf = os.path.join(testRoot, 'cobolredef004_HPH_sorted_g.out')
-    wf = os.path.join(testRoot, 'cobolredef004_HPH_sorted_w.out')
+    gf = os.path.join(testRoot, 'cs031-g.out')
+    wf = os.path.join(testRoot, 'cs031-w.out')
     print(test(gf, wf))
 
 
@@ -207,7 +207,7 @@ def createTestcase():
 if __name__ == '__main__':
     t1 = Timer("testTest()", "from __main__ import testTest")
     print t1.timeit(1)
-    # t2 = Timer("testDiff_big()", "from __main__ import testDiff_big")
+    # t2 = Timer("testadiff()", "from __main__ import testadiff")
     # print t2.timeit(1)
     # testDecFunc2("andy")
     pass

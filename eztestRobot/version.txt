@@ -1,4 +1,9 @@
-1.15
+1.16
+=========
+2017.12.19
+change the logic in _diff_small_unordered_files, from delete matched element directly in iterator
+to mark matched element and then put not matched elements to a new list
+Sorry, switch back!
 =========
 2017.10.23
 KSQL option will only take effect when set it to TRUE

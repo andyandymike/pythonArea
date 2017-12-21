@@ -437,7 +437,7 @@ class adiff(object):
         self.lenwlines = len(self.wlinesPre)
 
         glinesPre = map(lambda line: replace_env_str(line, False), glinesPre)
-        #glinesPre = map(lambda line: line.replace("\\\\", "\\"), glinesPre)
+        # glinesPre = map(lambda line: line.replace("\\\\", "\\"), glinesPre)
         glinesPre = map(lambda line: line.replace("\\\\", "ROBOTSLASH"), glinesPre)
         glinesPre = map(lambda line: line.replace("\\*", "ROBOTSTAR"), glinesPre)
         glinesPre = map(lambda line: line.replace("\\?", "ROBOTQM"), glinesPre)
@@ -548,6 +548,30 @@ class adiff(object):
             gfEndLen = len(self.glines)
             if gfStartLen == gfEndLen:
                 break
+
+        # delg = []
+        # delw = []
+        # for i, gline in enumerate(self.glines):
+        #    for j, wline in enumerate(self.wlines):
+        #        m = re.match(gline, wline)
+        #        s = re.split(gline, wline)
+        #        if m is not None and s[0] == '' and s[1] == '':
+        #            if i not in delg and j not in delw:
+        #                delg.append(i)
+        #                delw.append(j)
+        #                break
+        # notmatchg = []
+        # notmatchw = []
+        # if delg:
+        #    for i in range(self.lenglines):
+        #        if i not in delg:
+        #            notmatchg.append(self.glines[i])
+        # if delw:
+        #    for i in range(self.lenwlines):
+        #        if i not in delw:
+        #            notmatchw.append(self.wlines[i])
+        # self.glines = notmatchg
+        # self.wlines = notmatchw
 
         if len(self.glines) > 0 or len(self.wlines) > 0:
             i = 0
